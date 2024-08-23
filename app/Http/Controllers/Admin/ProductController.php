@@ -13,7 +13,7 @@ use App\Models\Client;
 use App\Models\ClientPrice;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
-use Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;

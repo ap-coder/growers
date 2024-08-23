@@ -11,7 +11,7 @@ use App\Models\Task;
 use App\Models\TaskStatus;
 use App\Models\TaskTag;
 use App\Models\User;
-use Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;

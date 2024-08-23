@@ -7,7 +7,7 @@ use App\Http\Requests\StoreClientPriceRequest;
 use App\Http\Requests\UpdateClientPriceRequest;
 use App\Http\Resources\Admin\ClientPriceResource;
 use App\Models\ClientPrice;
-use Gate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

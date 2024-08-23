@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MassDestroyTaskStatusRequest;
@@ -19,42 +19,42 @@ class TaskStatusController extends Controller
 
         $taskStatuses = TaskStatus::all();
 
-        return view('admin.taskStatuses.index', compact('taskStatuses'));
+        return view('frontend.taskStatuses.index', compact('taskStatuses'));
     }
 
     public function create()
     {
         abort_if(Gate::denies('task_status_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.taskStatuses.create');
+        return view('frontend.taskStatuses.create');
     }
 
     public function store(StoreTaskStatusRequest $request)
     {
         $taskStatus = TaskStatus::create($request->all());
 
-        return redirect()->route('admin.task-statuses.index');
+        return redirect()->route('frontend.task-statuses.index');
     }
 
     public function edit(TaskStatus $taskStatus)
     {
         abort_if(Gate::denies('task_status_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.taskStatuses.edit', compact('taskStatus'));
+        return view('frontend.taskStatuses.edit', compact('taskStatus'));
     }
 
     public function update(UpdateTaskStatusRequest $request, TaskStatus $taskStatus)
     {
         $taskStatus->update($request->all());
 
-        return redirect()->route('admin.task-statuses.index');
+        return redirect()->route('frontend.task-statuses.index');
     }
 
     public function show(TaskStatus $taskStatus)
     {
         abort_if(Gate::denies('task_status_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.taskStatuses.show', compact('taskStatus'));
+        return view('frontend.taskStatuses.show', compact('taskStatus'));
     }
 
     public function destroy(TaskStatus $taskStatus)
