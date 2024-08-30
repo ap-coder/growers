@@ -81,22 +81,22 @@
                             <span class="help-block">{{ trans('cruds.product.fields.photo_helper') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="clents">{{ trans('cruds.product.fields.clent') }}</label>
+                            <label for="clients">{{ trans('cruds.product.fields.client') }}</label>
                             <div style="padding-bottom: 4px">
                                 <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
                                 <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
                             </div>
-                            <select class="form-control select2" name="clents[]" id="clents" multiple>
-                                @foreach($clents as $id => $clent)
-                                    <option value="{{ $id }}" {{ (in_array($id, old('clents', [])) || $product->clents->contains($id)) ? 'selected' : '' }}>{{ $clent }}</option>
+                            <select class="form-control select2" name="clients[]" id="clients" multiple>
+                                @foreach($clients as $id => $client)
+                                    <option value="{{ $id }}" {{ (in_array($id, old('clients', [])) || $product->clients->contains($id)) ? 'selected' : '' }}>{{ $client }}</option>
                                 @endforeach
                             </select>
-                            @if($errors->has('clents'))
+                            @if($errors->has('clients'))
                                 <div class="invalid-feedback">
-                                    {{ $errors->first('clents') }}
+                                    {{ $errors->first('clients') }}
                                 </div>
                             @endif
-                            <span class="help-block">{{ trans('cruds.product.fields.clent_helper') }}</span>
+                            <span class="help-block">{{ trans('cruds.product.fields.client_helper') }}</span>
                         </div>
                         <div class="form-group">
                             <button class="btn btn-danger" type="submit">

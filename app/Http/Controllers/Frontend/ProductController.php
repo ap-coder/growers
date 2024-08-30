@@ -25,7 +25,7 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = Product::with(['categories', 'tags', 'clents', 'team', 'media'])->get();
+        $products = Product::with(['categories', 'tags', 'clients', 'team', 'media'])->get();
 
         return view('frontend.products.index', compact('products'));
     }
@@ -38,9 +38,9 @@ class ProductController extends Controller
 
         $tags = ProductTag::pluck('name', 'id');
 
-        $clents = ClientPrice::pluck('price', 'id');
+        $clients = ClientPrice::pluck('price', 'id');
 
-        return view('frontend.products.create', compact('categories', 'clents', 'tags'));
+        return view('frontend.products.create', compact('categories', 'clients', 'tags'));
     }
 
     public function store(StoreProductRequest $request)
@@ -48,7 +48,7 @@ class ProductController extends Controller
         $product = Product::create($request->all());
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
-        $product->clents()->sync($request->input('clents', []));
+        $product->clients()->sync($request->input('clients', []));
         if ($request->input('photo', false)) {
             $product->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
         }
@@ -68,11 +68,11 @@ class ProductController extends Controller
 
         $tags = ProductTag::pluck('name', 'id');
 
-        $clents = ClientPrice::pluck('price', 'id');
+        $clients = ClientPrice::pluck('price', 'id');
 
-        $product->load('categories', 'tags', 'clents', 'team');
+        $product->load('categories', 'tags', 'clients', 'team');
 
-        return view('frontend.products.edit', compact('categories', 'clents', 'product', 'tags'));
+        return view('frontend.products.edit', compact('categories', 'clients', 'product', 'tags'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
@@ -80,7 +80,7 @@ class ProductController extends Controller
         $product->update($request->all());
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
-        $product->clents()->sync($request->input('clents', []));
+        $product->clients()->sync($request->input('clients', []));
         if ($request->input('photo', false)) {
             if (! $product->photo || $request->input('photo') !== $product->photo->file_name) {
                 if ($product->photo) {
@@ -99,7 +99,7 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('categories', 'tags', 'clents', 'team', 'productsOrders');
+        $product->load('categories', 'tags', 'clients', 'team', 'productsOrders');
 
         return view('frontend.products.show', compact('product'));
     }

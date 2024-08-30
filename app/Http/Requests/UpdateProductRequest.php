@@ -33,10 +33,10 @@ class UpdateProductRequest extends FormRequest
             'tags' => [
                 'array',
             ],
-            'clents.*' => [
+            'clients.*' => [
                 'integer',
             ],
-            'clents' => [
+            'clients' => [
                 'array',
             ],
         ];

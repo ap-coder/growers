@@ -20,7 +20,7 @@ class ProductApiController extends Controller
     {
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return new ProductResource(Product::with(['categories', 'tags', 'clents', 'team'])->get());
+        return new ProductResource(Product::with(['categories', 'tags', 'clients', 'team'])->get());
     }
 
     public function store(StoreProductRequest $request)
@@ -28,7 +28,7 @@ class ProductApiController extends Controller
         $product = Product::create($request->all());
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
-        $product->clents()->sync($request->input('clents', []));
+        $product->clients()->sync($request->input('clients', []));
         if ($request->input('photo', false)) {
             $product->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
         }
@@ -42,7 +42,7 @@ class ProductApiController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return new ProductResource($product->load(['categories', 'tags', 'clents', 'team']));
+        return new ProductResource($product->load(['categories', 'tags', 'clients', 'team']));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
@@ -50,7 +50,7 @@ class ProductApiController extends Controller
         $product->update($request->all());
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
-        $product->clents()->sync($request->input('clents', []));
+        $product->clients()->sync($request->input('clients', []));
         if ($request->input('photo', false)) {
             if (! $product->photo || $request->input('photo') !== $product->photo->file_name) {
                 if ($product->photo) {
