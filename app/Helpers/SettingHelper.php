@@ -6,7 +6,6 @@ use App\Models\Setting;
 
 class SettingHelper
 {
-
     public static function get($key, $default = null)
     {
         return Cache::rememberForever('settings.' . $key, function () use ($key, $default) {

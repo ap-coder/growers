@@ -72,7 +72,7 @@ class RegisterController extends Controller
              ]);
 
              if (! request()->has('team')) {
-                 $team = \App\Models\Team::create([
+            $team = \App\Models\Team::create([
                      'owner_id' => $user->id,
                      'name'     => $data['email'],
                  ]);

@@ -32,7 +32,7 @@ trait MediaUploadingTrait
                 mkdir($path, 0755, true);
             }
         } catch (\Exception $e) {
-        }
+            }
 
         $file = $request->file('file');
 
