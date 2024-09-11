@@ -78,12 +78,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('products/process-csv-import', 'ProductController@processCsvImport')->name('products.processCsvImport');
     Route::resource('products', 'ProductController');
 
-    // Customer
-    Route::delete('customers/destroy', 'CustomerController@massDestroy')->name('customers.massDestroy');
-    Route::post('customers/parse-csv-import', 'CustomerController@parseCsvImport')->name('customers.parseCsvImport');
-    Route::post('customers/process-csv-import', 'CustomerController@processCsvImport')->name('customers.processCsvImport');
-    Route::resource('customers', 'CustomerController');
-
     // Task Status
     Route::delete('task-statuses/destroy', 'TaskStatusController@massDestroy')->name('task-statuses.massDestroy');
     Route::resource('task-statuses', 'TaskStatusController');
