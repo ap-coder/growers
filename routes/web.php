@@ -115,6 +115,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('client-prices/destroy', 'ClientPriceController@massDestroy')->name('client-prices.massDestroy');
     Route::post('client-prices/parse-csv-import', 'ClientPriceController@parseCsvImport')->name('client-prices.parseCsvImport');
     Route::post('client-prices/process-csv-import', 'ClientPriceController@processCsvImport')->name('client-prices.processCsvImport');
+    Route::post('client-prices/media', 'ClientPriceController@storeMedia')->name('client-prices.storeMedia');
     Route::resource('client-prices', 'ClientPriceController');
 
     // Setting
