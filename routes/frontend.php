@@ -61,27 +61,6 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
     Route::post('products/ckmedia', 'ProductController@storeCKEditorImages')->name('products.storeCKEditorImages');
     Route::resource('products', 'ProductController');
 
-    // Customer
-    Route::delete('customers/destroy', 'CustomerController@massDestroy')->name('customers.massDestroy');
-    Route::resource('customers', 'CustomerController');
-
-    // Task Status
-    Route::delete('task-statuses/destroy', 'TaskStatusController@massDestroy')->name('task-statuses.massDestroy');
-    Route::resource('task-statuses', 'TaskStatusController');
-
-    // Task Tag
-    Route::delete('task-tags/destroy', 'TaskTagController@massDestroy')->name('task-tags.massDestroy');
-    Route::resource('task-tags', 'TaskTagController');
-
-    // Task
-    Route::delete('tasks/destroy', 'TaskController@massDestroy')->name('tasks.massDestroy');
-    Route::post('tasks/media', 'TaskController@storeMedia')->name('tasks.storeMedia');
-    Route::post('tasks/ckmedia', 'TaskController@storeCKEditorImages')->name('tasks.storeCKEditorImages');
-    Route::resource('tasks', 'TaskController');
-
-    // Tasks Calendar
-    Route::resource('tasks-calendars', 'TasksCalendarController', ['except' => ['create', 'store', 'edit', 'update', 'show', 'destroy']]);
-
     // Order
     Route::delete('orders/destroy', 'OrderController@massDestroy')->name('orders.massDestroy');
     Route::resource('orders', 'OrderController');
@@ -92,6 +71,8 @@ Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['
 
     // Client Price
     Route::delete('client-prices/destroy', 'ClientPriceController@massDestroy')->name('client-prices.massDestroy');
+    Route::post('client-prices/media', 'ClientPriceController@storeMedia')->name('client-prices.storeMedia');
+    Route::post('client-prices/ckmedia', 'ClientPriceController@storeCKEditorImages')->name('client-prices.storeCKEditorImages');
     Route::resource('client-prices', 'ClientPriceController');
 
     // Setting

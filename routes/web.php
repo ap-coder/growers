@@ -1,5 +1,10 @@
 <?php
 
+//Route::get('r', function () { return view('site.routes'); })->name('assigned-routes')->middleware('auth');
+
+Route::get('r', function () { return view('site.routes'); })->name('assigned-routes');
+
+
 Route::view('/', 'welcome');
 
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');

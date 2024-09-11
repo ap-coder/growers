@@ -11,15 +11,16 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "opcodesio/log-viewer": "^3.6",
         "laraveldaily/laravel-charts": "^0.1.29",
         "nuovo/spreadsheet-reader": "^0.5.11",
         "orangehill/iseed": "^3.0",
         "spatie/laravel-medialibrary": "^10.7",
+        "wecodelaravel/laravel-menu": "dev-master",
         "yajra/laravel-datatables-oracle": "^10.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
-        "jkocik/laravel-profiler": "^2.0",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
         "laravel/ui": "^4.2",
@@ -72,6 +73,12 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true
+        }
+    },
+    "repositories": {
+        "menu": {
+            "type": "vcs",
+            "url": "https://github.com/wecodelaravel/laravel-menu"
         }
     },
     "minimum-stability": "stable",

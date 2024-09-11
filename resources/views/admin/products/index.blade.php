@@ -44,6 +44,9 @@
                         {{ trans('cruds.product.fields.photo') }}
                     </th>
                     <th>
+                        {{ trans('cruds.product.fields.clients') }}
+                    </th>
+                    <th>
                         &nbsp;
                     </th>
                 </tr>
@@ -105,6 +108,7 @@
 { data: 'category', name: 'categories.name' },
 { data: 'tag', name: 'tags.name' },
 { data: 'photo', name: 'photo', sortable: false, searchable: false },
+{ data: 'clients', name: 'clients.price' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

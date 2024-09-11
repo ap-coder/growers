@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Force HTTPS
+    RewriteCond %{HTTPS} !=on
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -19,3 +23,15 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# Block access to .env file
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Block access to other sensitive files (env, json, log, config, lock)
+<FilesMatch "\.(env|json|log|config|lock|env\..*)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

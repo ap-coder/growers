@@ -77,7 +77,7 @@
                 <span class="help-block">{{ trans('cruds.product.fields.photo_helper') }}</span>
             </div>
             <div class="form-group">
-                <label for="clients">{{ trans('cruds.product.fields.client') }}</label>
+                <label for="clients">{{ trans('cruds.product.fields.clients') }}</label>
                 <div style="padding-bottom: 4px">
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
                     <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
@@ -92,7 +92,7 @@
                         {{ $errors->first('clients') }}
                     </div>
                 @endif
-                <span class="help-block">{{ trans('cruds.product.fields.client_helper') }}</span>
+                <span class="help-block">{{ trans('cruds.product.fields.clients_helper') }}</span>
             </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">

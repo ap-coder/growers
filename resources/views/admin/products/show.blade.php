@@ -73,11 +73,11 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.product.fields.client') }}
+                            {{ trans('cruds.product.fields.clients') }}
                         </th>
                         <td>
-                            @foreach($product->clients as $key => $client)
-                                <span class="label label-info">{{ $client->price }}</span>
+                            @foreach($product->clients as $key => $clients)
+                                <span class="label label-info">{{ $clients->price }}</span>
                             @endforeach
                         </td>
                     </tr>
