@@ -42,22 +42,12 @@ class OrderItemController extends Controller
                 ));
             });
 
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->addColumn('product_name', function ($row) {
-                return $row->product ? $row->product->name : '';
-            });
+            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
+            $table->addColumn('product_name', fn ($row) => $row->product ? $row->product->name : '');
 
-            $table->editColumn('price', function ($row) {
-                return $row->price ? $row->price : '';
-            });
-            $table->editColumn('quantity', function ($row) {
-                return $row->quantity ? $row->quantity : '';
-            });
-            $table->editColumn('total_price', function ($row) {
-                return $row->total_price ? $row->total_price : '';
-            });
+            $table->editColumn('price', fn ($row) => $row->price ? $row->price : '');
+            $table->editColumn('quantity', fn ($row) => $row->quantity ? $row->quantity : '');
+            $table->editColumn('total_price', fn ($row) => $row->total_price ? $row->total_price : '');
 
             $table->rawColumns(['actions', 'placeholder', 'product']);
 

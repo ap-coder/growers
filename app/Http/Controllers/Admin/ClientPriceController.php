@@ -43,18 +43,10 @@ class ClientPriceController extends Controller
                 ));
             });
 
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->editColumn('price', function ($row) {
-                return $row->price ? $row->price : '';
-            });
-            $table->editColumn('sku', function ($row) {
-                return $row->sku ? $row->sku : '';
-            });
-            $table->editColumn('gtin', function ($row) {
-                return $row->gtin ? $row->gtin : '';
-            });
+            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
+            $table->editColumn('price', fn ($row) => $row->price ? $row->price : '');
+            $table->editColumn('sku', fn ($row) => $row->sku ? $row->sku : '');
+            $table->editColumn('gtin', fn ($row) => $row->gtin ? $row->gtin : '');
 
             $table->rawColumns(['actions', 'placeholder']);
 

@@ -49,15 +49,9 @@ class ProductController extends Controller
                 ));
             });
 
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : '';
-            });
-            $table->editColumn('description', function ($row) {
-                return $row->description ? $row->description : '';
-            });
+            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
+            $table->editColumn('name', fn ($row) => $row->name ? $row->name : '');
+            $table->editColumn('description', fn ($row) => $row->description ? $row->description : '');
             $table->editColumn('category', function ($row) {
                 $labels = [];
                 foreach ($row->categories as $category) {

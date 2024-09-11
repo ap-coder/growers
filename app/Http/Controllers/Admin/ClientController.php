@@ -44,12 +44,8 @@ class ClientController extends Controller
                 ));
             });
 
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : '';
-            });
+            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
+            $table->editColumn('name', fn ($row) => $row->name ? $row->name : '');
             $table->editColumn('products', function ($row) {
                 $labels = [];
                 foreach ($row->products as $product) {

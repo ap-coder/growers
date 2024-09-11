@@ -41,15 +41,9 @@ class SettingController extends Controller
                 ));
             });
 
-            $table->editColumn('id', function ($row) {
-                return $row->id ? $row->id : '';
-            });
-            $table->editColumn('key', function ($row) {
-                return $row->key ? $row->key : '';
-            });
-            $table->editColumn('value', function ($row) {
-                return $row->value ? $row->value : '';
-            });
+            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
+            $table->editColumn('key', fn ($row) => $row->key ? $row->key : '');
+            $table->editColumn('value', fn ($row) => $row->value ? $row->value : '');
 
             $table->rawColumns(['actions', 'placeholder']);
 
