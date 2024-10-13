@@ -29,7 +29,7 @@
         @include('partials.inc.users-section')
         @include('partials.inc.settings-section')
         @include('partials.inc.developers-section')
-
+        @include('partials.inc.dev-section')
         {{-- @include('partials.inc.tasks-section')--}}
 
         @can('user_alert_access')
