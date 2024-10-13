@@ -25,7 +25,10 @@
         @include('partials.inc.content-section')
         @include('partials.inc.orders-section')
         @include('partials.inc.faqs-section')
+
         @include('partials.inc.users-section')
+        @include('partials.inc.settings-section')
+        @include('partials.inc.developers-section')
 
         {{-- @include('partials.inc.tasks-section')--}}
 
@@ -39,16 +42,7 @@
                 </a>
             </li>
         @endcan
-        @can('setting_access')
-            <li class="c-sidebar-nav-item">
-                <a href="{{ route("admin.settings.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/settings") || request()->is("admin/settings/*") ? "c-active" : "" }}">
-                    <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
 
-                    </i>
-                    {{ trans('cruds.setting.title') }}
-                </a>
-            </li>
-        @endcan
 
         @php($unread = \App\Models\QaTopic::unreadCount())
             <li class="c-sidebar-nav-item">

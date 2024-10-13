@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Setting;
 
 class SettingServiceProvider extends ServiceProvider
 {
@@ -11,7 +13,13 @@ class SettingServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('setting', fn () => new \App\Models\Setting);
+        // Bind the SettingHelper to 'setting'
+        $this->app->singleton('setting', function () {
+            // Load all settings into the cache once and forever
+            return Cache::rememberForever('settings', function () {
+                return Setting::pluck('value', 'key')->all();
+            });
+        });
     }
 
     /**

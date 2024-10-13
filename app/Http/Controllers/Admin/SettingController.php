@@ -63,7 +63,10 @@ class SettingController extends Controller
     public function store(StoreSettingRequest $request)
     {
         $setting = Setting::create($request->all());
-        Cache::forever('settings.' . $setting->key, $setting->value);
+
+        // Refresh the entire settings cache
+        Cache::forget('settings');
+        Cache::forever('settings', Setting::pluck('value', 'key')->all());
 
         return redirect()->route('admin.settings.index');
     }
@@ -78,15 +81,21 @@ class SettingController extends Controller
     public function update(UpdateSettingRequest $request, Setting $setting)
     {
         $setting->update($request->all());
-        Cache::forever('settings.' . $setting->key, $setting->value);
+
+        // Refresh the entire settings cache
+        Cache::forget('settings');
+        Cache::forever('settings', Setting::pluck('value', 'key')->all());
 
         return redirect()->route('admin.settings.index');
     }
 
     public function destroy(Setting $setting)
     {
-        Cache::forget('settings.' . $setting->key);
+        // Delete the specific setting and refresh the cache
         $setting->delete();
+
+        Cache::forget('settings');
+        Cache::forever('settings', Setting::pluck('value', 'key')->all());
 
         return back();
     }
@@ -98,6 +107,10 @@ class SettingController extends Controller
         foreach ($settings as $setting) {
             $setting->delete();
         }
+
+        // Refresh the entire settings cache
+        Cache::forget('settings');
+        Cache::forever('settings', Setting::pluck('value', 'key')->all());
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
