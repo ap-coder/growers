@@ -32,13 +32,7 @@
                         {{ trans('cruds.product.fields.name') }}
                     </th>
                     <th>
-                        {{ trans('cruds.product.fields.description') }}
-                    </th>
-                    <th>
                         {{ trans('cruds.product.fields.category') }}
-                    </th>
-                    <th>
-                        {{ trans('cruds.product.fields.tag') }}
                     </th>
                     <th>
                         {{ trans('cruds.product.fields.photo') }}
@@ -104,11 +98,9 @@
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
 { data: 'name', name: 'name' },
-{ data: 'description', name: 'description' },
 { data: 'category', name: 'categories.name' },
-{ data: 'tag', name: 'tags.name' },
 { data: 'photo', name: 'photo', sortable: false, searchable: false },
-{ data: 'clients', name: 'clients.price' },
+{ data: 'clients', name: 'clients.name' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,
