@@ -136,7 +136,7 @@
     Dropzone.options.barcodeImageDropzone = {
     url: '{{ route('admin.client-prices.storeMedia') }}',
     maxFilesize: 2, // MB
-    acceptedFiles: '.jpeg,.jpg,.png,.gif',
+    acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
     maxFiles: 1,
     addRemoveLinks: true,
     headers: {
