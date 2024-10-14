@@ -29,13 +29,22 @@
                         {{ trans('cruds.clientPrice.fields.id') }}
                     </th>
                     <th>
+                        {{ trans('cruds.clientPrice.fields.product') }}
+                    </th>
+                    <th>
                         {{ trans('cruds.clientPrice.fields.price') }}
                     </th>
                     <th>
                         {{ trans('cruds.clientPrice.fields.sku') }}
                     </th>
                     <th>
-                        {{ trans('cruds.clientPrice.fields.gtin') }}
+                        {{ trans('cruds.clientPrice.fields.qb_1') }}
+                    </th>
+                    <th>
+                        {{ trans('cruds.clientPrice.fields.qb_2') }}
+                    </th>
+                    <th>
+                        {{ trans('cruds.clientPrice.fields.client') }}
                     </th>
                     <th>
                         &nbsp;
@@ -94,9 +103,12 @@
     columns: [
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
+{ data: 'product_name', name: 'product.name' },
 { data: 'price', name: 'price' },
 { data: 'sku', name: 'sku' },
-{ data: 'gtin', name: 'gtin' },
+{ data: 'qb_1', name: 'qb_1' },
+{ data: 'qb_2', name: 'qb_2' },
+{ data: 'client_name', name: 'client.name' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

@@ -465,6 +465,8 @@ return [
             'barcode_image_helper' => ' ',
             'client'               => 'Client',
             'client_helper'        => ' ',
+            'product'              => 'Product',
+            'product_helper'       => ' ',
         ],
     ],
     'developer' => [

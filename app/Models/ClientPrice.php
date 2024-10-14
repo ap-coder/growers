@@ -29,6 +29,7 @@ class ClientPrice extends Model implements HasMedia
     ];
 
     protected $fillable = [
+        'product_id',
         'price',
         'sku',
         'mpn',
@@ -37,6 +38,7 @@ class ClientPrice extends Model implements HasMedia
         'qb_1',
         'qb_2',
         'created_at',
+        'client_id',
         'updated_at',
         'deleted_at',
         'team_id',
@@ -53,6 +55,11 @@ class ClientPrice extends Model implements HasMedia
         $this->addMediaConversion('preview')->fit('crop', 120, 120);
     }
 
+    public function product()
+    {
+        return $this->belongsTo(Product::class, 'product_id');
+    }
+
     public function getBarcodeImageAttribute()
     {
         $file = $this->getMedia('barcode_image')->last();
@@ -63,6 +70,11 @@ class ClientPrice extends Model implements HasMedia
         }
 
         return $file;
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
     }
 
     public function team()
