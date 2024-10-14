@@ -23,6 +23,6 @@ class SiteController extends Controller
      */
     public function index()
     {
-        return view('homepage');
+        return view('site.pages.homepage.index');
     }
 }
