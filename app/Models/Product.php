@@ -77,6 +77,10 @@ class Product extends Model implements HasMedia
             ->withTimestamps();
     }
 
+    public function clients_prices()
+    {
+        return $this->belongsTo(ClientPrice::class, 'clients_prices_id');
+    }
     public function team()
     {
         return $this->belongsTo(Team::class, 'team_id');
