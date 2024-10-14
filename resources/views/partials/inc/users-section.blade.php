@@ -57,16 +57,7 @@
                             </a>
                         </li>
                     @endcan
-                    @can('customer_access')
-                        <li class="c-sidebar-nav-item">
-                            <a href="{{ route("admin.customers.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/customers") || request()->is("admin/customers/*") ? "c-active" : "" }}">
-                                <i class="fa-fw fas fa-user c-sidebar-nav-icon">
-
-                                </i>
-                                {{ trans('cruds.customer.title') }}
-                            </a>
-                        </li>
-                    @endcan
+          
                 </ul>
             </li>
 @endcan
