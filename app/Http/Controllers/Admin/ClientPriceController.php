@@ -4,25 +4,29 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Traits\CsvImportTrait;
+use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyClientPriceRequest;
 use App\Http\Requests\StoreClientPriceRequest;
 use App\Http\Requests\UpdateClientPriceRequest;
+use App\Models\Client;
 use App\Models\ClientPrice;
-use Illuminate\Support\Facades\Gate;
+use App\Models\Product;
+use Gate;
 use Illuminate\Http\Request;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
 class ClientPriceController extends Controller
 {
-    use CsvImportTrait;
+    use MediaUploadingTrait, CsvImportTrait;
 
     public function index(Request $request)
     {
         abort_if(Gate::denies('client_price_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = ClientPrice::with(['team'])->select(sprintf('%s.*', (new ClientPrice)->table));
+            $query = ClientPrice::with(['product', 'client', 'team'])->select(sprintf('%s.*', (new ClientPrice)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -43,12 +47,30 @@ class ClientPriceController extends Controller
                 ));
             });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->editColumn('price', fn ($row) => $row->price ? $row->price : '');
-            $table->editColumn('sku', fn ($row) => $row->sku ? $row->sku : '');
-            $table->editColumn('gtin', fn ($row) => $row->gtin ? $row->gtin : '');
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->addColumn('product_name', function ($row) {
+                return $row->product ? $row->product->name : '';
+            });
 
-            $table->rawColumns(['actions', 'placeholder']);
+            $table->editColumn('price', function ($row) {
+                return $row->price ? $row->price : '';
+            });
+            $table->editColumn('sku', function ($row) {
+                return $row->sku ? $row->sku : '';
+            });
+            $table->editColumn('qb_1', function ($row) {
+                return $row->qb_1 ? $row->qb_1 : '';
+            });
+            $table->editColumn('qb_2', function ($row) {
+                return $row->qb_2 ? $row->qb_2 : '';
+            });
+            $table->addColumn('client_name', function ($row) {
+                return $row->client ? $row->client->name : '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'product', 'client']);
 
             return $table->make(true);
         }
@@ -60,12 +82,24 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.clientPrices.create');
+        $products = Product::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        return view('admin.clientPrices.create', compact('clients', 'products'));
     }
 
     public function store(StoreClientPriceRequest $request)
     {
         $clientPrice = ClientPrice::create($request->all());
+
+        if ($request->input('barcode_image', false)) {
+            $clientPrice->addMedia(storage_path('tmp/uploads/' . basename($request->input('barcode_image'))))->toMediaCollection('barcode_image');
+        }
+
+        if ($media = $request->input('ck-media', false)) {
+            Media::whereIn('id', $media)->update(['model_id' => $clientPrice->id]);
+        }
 
         return redirect()->route('admin.client-prices.index');
     }
@@ -74,14 +108,29 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientPrice->load('team');
+        $products = Product::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.clientPrices.edit', compact('clientPrice'));
+        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        $clientPrice->load('product', 'client', 'team');
+
+        return view('admin.clientPrices.edit', compact('clientPrice', 'clients', 'products'));
     }
 
     public function update(UpdateClientPriceRequest $request, ClientPrice $clientPrice)
     {
         $clientPrice->update($request->all());
+
+        if ($request->input('barcode_image', false)) {
+            if (! $clientPrice->barcode_image || $request->input('barcode_image') !== $clientPrice->barcode_image->file_name) {
+                if ($clientPrice->barcode_image) {
+                    $clientPrice->barcode_image->delete();
+                }
+                $clientPrice->addMedia(storage_path('tmp/uploads/' . basename($request->input('barcode_image'))))->toMediaCollection('barcode_image');
+            }
+        } elseif ($clientPrice->barcode_image) {
+            $clientPrice->barcode_image->delete();
+        }
 
         return redirect()->route('admin.client-prices.index');
     }
@@ -90,7 +139,7 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientPrice->load('team');
+        $clientPrice->load('product', 'client', 'team');
 
         return view('admin.clientPrices.show', compact('clientPrice'));
     }
@@ -113,5 +162,17 @@ class ClientPriceController extends Controller
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function storeCKEditorImages(Request $request)
+    {
+        abort_if(Gate::denies('client_price_create') && Gate::denies('client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $model         = new ClientPrice();
+        $model->id     = $request->input('crud_id', 0);
+        $model->exists = true;
+        $media         = $model->addMediaFromRequest('upload')->toMediaCollection('ck-media');
+
+        return response()->json(['id' => $media->id, 'url' => $media->getUrl()], Response::HTTP_CREATED);
     }
 }
