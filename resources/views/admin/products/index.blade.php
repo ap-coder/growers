@@ -56,6 +56,7 @@
 @parent
 <script>
     $(function () {
+
   let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 @can('product_delete')
   let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
@@ -94,25 +95,37 @@
     retrieve: true,
     aaSorting: [],
     ajax: "{{ route('admin.products.index') }}",
-    columns: [
-      { data: 'placeholder', name: 'placeholder' },
-{ data: 'id', name: 'id' },
-{ data: 'name', name: 'name' },
-{ data: 'category', name: 'categories.name' },
-{ data: 'photo', name: 'photo', sortable: false, searchable: false },
-{ data: 'clients', name: 'clients.name' },
-{ data: 'actions', name: '{{ trans('global.actions') }}' }
-    ],
+      columns: [
+          { data: 'placeholder', name: 'placeholder' },
+          { data: 'id', name: 'id' },
+          { data: 'name', name: 'name' },
+          { data: 'category', name: 'categories.name', defaultContent: '' },
+          { data: 'photo', name: 'photo', sortable: false, searchable: false, defaultContent: '' },
+          { data: 'clients', name: 'clients.name', defaultContent: '' },
+          { data: 'actions', name: '{{ trans('global.actions') }}', defaultContent: '' }
+      ],
+{{--    columns: [--}}
+{{--      { data: 'placeholder', name: 'placeholder' },--}}
+{{--{ data: 'id', name: 'id' },--}}
+{{--{ data: 'name', name: 'name' },--}}
+{{--{ data: 'category', name: 'categories.name' },--}}
+{{--{ data: 'photo', name: 'photo', sortable: false, searchable: false },--}}
+{{--{ data: 'clients', name: 'clients.name' },--}}
+{{--{ data: 'actions', name: '{{ trans('global.actions') }}' }--}}
+{{--    ],--}}
     orderCellsTop: true,
     order: [[ 1, 'desc' ]],
     pageLength: 100,
   };
+
+        console.log(dtOverrideGlobals.ajax);
+        
   let table = $('.datatable-Product').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 });
 
 </script>
