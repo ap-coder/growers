@@ -38,10 +38,18 @@ class Client extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    public function clientPrices()
+    {
+        return $this->hasMany(ClientPrice::class, 'client_id');
+    }
+
     public function products()
     {
-        return $this->belongsToMany(ClientPrice::class);
+        return $this->belongsToMany(Product::class, 'client_prices', 'client_id', 'product_id')
+            ->withPivot('price', 'sku', 'mpn', 'gtin', 'upc', 'qb_1', 'qb_2')
+            ->withTimestamps();
     }
+
 
     public function customers()
     {
