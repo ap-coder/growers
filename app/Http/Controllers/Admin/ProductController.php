@@ -105,14 +105,23 @@ class ProductController extends Controller
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
 
-        // Sync clients with their prices
+        // Assign clients to the product and create ClientPrice records
         $clients = $request->input('clients', []);
         $prices  = $request->input('prices', []);
-        $syncData = [];
+
         foreach ($clients as $client_id) {
-            $syncData[$client_id] = ['price' => $prices[$client_id] ?? null];
+            ClientPrice::create([
+                'product_id' => $product->id,
+                'client_id' => $client_id,
+                'price' => $prices[$client_id] ?? null,
+                // Additional fields here if necessary (e.g., sku, mpn, etc.)
+            ]);
         }
-        $product->clients()->sync($syncData);
+
+        // Handle additional photos
+        foreach ($request->input('additional_photos', []) as $file) {
+            $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
+        }
 
         if ($request->input('photo', false)) {
             $product->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
@@ -121,20 +130,18 @@ class ProductController extends Controller
         return redirect()->route('admin.products.index');
     }
 
-
     public function edit(Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = ProductCategory::pluck('name', 'id');
         $tags       = ProductTag::pluck('name', 'id');
-        $clients    = Client::pluck('name', 'id'); // Load clients
+        $clients    = Client::pluck('name', 'id'); // Load clients for selection
 
-        $product->load('categories', 'tags', 'clients', 'team');
+        $product->load('categories', 'tags', 'clientPrices', 'team'); // Load clientPrices instead of clients
 
         return view('admin.products.edit', compact('categories', 'clients', 'product', 'tags'));
     }
-
 
     public function update(UpdateProductRequest $request, Product $product)
     {
@@ -142,14 +149,37 @@ class ProductController extends Controller
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
 
-        // Sync clients with their prices
+        // Update ClientPrice records
         $clients = $request->input('clients', []);
         $prices  = $request->input('prices', []);
-        $syncData = [];
+
+        // Delete existing client prices for this product
+        ClientPrice::where('product_id', $product->id)->delete();
+
+        // Create new client prices
         foreach ($clients as $client_id) {
-            $syncData[$client_id] = ['price' => $prices[$client_id] ?? null];
+            ClientPrice::create([
+                'product_id' => $product->id,
+                'client_id' => $client_id,
+                'price' => $prices[$client_id] ?? null,
+                // Additional fields here if necessary (e.g., sku, mpn, etc.)
+            ]);
         }
-        $product->clients()->sync($syncData);
+
+        // Handle additional photos
+        if (count($product->additional_photos) > 0) {
+            foreach ($product->additional_photos as $media) {
+                if (!in_array($media->file_name, $request->input('additional_photos', []))) {
+                    $media->delete();
+                }
+            }
+        }
+        $media = $product->additional_photos->pluck('file_name')->toArray();
+        foreach ($request->input('additional_photos', []) as $file) {
+            if (count($media) === 0 || !in_array($file, $media)) {
+                $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
+            }
+        }
 
         if ($request->input('photo', false)) {
             if (!$product->photo || $request->input('photo') !== $product->photo->file_name) {
@@ -169,7 +199,7 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('categories', 'tags', 'clients', 'team'); // Load clients with prices
+        $product->load('categories', 'tags', 'clientPrices', 'team'); // Load clientPrices instead of clients
 
         return view('admin.products.show', compact('product'));
     }

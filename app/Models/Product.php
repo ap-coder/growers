@@ -20,6 +20,7 @@ class Product extends Model implements HasMedia
 
     protected $appends = [
         'photo',
+        'additional_photos',
     ];
 
     protected $dates = [
@@ -70,11 +71,26 @@ class Product extends Model implements HasMedia
         return $file;
     }
 
+    public function getAdditionalPhotosAttribute()
+    {
+        $files = $this->getMedia('additional_photos');
+        $files->each(function ($item) {
+            $item->url       = $item->getUrl();
+            $item->thumbnail = $item->getUrl('thumb');
+            $item->preview   = $item->getUrl('preview');
+        });
+
+        return $files;
+    }
+
+    public function clientPrices()
+    {
+        return $this->hasMany(ClientPrice::class, 'product_id');
+    }
+
     public function clients()
     {
-        return $this->belongsToMany(Client::class, 'client_product')
-            ->withPivot('price', 'sku', 'mpn', 'gtin')
-            ->withTimestamps();
+        return $this->hasManyThrough(Client::class, ClientPrice::class, 'product_id', 'id', 'id', 'client_id');
     }
 
     public function clients_prices()

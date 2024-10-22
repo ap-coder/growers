@@ -77,6 +77,13 @@ class ClientPrice extends Model implements HasMedia
         return $this->belongsTo(Client::class, 'client_id');
     }
 
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class, 'client_prices', 'product_id', 'client_id')
+            ->withPivot('price', 'sku', 'mpn', 'gtin', 'upc', 'qb_1', 'qb_2')
+            ->withTimestamps();
+    }
+
     public function team()
     {
         return $this->belongsTo(Team::class, 'team_id');
