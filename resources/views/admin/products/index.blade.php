@@ -119,7 +119,7 @@
   };
 
         console.log(dtOverrideGlobals.ajax);
-        
+
   let table = $('.datatable-Product').DataTable(dtOverrideGlobals);
   $('a[data-toggle="tab"]').on('shown.bs.tab click', function(e){
       $($.fn.dataTable.tables(true)).DataTable()
