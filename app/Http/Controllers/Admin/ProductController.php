@@ -14,6 +14,7 @@ use App\Models\ClientPrice;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
@@ -85,7 +86,7 @@ class ProductController extends Controller
 
                 return $table->make(true);
             } catch (\Exception $e) {
-                \Log::error('Error loading products datatable: ' . $e->getMessage());
+                Log::error('Error loading products datatable: ' . $e->getMessage());
                 return response()->json(['error' => 'Something went wrong'], 500);
             }
         }
