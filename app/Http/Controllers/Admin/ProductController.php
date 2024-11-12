@@ -28,61 +28,66 @@ class ProductController extends Controller
         abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Product::with(['categories', 'tags', 'clients', 'team'])->select(sprintf('%s.*', (new Product)->table));
-            $table = Datatables::of($query);
+            try {
+                $query = Product::with(['categories', 'tags', 'clients', 'team'])->select(sprintf('%s.*', (new Product)->table));
+                $table = Datatables::of($query);
 
-            $table->addColumn('placeholder', '&nbsp;');
-            $table->addColumn('actions', '&nbsp;');
+                $table->addColumn('placeholder', '&nbsp;');
+                $table->addColumn('actions', '&nbsp;');
 
-            $table->editColumn('actions', function ($row) {
-                $viewGate      = 'product_show';
-                $editGate      = 'product_edit';
-                $deleteGate    = 'product_delete';
-                $crudRoutePart = 'products';
+                $table->editColumn('actions', function ($row) {
+                    $viewGate      = 'product_show';
+                    $editGate      = 'product_edit';
+                    $deleteGate    = 'product_delete';
+                    $crudRoutePart = 'products';
 
-                return view('partials.datatablesActions', compact(
-                    'viewGate',
-                    'editGate',
-                    'deleteGate',
-                    'crudRoutePart',
-                    'row'
-                ));
-            });
+                    return view('partials.datatablesActions', compact(
+                        'viewGate',
+                        'editGate',
+                        'deleteGate',
+                        'crudRoutePart',
+                        'row'
+                    ));
+                });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->editColumn('name', fn ($row) => $row->name ? $row->name : '');
-            $table->editColumn('description', fn ($row) => $row->description ? $row->description : '');
-            $table->editColumn('category', function ($row) {
-                $labels = [];
-                foreach ($row->categories as $category) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $category->name);
-                }
+                $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
+                $table->editColumn('name', fn ($row) => $row->name ? $row->name : '');
+                $table->editColumn('description', fn ($row) => $row->description ? $row->description : '');
+                $table->editColumn('category', function ($row) {
+                    $labels = [];
+                    foreach ($row->categories as $category) {
+                        $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $category->name);
+                    }
 
-                return implode(' ', $labels);
-            });
-            $table->editColumn('tag', function ($row) {
-                $labels = [];
-                foreach ($row->tags as $tag) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $tag->name);
-                }
+                    return implode(' ', $labels);
+                });
+                $table->editColumn('tag', function ($row) {
+                    $labels = [];
+                    foreach ($row->tags as $tag) {
+                        $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $tag->name);
+                    }
 
-                return implode(' ', $labels);
-            });
-            $table->editColumn('photo', function ($row) {
-                if ($photo = $row->photo) {
-                    return sprintf(
-                        '<a href="%s" target="_blank"><img src="%s" width="50px" height="50px"></a>',
-                        $photo->url,
-                        $photo->thumbnail
-                    );
-                }
+                    return implode(' ', $labels);
+                });
+                $table->editColumn('photo', function ($row) {
+                    if ($photo = $row->photo) {
+                        return sprintf(
+                            '<a href="%s" target="_blank"><img src="%s" width="50px" height="50px"></a>',
+                            $photo->url,
+                            $photo->thumbnail
+                        );
+                    }
 
-                return '';
-            });
+                    return '';
+                });
 
-            $table->rawColumns(['actions', 'placeholder', 'category', 'tag', 'photo']);
+                $table->rawColumns(['actions', 'placeholder', 'category', 'tag', 'photo']);
 
-            return $table->make(true);
+                return $table->make(true);
+            } catch (\Exception $e) {
+                \Log::error('Error loading products datatable: ' . $e->getMessage());
+                return response()->json(['error' => 'Something went wrong'], 500);
+            }
         }
 
         return view('admin.products.index');
