@@ -145,9 +145,10 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $categories = ProductCategory::pluck('name', 'id');
+        //$categories =
+        $categories = ProductCategory::all()->pluck('name', 'id');
         $tags       = ProductTag::pluck('name', 'id');
-        $clients    = Client::pluck('name', 'id'); // Load clients for selection
+        $clients    = Client::pluck('name', 'id');
 
         $product->load('categories', 'tags', 'clientPrices', 'team'); // Load clientPrices instead of clients
 
