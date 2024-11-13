@@ -72,11 +72,6 @@ class ClientPrice extends Model implements HasMedia
         return $file;
     }
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'product_id');
-    }
-
     public function client()
     {
         return $this->belongsTo(Client::class, 'client_id');
