@@ -33,6 +33,9 @@ class ProductController extends Controller
                 $query = Product::with(['categories', 'tags', 'clients', 'team'])->select(sprintf('%s.*', (new Product)->table));
                 $table = Datatables::of($query);
 
+                Log::info($query->toSql());
+                Log::info($query->getBindings());
+
                 $table->addColumn('placeholder', '&nbsp;');
                 $table->addColumn('actions', '&nbsp;');
 
@@ -85,6 +88,8 @@ class ProductController extends Controller
                 $table->rawColumns(['actions', 'placeholder', 'category', 'tag', 'photo']);
 
                 return $table->make(true);
+
+
             } catch (\Exception $e) {
                 Log::error('Error loading products datatable: ' . $e->getMessage());
                 return response()->json(['error' => 'Something went wrong'], 500);
