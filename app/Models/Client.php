@@ -38,6 +38,11 @@ class Client extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    public function scopePublished($query)
+    {
+        return $query->where('published', true);
+    }
+
     public function clientPrices()
     {
         return $this->hasMany(ClientPrice::class, 'client_id');
