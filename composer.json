@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "barryvdh/laravel-debugbar": "^3.14",
         "guzzlehttp/guzzle": "^7.9",
         "imanghafoori/laravel-microscope": "^1.0",
         "laravel/framework": "^10.0",
@@ -37,7 +38,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/SettingHelper.php"
+            "app/Helpers/SettingHelper.php",
+            "app/Helpers/Helper.php"
         ]
     },
     "autoload-dev": {
