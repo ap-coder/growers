@@ -30,6 +30,7 @@ class SettingHelper
     }
 
 
+
     // Set a new setting value and update the cache
     public static function set($key, $value)
     {
@@ -52,5 +53,12 @@ class SettingHelper
 
         // Optionally delete from the database as well
         \App\Models\Setting::where('key', $key)->delete();
+    }
+}
+
+if (!function_exists('testSettingHelper')) {
+    function testSettingHelper()
+    {
+        return 'Setting helper file is working!';
     }
 }

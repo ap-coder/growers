@@ -11,3 +11,12 @@ if (!function_exists('userCanSeeDebugbar')) {
         return false;
     }
 }
+
+
+if (!function_exists('testHelperFunction')) {
+    function testHelperFunction()
+    {
+
+        return 'Helper file is working!';
+    }
+}
