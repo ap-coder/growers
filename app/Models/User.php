@@ -76,7 +76,7 @@ class User extends Authenticatable
 
     public function getIsAdminAttribute()
     {
-        \Log::info('User Roles:', $this->roles->toArray());
+     //   \Log::info('User Roles:', $this->roles->toArray());
         return $this->roles()->where('id', 1)->exists();
     }
 
