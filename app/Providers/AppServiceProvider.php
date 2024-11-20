@@ -14,6 +14,11 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local', 'development')) {
             $this->app->register(\Barryvdh\Debugbar\ServiceProvider::class);
         }
+
+        if ($this->app->environment('local', 'development', 'staging')) {
+            $this->app->register(\Laravel\Telescope\TelescopeServiceProvider::class);
+        }
+
     }
 
     /**
