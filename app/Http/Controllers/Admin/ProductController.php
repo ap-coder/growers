@@ -155,7 +155,7 @@ class ProductController extends Controller
         $categories = ProductCategory::all();
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::pluck('name', 'id');
-        $product->load('categories', 'tags', 'clientPrices.client'); // Load related data
+        $product->load('categories', 'tags', 'clientPrices.client');
 
         return view('admin.products.edit', compact('categories', 'clients', 'product', 'tags'));
     }
