@@ -145,13 +145,15 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $categories = ProductCategory::pluck('name', 'id');
+        // Fetch the full objects for categories, not just plucked values
+        $categories = ProductCategory::all();
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::pluck('name', 'id');
         $product->load('categories', 'tags', 'clientPrices.client'); // Load related data
 
         return view('admin.products.edit', compact('categories', 'clients', 'product', 'tags'));
     }
+
 
     public function update(UpdateProductRequest $request, Product $product)
     {
