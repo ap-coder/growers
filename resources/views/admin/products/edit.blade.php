@@ -48,21 +48,26 @@
                     </div>
 
                     <!-- Pricing Tab -->
-                    <div class="tab-pane fade" id="v-pills-pricing" role="tabpanel" aria-labelledby="v-pills-pricing-tab" tabindex="0">
-                        <div class="form-group">
-                            <label for="clients">Select Clients</label>
-                            <select class="form-control select2" name="clients[]" id="clients" multiple>
-                                @foreach($clients as $id => $client)
-                                    <option value="{{ $id }}">{{ $client }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Client Pricing Fields -->
-                        <div id="client-pricing-fields" class="mt-4">
-                            <!-- Client-specific pricing fields will be dynamically added here -->
-                        </div>
+                    <div class="tab-pane fade" id="v-pills-pricing" role="tabpanel" aria-labelledby="v-pills-pricing-tab">
+                        @include('admin.products.partials.client_prices')
                     </div>
+
+                    {{--                    <!-- Pricing Tab -->--}}
+{{--                    <div class="tab-pane fade" id="v-pills-pricing" role="tabpanel" aria-labelledby="v-pills-pricing-tab" tabindex="0">--}}
+{{--                        <div class="form-group">--}}
+{{--                            <label for="clients">Select Clients</label>--}}
+{{--                            <select class="form-control select2" name="clients[]" id="clients" multiple>--}}
+{{--                                @foreach($clients as $id => $client)--}}
+{{--                                    <option value="{{ $id }}">{{ $client }}</option>--}}
+{{--                                @endforeach--}}
+{{--                            </select>--}}
+{{--                        </div>--}}
+
+{{--                        <!-- Client Pricing Fields -->--}}
+{{--                        <div id="client-pricing-fields" class="mt-4">--}}
+{{--                            <!-- Client-specific pricing fields will be dynamically added here -->--}}
+{{--                        </div>--}}
+{{--                    </div>--}}
 
                     <!-- Settings Tab -->
                     <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab" tabindex="0">
