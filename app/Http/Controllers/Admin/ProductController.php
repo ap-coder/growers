@@ -103,9 +103,9 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $categories = ProductCategory::pluck('name', 'id');
-        $tags       = ProductTag::pluck('name', 'id');
-        $clients    = Client::pluck('name', 'id'); // Load clients for selection
+        $categories = ProductCategory::all();
+        $tags = ProductTag::pluck('name', 'id');
+        $clients = Client::pluck('name', 'id');
 
         return view('admin.products.create', compact('categories', 'clients', 'tags'));
     }
@@ -125,8 +125,15 @@ class ProductController extends Controller
                 'product_id' => $product->id,
                 'client_id' => $client_id,
                 'price' => $prices[$client_id] ?? null,
-                // Additional fields here if necessary (e.g., sku, mpn, etc.)
+                'sku' => $request->input("skus.$client_id") ?? null,
+                'mpn' => $request->input("mpns.$client_id") ?? null,
+                'gtin' => $request->input("gtins.$client_id") ?? null,
+                'upc' => $request->input("upcs.$client_id") ?? null,
+                'qb_1' => $request->input("qb_1.$client_id") ?? null,
+                'qb_2' => $request->input("qb_2.$client_id") ?? null,
+                'team_id' => auth()->user()->team_id, // Example for default field
             ]);
+
         }
 
         // Handle additional photos
@@ -145,7 +152,6 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        // Fetch the full objects for categories, not just plucked values
         $categories = ProductCategory::all();
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::pluck('name', 'id');
@@ -153,7 +159,6 @@ class ProductController extends Controller
 
         return view('admin.products.edit', compact('categories', 'clients', 'product', 'tags'));
     }
-
 
     public function update(UpdateProductRequest $request, Product $product)
     {
@@ -174,8 +179,15 @@ class ProductController extends Controller
                 'product_id' => $product->id,
                 'client_id' => $client_id,
                 'price' => $prices[$client_id] ?? null,
-                // Additional fields here if necessary (e.g., sku, mpn, etc.)
+                'sku' => $request->input("skus.$client_id") ?? null,
+                'mpn' => $request->input("mpns.$client_id") ?? null,
+                'gtin' => $request->input("gtins.$client_id") ?? null,
+                'upc' => $request->input("upcs.$client_id") ?? null,
+                'qb_1' => $request->input("qb_1.$client_id") ?? null,
+                'qb_2' => $request->input("qb_2.$client_id") ?? null,
+                'team_id' => auth()->user()->team_id, // Example for default field
             ]);
+
         }
 
         // Handle additional photos
