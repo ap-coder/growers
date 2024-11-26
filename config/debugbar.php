@@ -14,7 +14,7 @@ return [
      |
      */
 
-    'enabled' => env('DEBUGBAR_ENABLED', app()->environment('local', 'development')),
+    'enabled' => env('DEBUGBAR_ENABLED', false),
 
 
 
