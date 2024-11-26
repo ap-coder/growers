@@ -148,56 +148,62 @@
 
                         <!-- Select Clients -->
                         <div class="form-group">
-                            <label for="clients">{{ trans('cruds.product.fields.clients') }}</label>
-                            <div style="padding-bottom: 4px">
-                                <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                                <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                            </div>
-                            <select class="form-control select2 {{ $errors->has('clients') ? 'is-invalid' : '' }}" style="width: 100%;" name="clients[]" id="clients" multiple>
+                            <label for="clients">Select Clients</label>
+                            <select class="form-control select2" name="clients[]" id="clients" multiple style="width: 100%;">
                                 @foreach($clients as $id => $client)
-                                    <option value="{{ $id }}" {{ (in_array($id, old('clients', [])) || $product->clients->contains($id)) ? 'selected' : '' }}>{{ $client }}</option>
+                                    <option value="{{ $id }}"
+                                        {{ (in_array($id, old('clients', $product->clients->pluck('id')->toArray()))) ? 'selected' : '' }}>
+                                        {{ $client }}
+                                    </option>
                                 @endforeach
                             </select>
-                            @if($errors->has('clients'))
-                                <span class="text-danger">{{ $errors->first('clients') }}</span>
-                            @endif
-                            <span class="help-block">{{ trans('cruds.product.fields.clients_helper') }}</span>
                         </div>
-
 
                         <!-- Client Pricing Fields -->
-                        <div id="client-pricing-fields" class="mt-4">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Client</th>
-                                        <th>Price</th>
-                                        <th>SKU</th>
-                                        <th>MPN</th>
-                                        <th>GTIN</th>
-                                        <th>UPC</th>
-                                        <th>QB 1</th>
-                                        <th>QB 2</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="client-pricing-tbody">
-                                    @foreach($product->clientPrices as $clientPrice)
-                                        <tr data-client-id="{{ $clientPrice->client_id }}">
-                                            <td>{{ $clientPrice->client->name }}</td>
-                                            <td><input type="number" name="client_price[{{ $clientPrice->client_id }}][price]" class="form-control" value="{{ $clientPrice->price ?? '' }}" placeholder="Enter price"></td>
-                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][sku]" class="form-control" value="{{ $clientPrice->sku ?? '' }}" placeholder="Enter SKU"></td>
-                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][mpn]" class="form-control" value="{{ $clientPrice->mpn ?? '' }}" placeholder="Enter MPN"></td>
-                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][gtin]" class="form-control" value="{{ $clientPrice->gtin ?? '' }}" placeholder="Enter GTIN"></td>
-                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][upc]" class="form-control" value="{{ $clientPrice->upc ?? '' }}" placeholder="Enter UPC"></td>
-                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][qb_1]" class="form-control" value="{{ $clientPrice->qb_1 ?? '' }}" placeholder="Enter QB 1"></td>
-                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][qb_2]" class="form-control" value="{{ $clientPrice->qb_2 ?? '' }}" placeholder="Enter QB 2"></td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-
-
+{{--                        <div id="client-pricing-fields" class="mt-4">--}}
+{{--                            <table class="table table-bordered">--}}
+{{--                                <thead>--}}
+{{--                                    <tr>--}}
+{{--                                        <th>Client</th>--}}
+{{--                                        <th>Price</th>--}}
+{{--                                        <th>SKU</th>--}}
+{{--                                        <th>MPN</th>--}}
+{{--                                        <th>GTIN</th>--}}
+{{--                                        <th>UPC</th>--}}
+{{--                                        <th>QB 1</th>--}}
+{{--                                        <th>QB 2</th>--}}
+{{--                                    </tr>--}}
+{{--                                </thead>--}}
+{{--                                <tbody>--}}
+{{--                                    @foreach($product->clientPrices as $clientPrice)--}}
+{{--                                        <tr>--}}
+{{--                                            <td>{{ $clientPrice->client->name }}</td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="number" name="prices[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->price ?? '' }}" placeholder="Enter price">--}}
+{{--                                            </td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="text" name="skus[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->sku ?? '' }}" placeholder="Enter SKU">--}}
+{{--                                            </td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="text" name="mpns[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->mpn ?? '' }}" placeholder="Enter MPN">--}}
+{{--                                            </td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="text" name="gtins[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->gtin ?? '' }}" placeholder="Enter GTIN">--}}
+{{--                                            </td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="text" name="upcs[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->upc ?? '' }}" placeholder="Enter UPC">--}}
+{{--                                            </td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="text" name="qb_1[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->qb_1 ?? '' }}" placeholder="Enter QB 1">--}}
+{{--                                            </td>--}}
+{{--                                            <td>--}}
+{{--                                                <input type="text" name="qb_2[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->qb_2 ?? '' }}" placeholder="Enter QB 2">--}}
+{{--                                            </td>--}}
+{{--                                        </tr>--}}
+{{--                                    @endforeach--}}
+{{--                                </tbody>--}}
+{{--                            </table>--}}
+{{--                        </div>--}}
                     </div>
 
                     <!-- Settings Tab -->
@@ -224,64 +230,20 @@
 @section('scripts')
     <script>
     window.clientsData = @json($clients);
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const clientsDropdown = document.getElementById('clients');
-        const pricingFieldsContainer = document.getElementById('client-pricing-tbody');
-
-        if (!clientsDropdown || !pricingFieldsContainer) {
-            console.error('Required elements not found');
-            return;
-        }
-
-        clientsDropdown.addEventListener('change', function () {
-            const selectedClientIds = Array.from(this.selectedOptions).map(option => option.value);
-
-            // Remove rows for clients that are no longer selected
-            const existingRows = Array.from(pricingFieldsContainer.querySelectorAll('tr'));
-            existingRows.forEach(row => {
-                const clientId = row.getAttribute('data-client-id');
-                if (!selectedClientIds.includes(clientId)) {
-                    console.log(`Removing row for client ID: ${clientId}`);
-                    row.remove();
-                }
-            });
-
-            // Add rows for newly selected clients
-            selectedClientIds.forEach(clientId => {
-                // Only add row if it does not exist already
-                if (!pricingFieldsContainer.querySelector(`tr[data-client-id="${clientId}"]`)) {
-                    const clientName = getClientName(clientId);
-                    const pricingRow = `
-                    <tr data-client-id="${clientId}">
-                        <td>${clientName}</td>
-                        <td><input type="number" name="prices[${clientId}]" class="form-control" placeholder="Enter price" value="0"></td>
-                        <td><input type="text" name="skus[${clientId}]" class="form-control" placeholder="Enter SKU" value=""></td>
-                        <td><input type="text" name="mpns[${clientId}]" class="form-control" placeholder="Enter MPN" value=""></td>
-                        <td><input type="text" name="gtins[${clientId}]" class="form-control" placeholder="Enter GTIN" value=""></td>
-                        <td><input type="text" name="upcs[${clientId}]" class="form-control" placeholder="Enter UPC" value=""></td>
-                        <td><input type="text" name="qb_1[${clientId}]" class="form-control" placeholder="Enter QB 1" value=""></td>
-                        <td><input type="text" name="qb_2[${clientId}]" class="form-control" placeholder="Enter QB 2" value=""></td>
-                    </tr>
-                `;
-                    console.log(`Adding row for client ID: ${clientId}`);
-                    pricingFieldsContainer.insertAdjacentHTML('beforeend', pricingRow);
-                }
-            });
-        });
-    });
+    window.clientPrices = @json($product->clientPrices);
+    window.productCategories = @json($product_categories);
 
     Dropzone.options.photoDropzone = {
         url: '{{ route('admin.products.storeMedia') }}',
         maxFilesize: 2, // MB
-        acceptedFiles: '.jpeg,.jpg,.png,.gif',
+        acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
         maxFiles: 1,
         addRemoveLinks: true,
         headers: {
             'X-CSRF-TOKEN': "{{ csrf_token() }}"
         },
         params: {
-            size: 2,
+            size: 20,
             width: 4096,
             height: 4096
         },
@@ -325,13 +287,13 @@
     Dropzone.options.additionalPhotosDropzone = {
         url: '{{ route('admin.products.storeMedia') }}',
         maxFilesize: 2, // MB
-        acceptedFiles: '.jpeg,.jpg,.png,.gif',
+        acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
         addRemoveLinks: true,
         headers: {
             'X-CSRF-TOKEN': "{{ csrf_token() }}"
         },
         params: {
-            size: 2,
+            size: 20,
             width: 4096,
             height: 4096
         },
@@ -380,59 +342,46 @@
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        document.getElementById('saveProductCategoryButton').addEventListener('click', function () {
-            const form = document.getElementById('addProductCategoryForm');
-            const name = document.getElementById('product-category-name').value;
-            const errorDiv = document.getElementById('product-category-error');
+    document.getElementById('saveCategoryButton').addEventListener('click', function () {
+        const form = document.getElementById('addCategoryForm');
+        const name = document.getElementById('category-name').value;
+        const errorDiv = document.getElementById('category-error');
 
-            if (!name) {
-                errorDiv.textContent = 'Product category name is required';
-                return;
-            }
+        fetch('/admin/product-categories', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({category_name: name}),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
 
-            fetch('/admin/product-categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({ product_category_name: name }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const select = document.getElementById('product_categories');
-                        let option = Array.from(select.options).find(option => option.value == data.product_category.id);
-                        if (!option) {
-                            option = document.createElement('option');
-                            option.value = data.product_category.id;
-                            option.textContent = data.product_category.name;
-                            select.appendChild(option);
-                        }
-                        option.selected = true;
-
-                        $('#addProductCategoryModal').modal('hide');
-                        form.reset();
-                        errorDiv.textContent = '';
-                    } else {
-                        errorDiv.textContent = data.message || 'An error occurred';
+                    const select = document.getElementById('categories');
+                    let option = Array.from(select.options).find(option => option.value == data.category.id);
+                    if (!option) {
+                        option = document.createElement('option');
+                        option.value = data.category.id;
+                        option.textContent = data.category.name;
+                        select.appendChild(option);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    errorDiv.textContent = 'An error occurred. Please try again.';
-                });
-        });
+                    option.selected = true;
+
+
+                    $('#addCategoryModal').modal('hide');
+                    form.reset();
+                    errorDiv.textContent = '';
+                } else {
+                    errorDiv.textContent = data.message || 'An error occurred';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorDiv.textContent = 'An error occurred. Please try again.';
+            });
     });
-
-
-    function getClientName(clientId) {
-        const clients = window.clientsData || {};
-        return clients[clientId] || 'Unknown Client';
-    }
-
 </script>
-
 @endsection
 
