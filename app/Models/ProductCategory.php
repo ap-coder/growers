@@ -61,4 +61,9 @@ class ProductCategory extends Model implements HasMedia
 
         return $file;
     }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'category_product');
+    }
 }

@@ -58,12 +58,17 @@ class Product extends Model implements HasMedia
 
     public function categories()
     {
-        return $this->belongsToMany(ProductCategory::class);
+        return $this->belongsToMany(ProductCategory::class, 'product_product_category');
+    }
+
+    public function product_categories()
+    {
+        return $this->belongsToMany(ProductCategory::class, 'product_product_category');
     }
 
     public function tags()
     {
-        return $this->belongsToMany(ProductTag::class);
+        return $this->belongsToMany(ProductTag::class, 'product_product_tag');
     }
 
     public function getPhotoAttribute()
@@ -92,7 +97,7 @@ class Product extends Model implements HasMedia
 
     public function clientPrices()
     {
-        return $this->hasMany(ClientPrice::class, 'product_id');
+        return $this->hasMany(ClientPrice::class);
     }
 
     public function clients()

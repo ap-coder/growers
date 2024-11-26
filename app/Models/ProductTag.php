@@ -26,12 +26,13 @@ class ProductTag extends Model
         'deleted_at',
     ];
 
-    public function scopePublished($query)
-    {
-        return $query->where('published', true);
-    }
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'product_tag');
     }
 }
