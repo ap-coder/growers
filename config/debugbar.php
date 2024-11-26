@@ -14,13 +14,7 @@ return [
      |
      */
 
-    'enabled' => function () {
-        return app()->environment('local','development') && auth()->check() && auth()->user()->is_admin;
-    },
-
-//    'enabled' => function () {
-//        return app()->environment('development') && userCanSeeDebugbar();
-//    },
+    'enabled' => env('DEBUGBAR_ENABLED', app()->environment('local', 'development')),
 
 
 
