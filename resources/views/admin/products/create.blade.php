@@ -239,45 +239,43 @@
 
 </script>
 <script>
-        document.getElementById('saveCategoryButton').addEventListener('click', function () {
-            const form = document.getElementById('addCategoryForm');
-            const name = document.getElementById('category-name').value;
-            const errorDiv = document.getElementById('category-error');
+   document.getElementById('saveCategoryButton').addEventListener('click', function () {
+       const form = document.getElementById('addCategoryForm');
+       const name = document.getElementById('category-name').value;
+       const errorDiv = document.getElementById('category-error');
 
-            fetch('/admin/categories', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: JSON.stringify({ name }),
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Add new or existing category to the dropdown
-                        const select = document.getElementById('categories');
-                        let option = Array.from(select.options).find(option => option.value == data.category.id);
-                        if (!option) {
-                            option = document.createElement('option');
-                            option.value = data.category.id;
-                            option.textContent = data.category.name;
-                            select.appendChild(option);
-                        }
-                        option.selected = true;
+       fetch('{{ route("admin.product-categories.store") }}', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+               'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+           },
+           body: JSON.stringify({ name }),
+       })
+           .then(response => response.json())
+           .then(data => {
+               if (data.success) {
+                   const select = document.getElementById('categories');
+                   let option = Array.from(select.options).find(option => option.value == data.category.id);
+                   if (!option) {
+                       option = document.createElement('option');
+                       option.value = data.category.id;
+                       option.textContent = data.category.name;
+                       select.appendChild(option);
+                   }
+                   option.selected = true;
 
-                        // Close modal and reset form
-                        $('#addCategoryModal').modal('hide');
-                        form.reset();
-                        errorDiv.textContent = '';
-                    } else {
-                        errorDiv.textContent = data.message || 'An error occurred';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    errorDiv.textContent = 'An error occurred. Please try again.';
-                });
-        });
-    </script>
+                   $('#addCategoryModal').modal('hide');
+                   form.reset();
+                   errorDiv.textContent = '';
+               } else {
+                   errorDiv.textContent = data.message || 'An error occurred';
+               }
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               errorDiv.textContent = 'An error occurred. Please try again.';
+           });
+   });
+</script>
 @endsection

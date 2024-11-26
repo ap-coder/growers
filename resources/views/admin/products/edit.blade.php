@@ -242,36 +242,45 @@
 
 </script>
     <script>
-        $('#add-category-form').on('submit', function (e) {
-            e.preventDefault();
+        document.getElementById('saveCategoryButton').addEventListener('click', function () {
+            const form = document.getElementById('addCategoryForm');
+            const name = document.getElementById('category-name').value;
+            const errorDiv = document.getElementById('category-error');
 
-            const form = $(this);
-
-            $.ajax({
-                url: '{{ route("admin.product-categories.store") }}',
+            fetch('{{ route("admin.product-categories.store") }}', {
                 method: 'POST',
-                data: form.serialize(),
-                success: function (response) {
-                    if (response.success) {
-                        // Add the new category to the dropdown and select it
-                        $('#categories').append(
-                            `<option value="${response.category.id}" selected>${response.category.name}</option>`
-                        ).trigger('change');
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ name }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('categories');
+                        let option = Array.from(select.options).find(option => option.value == data.category.id);
+                        if (!option) {
+                            option = document.createElement('option');
+                            option.value = data.category.id;
+                            option.textContent = data.category.name;
+                            select.appendChild(option);
+                        }
+                        option.selected = true;
 
-                        // Hide the modal and reset the form
                         $('#addCategoryModal').modal('hide');
-                        form[0].reset();
-                        alert(response.message);
+                        form.reset();
+                        errorDiv.textContent = '';
                     } else {
-                        alert(response.message); // Notify the user if the category already exists
+                        errorDiv.textContent = data.message || 'An error occurred';
                     }
-                },
-                error: function (xhr) {
-                    console.error(xhr);
-                    alert('An error occurred while adding the category.');
-                },
-            });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorDiv.textContent = 'An error occurred. Please try again.';
+                });
         });
+
     </script>
 @endsection
 
