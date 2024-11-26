@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\ClientPrice;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 
@@ -26,6 +26,18 @@ class UpdateClientPriceRequest extends FormRequest
                 'nullable',
             ],
             'gtin' => [
+                'string',
+                'nullable',
+            ],
+            'upc' => [
+                'string',
+                'nullable',
+            ],
+            'qb_1' => [
+                'string',
+                'nullable',
+            ],
+            'qb_2' => [
                 'string',
                 'nullable',
             ],

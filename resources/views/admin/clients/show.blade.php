@@ -25,6 +25,14 @@
                     </tr>
                     <tr>
                         <th>
+                            {{ trans('cruds.client.fields.published') }}
+                        </th>
+                        <td>
+                            <input type="checkbox" disabled="disabled" {{ $client->published ? 'checked' : '' }}>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.client.fields.name') }}
                         </th>
                         <td>
@@ -33,12 +41,10 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.client.fields.products') }}
+                            {{ trans('cruds.client.fields.prices') }}
                         </th>
                         <td>
-                            @foreach($client->products as $key => $products)
-                                <span class="label label-info">{{ $products->price }}</span>
-                            @endforeach
+                            {{ $client->prices->price ?? '' }}
                         </td>
                     </tr>
                 </tbody>
@@ -52,6 +58,30 @@
     </div>
 </div>
 
-
+<div class="card">
+    <div class="card-header">
+        {{ trans('global.relatedData') }}
+    </div>
+    <ul class="nav nav-tabs" role="tablist" id="relationship-tabs">
+        <li class="nav-item">
+            <a class="nav-link" href="#client_client_prices" role="tab" data-toggle="tab">
+                {{ trans('cruds.clientPrice.title') }}
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#clients_products" role="tab" data-toggle="tab">
+                {{ trans('cruds.product.title') }}
+            </a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane" role="tabpanel" id="client_client_prices">
+            @includeIf('admin.clients.relationships.clientClientPrices', ['clientPrices' => $client->clientClientPrices])
+        </div>
+        <div class="tab-pane" role="tabpanel" id="clients_products">
+            @includeIf('admin.clients.relationships.clientsProducts', ['products' => $client->clientsProducts])
+        </div>
+    </div>
+</div>
 
 @endsection

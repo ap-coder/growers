@@ -10,7 +10,6 @@ use App\Http\Requests\StoreClientPriceRequest;
 use App\Http\Requests\UpdateClientPriceRequest;
 use App\Models\Client;
 use App\Models\ClientPrice;
-use App\Models\Product;
 use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -26,7 +25,7 @@ class ClientPriceController extends Controller
         abort_if(Gate::denies('client_price_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = ClientPrice::with(['product', 'client', 'team'])->select(sprintf('%s.*', (new ClientPrice)->table));
+            $query = ClientPrice::with(['client', 'team'])->select(sprintf('%s.*', (new ClientPrice)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -50,10 +49,9 @@ class ClientPriceController extends Controller
             $table->editColumn('id', function ($row) {
                 return $row->id ? $row->id : '';
             });
-            $table->addColumn('product_name', function ($row) {
-                return $row->product ? $row->product->name : '';
+            $table->editColumn('published', function ($row) {
+                return '<input type="checkbox" disabled ' . ($row->published ? 'checked' : null) . '>';
             });
-
             $table->editColumn('price', function ($row) {
                 return $row->price ? $row->price : '';
             });
@@ -70,7 +68,7 @@ class ClientPriceController extends Controller
                 return $row->client ? $row->client->name : '';
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'product', 'client']);
+            $table->rawColumns(['actions', 'placeholder', 'published', 'client']);
 
             return $table->make(true);
         }
@@ -82,11 +80,9 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = Product::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
         $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.clientPrices.create', compact('clients', 'products'));
+        return view('admin.clientPrices.create', compact('clients'));
     }
 
     public function store(StoreClientPriceRequest $request)
@@ -108,13 +104,11 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = Product::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
-
         $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $clientPrice->load('product', 'client', 'team');
+        $clientPrice->load('client', 'team');
 
-        return view('admin.clientPrices.edit', compact('clientPrice', 'clients', 'products'));
+        return view('admin.clientPrices.edit', compact('clientPrice', 'clients'));
     }
 
     public function update(UpdateClientPriceRequest $request, ClientPrice $clientPrice)
@@ -139,7 +133,7 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientPrice->load('product', 'client', 'team');
+        $clientPrice->load('client', 'team');
 
         return view('admin.clientPrices.show', compact('clientPrice'));
     }

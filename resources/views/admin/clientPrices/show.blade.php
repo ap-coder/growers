@@ -25,10 +25,10 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.clientPrice.fields.product') }}
+                            {{ trans('cruds.clientPrice.fields.published') }}
                         </th>
                         <td>
-                            {{ $clientPrice->product->name ?? '' }}
+                            <input type="checkbox" disabled="disabled" {{ $clientPrice->published ? 'checked' : '' }}>
                         </td>
                     </tr>
                     <tr>

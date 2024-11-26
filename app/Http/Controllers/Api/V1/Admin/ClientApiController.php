@@ -7,7 +7,7 @@ use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Http\Resources\Admin\ClientResource;
 use App\Models\Client;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,13 +17,12 @@ class ClientApiController extends Controller
     {
         abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return new ClientResource(Client::with(['products', 'team'])->get());
+        return new ClientResource(Client::with(['prices', 'team'])->get());
     }
 
     public function store(StoreClientRequest $request)
     {
         $client = Client::create($request->all());
-        $client->products()->sync($request->input('products', []));
 
         return (new ClientResource($client))
             ->response()
@@ -34,13 +33,12 @@ class ClientApiController extends Controller
     {
         abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return new ClientResource($client->load(['products', 'team']));
+        return new ClientResource($client->load(['prices', 'team']));
     }
 
     public function update(UpdateClientRequest $request, Client $client)
     {
         $client->update($request->all());
-        $client->products()->sync($request->input('products', []));
 
         return (new ClientResource($client))
             ->response()

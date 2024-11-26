@@ -7,7 +7,7 @@ use App\Http\Requests\MassDestroyUserAlertRequest;
 use App\Http\Requests\StoreUserAlertRequest;
 use App\Models\User;
 use App\Models\UserAlert;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -40,9 +40,15 @@ class UserAlertsController extends Controller
                 ));
             });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->editColumn('alert_text', fn ($row) => $row->alert_text ? $row->alert_text : '');
-            $table->editColumn('alert_link', fn ($row) => $row->alert_link ? $row->alert_link : '');
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->editColumn('alert_text', function ($row) {
+                return $row->alert_text ? $row->alert_text : '';
+            });
+            $table->editColumn('alert_link', function ($row) {
+                return $row->alert_link ? $row->alert_link : '';
+            });
             $table->editColumn('user', function ($row) {
                 $labels = [];
                 foreach ($row->users as $user) {

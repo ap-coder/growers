@@ -292,198 +292,178 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'    => 71,
-                'title' => 'customer_create',
-            ],
-            [
-                'id'    => 72,
-                'title' => 'customer_edit',
-            ],
-            [
-                'id'    => 73,
-                'title' => 'customer_show',
-            ],
-            [
-                'id'    => 74,
-                'title' => 'customer_delete',
-            ],
-            [
-                'id'    => 75,
-                'title' => 'customer_access',
-            ],
-            [
-                'id'    => 76,
                 'title' => 'task_management_access',
             ],
             [
-                'id'    => 77,
+                'id'    => 72,
                 'title' => 'task_status_create',
             ],
             [
-                'id'    => 78,
+                'id'    => 73,
                 'title' => 'task_status_edit',
             ],
             [
-                'id'    => 79,
+                'id'    => 74,
                 'title' => 'task_status_show',
             ],
             [
-                'id'    => 80,
+                'id'    => 75,
                 'title' => 'task_status_delete',
             ],
             [
-                'id'    => 81,
+                'id'    => 76,
                 'title' => 'task_status_access',
             ],
             [
-                'id'    => 82,
+                'id'    => 77,
                 'title' => 'task_tag_create',
             ],
             [
-                'id'    => 83,
+                'id'    => 78,
                 'title' => 'task_tag_edit',
             ],
             [
-                'id'    => 84,
+                'id'    => 79,
                 'title' => 'task_tag_show',
             ],
             [
-                'id'    => 85,
+                'id'    => 80,
                 'title' => 'task_tag_delete',
             ],
             [
-                'id'    => 86,
+                'id'    => 81,
                 'title' => 'task_tag_access',
             ],
             [
-                'id'    => 87,
+                'id'    => 82,
                 'title' => 'task_create',
             ],
             [
-                'id'    => 88,
+                'id'    => 83,
                 'title' => 'task_edit',
             ],
             [
-                'id'    => 89,
+                'id'    => 84,
                 'title' => 'task_show',
             ],
             [
-                'id'    => 90,
+                'id'    => 85,
                 'title' => 'task_delete',
             ],
             [
-                'id'    => 91,
+                'id'    => 86,
                 'title' => 'task_access',
             ],
             [
-                'id'    => 92,
+                'id'    => 87,
                 'title' => 'tasks_calendar_access',
             ],
             [
-                'id'    => 93,
+                'id'    => 88,
                 'title' => 'order_create',
             ],
             [
-                'id'    => 94,
+                'id'    => 89,
                 'title' => 'order_edit',
             ],
             [
-                'id'    => 95,
+                'id'    => 90,
                 'title' => 'order_show',
             ],
             [
-                'id'    => 96,
+                'id'    => 91,
                 'title' => 'order_delete',
             ],
             [
-                'id'    => 97,
+                'id'    => 92,
                 'title' => 'order_access',
             ],
             [
-                'id'    => 98,
+                'id'    => 93,
                 'title' => 'client_create',
             ],
             [
-                'id'    => 99,
+                'id'    => 94,
                 'title' => 'client_edit',
             ],
             [
-                'id'    => 100,
+                'id'    => 95,
                 'title' => 'client_show',
             ],
             [
-                'id'    => 101,
+                'id'    => 96,
                 'title' => 'client_delete',
             ],
             [
-                'id'    => 102,
+                'id'    => 97,
                 'title' => 'client_access',
             ],
             [
-                'id'    => 103,
+                'id'    => 98,
                 'title' => 'client_price_create',
             ],
             [
-                'id'    => 104,
+                'id'    => 99,
                 'title' => 'client_price_edit',
             ],
             [
-                'id'    => 105,
+                'id'    => 100,
                 'title' => 'client_price_show',
             ],
             [
-                'id'    => 106,
+                'id'    => 101,
                 'title' => 'client_price_delete',
             ],
             [
-                'id'    => 107,
+                'id'    => 102,
                 'title' => 'client_price_access',
             ],
             [
-                'id'    => 108,
+                'id'    => 103,
                 'title' => 'developer_access',
             ],
             [
-                'id'    => 109,
+                'id'    => 104,
                 'title' => 'setting_create',
             ],
             [
-                'id'    => 110,
+                'id'    => 105,
                 'title' => 'setting_edit',
             ],
             [
-                'id'    => 111,
+                'id'    => 106,
                 'title' => 'setting_delete',
             ],
             [
-                'id'    => 112,
+                'id'    => 107,
                 'title' => 'setting_access',
             ],
             [
-                'id'    => 113,
+                'id'    => 108,
                 'title' => 'order_item_create',
             ],
             [
-                'id'    => 114,
+                'id'    => 109,
                 'title' => 'order_item_edit',
             ],
             [
-                'id'    => 115,
+                'id'    => 110,
                 'title' => 'order_item_show',
             ],
             [
-                'id'    => 116,
+                'id'    => 111,
                 'title' => 'order_item_delete',
             ],
             [
-                'id'    => 117,
+                'id'    => 112,
                 'title' => 'order_item_access',
             ],
             [
-                'id'    => 118,
+                'id'    => 113,
                 'title' => 'order_management_access',
             ],
             [
-                'id'    => 119,
+                'id'    => 114,
                 'title' => 'profile_password_edit',
             ],
         ];

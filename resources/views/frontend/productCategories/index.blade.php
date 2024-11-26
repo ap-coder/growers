@@ -26,6 +26,9 @@
                                         {{ trans('cruds.productCategory.fields.id') }}
                                     </th>
                                     <th>
+                                        {{ trans('cruds.productCategory.fields.published') }}
+                                    </th>
+                                    <th>
                                         {{ trans('cruds.productCategory.fields.name') }}
                                     </th>
                                     <th>
@@ -44,6 +47,10 @@
                                     <tr data-entry-id="{{ $productCategory->id }}">
                                         <td>
                                             {{ $productCategory->id ?? '' }}
+                                        </td>
+                                        <td>
+                                            <span style="display:none">{{ $productCategory->published ?? '' }}</span>
+                                            <input type="checkbox" disabled="disabled" {{ $productCategory->published ? 'checked' : '' }}>
                                         </td>
                                         <td>
                                             {{ $productCategory->name ?? '' }}

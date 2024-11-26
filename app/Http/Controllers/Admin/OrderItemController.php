@@ -9,7 +9,7 @@ use App\Http\Requests\UpdateOrderItemRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -42,12 +42,22 @@ class OrderItemController extends Controller
                 ));
             });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->addColumn('product_name', fn ($row) => $row->product ? $row->product->name : '');
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->addColumn('product_name', function ($row) {
+                return $row->product ? $row->product->name : '';
+            });
 
-            $table->editColumn('price', fn ($row) => $row->price ? $row->price : '');
-            $table->editColumn('quantity', fn ($row) => $row->quantity ? $row->quantity : '');
-            $table->editColumn('total_price', fn ($row) => $row->total_price ? $row->total_price : '');
+            $table->editColumn('price', function ($row) {
+                return $row->price ? $row->price : '';
+            });
+            $table->editColumn('quantity', function ($row) {
+                return $row->quantity ? $row->quantity : '';
+            });
+            $table->editColumn('total_price', function ($row) {
+                return $row->total_price ? $row->total_price : '';
+            });
 
             $table->rawColumns(['actions', 'placeholder', 'product']);
 

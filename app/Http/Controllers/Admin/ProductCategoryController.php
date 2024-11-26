@@ -8,22 +8,72 @@ use App\Http\Requests\MassDestroyProductCategoryRequest;
 use App\Http\Requests\StoreProductCategoryRequest;
 use App\Http\Requests\UpdateProductCategoryRequest;
 use App\Models\ProductCategory;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
+use Yajra\DataTables\Facades\DataTables;
 
 class ProductCategoryController extends Controller
 {
     use MediaUploadingTrait;
 
-    public function index()
+    public function index(Request $request)
     {
         abort_if(Gate::denies('product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $productCategories = ProductCategory::with(['media'])->get();
+        if ($request->ajax()) {
+            $query = ProductCategory::query()->select(sprintf('%s.*', (new ProductCategory)->table));
+            $table = Datatables::of($query);
 
-        return view('admin.productCategories.index', compact('productCategories'));
+            $table->addColumn('placeholder', '&nbsp;');
+            $table->addColumn('actions', '&nbsp;');
+
+            $table->editColumn('actions', function ($row) {
+                $viewGate      = 'product_category_show';
+                $editGate      = 'product_category_edit';
+                $deleteGate    = 'product_category_delete';
+                $crudRoutePart = 'product-categories';
+
+                return view('partials.datatablesActions', compact(
+                    'viewGate',
+                    'editGate',
+                    'deleteGate',
+                    'crudRoutePart',
+                    'row'
+                ));
+            });
+
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->editColumn('published', function ($row) {
+                return '<input type="checkbox" disabled ' . ($row->published ? 'checked' : null) . '>';
+            });
+            $table->editColumn('name', function ($row) {
+                return $row->name ? $row->name : '';
+            });
+            $table->editColumn('description', function ($row) {
+                return $row->description ? $row->description : '';
+            });
+            $table->editColumn('photo', function ($row) {
+                if ($photo = $row->photo) {
+                    return sprintf(
+                        '<a href="%s" target="_blank"><img src="%s" width="50px" height="50px"></a>',
+                        $photo->url,
+                        $photo->thumbnail
+                    );
+                }
+
+                return '';
+            });
+
+            $table->rawColumns(['actions', 'placeholder', 'published', 'photo']);
+
+            return $table->make(true);
+        }
+
+        return view('admin.productCategories.index');
     }
 
     public function create()
@@ -33,119 +83,20 @@ class ProductCategoryController extends Controller
         return view('admin.productCategories.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreProductCategoryRequest $request)
     {
-        // Check if the category already exists
-        $existingCategory = ProductCategory::where('name', $request->input('name'))->first();
+        $productCategory = ProductCategory::create($request->all());
 
-        if ($existingCategory) {
-            return response()->json([
-                'success' => false,
-                'message' => 'This category already exists.',
-                'category' => $existingCategory,
-            ]);
+        if ($request->input('photo', false)) {
+            $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
         }
 
-        try {
-            $productCategory = ProductCategory::create($request->only(['name', 'description']));
-
-            if ($request->input('photo', false)) {
-                $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Category added successfully.',
-                'category' => $productCategory,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Failed to save category: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while saving the category. Please try again.',
-            ], 500);
+        if ($media = $request->input('ck-media', false)) {
+            Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
         }
+
+        return redirect()->route('admin.product-categories.index');
     }
-
-
-//    public function store(StoreProductCategoryRequest $request)
-//    {
-//
-//        $existingCategory = ProductCategory::where('name', $request->input('category_name'))->first();
-//
-//        if ($existingCategory) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'This category already exists.',
-//                'category' => $existingCategory, // Return the existing category for selection
-//            ]);
-//        }
-//
-//        try {
-//            // Create the product category
-//            $productCategory = ProductCategory::create($request->all());
-//
-//            // Handle photo upload if provided
-//            if ($request->input('photo', false)) {
-//                $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
-//            }
-//
-//            // Link CKEditor media if applicable
-//            if ($media = $request->input('ck-media', false)) {
-//                Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
-//            }
-//
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Category added successfully.',
-//                'category' => $productCategory, // Return the new category details for UI
-//            ]);
-//        } catch (\Exception $e) {
-//            \Log::error('Failed to save category: ' . $e->getMessage());
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'An error occurred while saving the category. Please try again.',
-//            ], 500);
-//        }
-//    }
-
-//    public function store(StoreProductCategoryRequest $request)
-//    {
-//        // Check if the category already exists
-//        $existingCategory = ProductCategory::where('name', $request->input('name'))->first();
-//
-//        if ($existingCategory) {
-//            return response()->json([
-//                'success' => false,
-//                'message' => 'This category already exists.',
-//                'category' => $existingCategory, // Return the existing category for UI to update
-//            ]);
-//        }
-//
-//        // Create a new category
-//        $productCategory = ProductCategory::create($request->all());
-//
-//        if ($request->input('photo', false)) {
-//            $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
-//        }
-//
-//        if ($media = $request->input('ck-media', false)) {
-//            Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
-//        }
-//
-//        // Return JSON for dynamic updates
-//        if ($request->ajax()) {
-//            return response()->json([
-//                'success' => true,
-//                'message' => 'Category added successfully.',
-//                'category' => $productCategory, // Return the new category details
-//            ]);
-//        }
-//
-//        // Fallback for non-AJAX requests
-//        return redirect()->route('admin.product-categories.index');
-//    }
-
 
     public function edit(ProductCategory $productCategory)
     {

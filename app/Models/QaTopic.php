@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Illuminate\Database\Eloquent\Model;
 
 class QaTopic extends Model

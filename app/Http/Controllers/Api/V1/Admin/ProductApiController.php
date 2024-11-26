@@ -8,7 +8,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\Admin\ProductResource;
 use App\Models\Product;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,6 +31,10 @@ class ProductApiController extends Controller
         $product->clients()->sync($request->input('clients', []));
         if ($request->input('photo', false)) {
             $product->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
+        }
+
+        foreach ($request->input('additional_photos', []) as $file) {
+            $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
         }
 
         return (new ProductResource($product))
@@ -60,6 +64,20 @@ class ProductApiController extends Controller
             }
         } elseif ($product->photo) {
             $product->photo->delete();
+        }
+
+        if (count($product->additional_photos) > 0) {
+            foreach ($product->additional_photos as $media) {
+                if (! in_array($media->file_name, $request->input('additional_photos', []))) {
+                    $media->delete();
+                }
+            }
+        }
+        $media = $product->additional_photos->pluck('file_name')->toArray();
+        foreach ($request->input('additional_photos', []) as $file) {
+            if (count($media) === 0 || ! in_array($file, $media)) {
+                $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
+            }
         }
 
         return (new ProductResource($product))

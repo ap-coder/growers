@@ -27,17 +27,13 @@ class ProductCategory extends Model implements HasMedia
     ];
 
     protected $fillable = [
+        'published',
         'name',
         'description',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
-
-    public function scopePublished($query)
-    {
-        return $query->where('published', true);
-    }
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -60,10 +56,5 @@ class ProductCategory extends Model implements HasMedia
         }
 
         return $file;
-    }
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'category_product');
     }
 }

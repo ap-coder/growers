@@ -7,7 +7,7 @@ use App\Http\Requests\StoreOrderItemRequest;
 use App\Http\Requests\UpdateOrderItemRequest;
 use App\Http\Resources\Admin\OrderItemResource;
 use App\Models\OrderItem;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

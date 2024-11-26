@@ -26,16 +26,10 @@
                                         {{ trans('cruds.contentPage.fields.id') }}
                                     </th>
                                     <th>
+                                        {{ trans('cruds.contentPage.fields.published') }}
+                                    </th>
+                                    <th>
                                         {{ trans('cruds.contentPage.fields.title') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.contentPage.fields.category') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.contentPage.fields.tag') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.contentPage.fields.excerpt') }}
                                     </th>
                                     <th>
                                         {{ trans('cruds.contentPage.fields.featured_image') }}
@@ -52,20 +46,11 @@
                                             {{ $contentPage->id ?? '' }}
                                         </td>
                                         <td>
+                                            <span style="display:none">{{ $contentPage->published ?? '' }}</span>
+                                            <input type="checkbox" disabled="disabled" {{ $contentPage->published ? 'checked' : '' }}>
+                                        </td>
+                                        <td>
                                             {{ $contentPage->title ?? '' }}
-                                        </td>
-                                        <td>
-                                            @foreach($contentPage->categories as $key => $item)
-                                                <span>{{ $item->name }}</span>
-                                            @endforeach
-                                        </td>
-                                        <td>
-                                            @foreach($contentPage->tags as $key => $item)
-                                                <span>{{ $item->name }}</span>
-                                            @endforeach
-                                        </td>
-                                        <td>
-                                            {{ $contentPage->excerpt ?? '' }}
                                         </td>
                                         <td>
                                             @if($contentPage->featured_image)

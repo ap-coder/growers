@@ -14,6 +14,19 @@
                         @method('PUT')
                         @csrf
                         <div class="form-group">
+                            <div>
+                                <input type="hidden" name="published" value="0">
+                                <input type="checkbox" name="published" id="published" value="1" {{ $clientPrice->published || old('published', 0) === 1 ? 'checked' : '' }}>
+                                <label for="published">{{ trans('cruds.clientPrice.fields.published') }}</label>
+                            </div>
+                            @if($errors->has('published'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('published') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.clientPrice.fields.published_helper') }}</span>
+                        </div>
+                        <div class="form-group">
                             <label for="price">{{ trans('cruds.clientPrice.fields.price') }}</label>
                             <input class="form-control" type="number" name="price" id="price" value="{{ old('price', $clientPrice->price) }}" step="0.01">
                             @if($errors->has('price'))
@@ -54,6 +67,61 @@
                             <span class="help-block">{{ trans('cruds.clientPrice.fields.gtin_helper') }}</span>
                         </div>
                         <div class="form-group">
+                            <label for="upc">{{ trans('cruds.clientPrice.fields.upc') }}</label>
+                            <input class="form-control" type="text" name="upc" id="upc" value="{{ old('upc', $clientPrice->upc) }}">
+                            @if($errors->has('upc'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('upc') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.clientPrice.fields.upc_helper') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="qb_1">{{ trans('cruds.clientPrice.fields.qb_1') }}</label>
+                            <input class="form-control" type="text" name="qb_1" id="qb_1" value="{{ old('qb_1', $clientPrice->qb_1) }}">
+                            @if($errors->has('qb_1'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('qb_1') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.clientPrice.fields.qb_1_helper') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="qb_2">{{ trans('cruds.clientPrice.fields.qb_2') }}</label>
+                            <input class="form-control" type="text" name="qb_2" id="qb_2" value="{{ old('qb_2', $clientPrice->qb_2) }}">
+                            @if($errors->has('qb_2'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('qb_2') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.clientPrice.fields.qb_2_helper') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="barcode_image">{{ trans('cruds.clientPrice.fields.barcode_image') }}</label>
+                            <div class="needsclick dropzone" id="barcode_image-dropzone">
+                            </div>
+                            @if($errors->has('barcode_image'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('barcode_image') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.clientPrice.fields.barcode_image_helper') }}</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="client_id">{{ trans('cruds.clientPrice.fields.client') }}</label>
+                            <select class="form-control select2" name="client_id" id="client_id">
+                                @foreach($clients as $id => $entry)
+                                    <option value="{{ $id }}" {{ (old('client_id') ? old('client_id') : $clientPrice->client->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('client'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('client') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.clientPrice.fields.client_helper') }}</span>
+                        </div>
+                        <div class="form-group">
                             <button class="btn btn-danger" type="submit">
                                 {{ trans('global.save') }}
                             </button>
@@ -65,4 +133,62 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    Dropzone.options.barcodeImageDropzone = {
+    url: '{{ route('frontend.client-prices.storeMedia') }}',
+    maxFilesize: 2, // MB
+    acceptedFiles: '.jpeg,.jpg,.png,.gif',
+    maxFiles: 1,
+    addRemoveLinks: true,
+    headers: {
+      'X-CSRF-TOKEN': "{{ csrf_token() }}"
+    },
+    params: {
+      size: 2,
+      width: 600,
+      height: 600
+    },
+    success: function (file, response) {
+      $('form').find('input[name="barcode_image"]').remove()
+      $('form').append('<input type="hidden" name="barcode_image" value="' + response.name + '">')
+    },
+    removedfile: function (file) {
+      file.previewElement.remove()
+      if (file.status !== 'error') {
+        $('form').find('input[name="barcode_image"]').remove()
+        this.options.maxFiles = this.options.maxFiles + 1
+      }
+    },
+    init: function () {
+@if(isset($clientPrice) && $clientPrice->barcode_image)
+      var file = {!! json_encode($clientPrice->barcode_image) !!}
+          this.options.addedfile.call(this, file)
+      this.options.thumbnail.call(this, file, file.preview ?? file.preview_url)
+      file.previewElement.classList.add('dz-complete')
+      $('form').append('<input type="hidden" name="barcode_image" value="' + file.file_name + '">')
+      this.options.maxFiles = this.options.maxFiles - 1
+@endif
+    },
+    error: function (file, response) {
+        if ($.type(response) === 'string') {
+            var message = response //dropzone sends it's own error messages in string
+        } else {
+            var message = response.errors.file
+        }
+        file.previewElement.classList.add('dz-error')
+        _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+        _results = []
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i]
+            _results.push(node.textContent = message)
+        }
+
+        return _results
+    }
+}
+
+</script>
 @endsection

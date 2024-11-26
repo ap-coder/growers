@@ -29,6 +29,9 @@
                                         {{ trans('cruds.faqCategory.fields.category') }}
                                     </th>
                                     <th>
+                                        {{ trans('cruds.faqCategory.fields.published') }}
+                                    </th>
+                                    <th>
                                         &nbsp;
                                     </th>
                                 </tr>
@@ -41,6 +44,10 @@
                                         </td>
                                         <td>
                                             {{ $faqCategory->category ?? '' }}
+                                        </td>
+                                        <td>
+                                            <span style="display:none">{{ $faqCategory->published ?? '' }}</span>
+                                            <input type="checkbox" disabled="disabled" {{ $faqCategory->published ? 'checked' : '' }}>
                                         </td>
                                         <td>
                                             @can('faq_category_show')

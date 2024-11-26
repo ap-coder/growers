@@ -11,26 +11,21 @@
             @method('PUT')
             @csrf
             <div class="form-group">
-                <label for="product_id">{{ trans('cruds.clientPrice.fields.product') }}</label>
-                <select class="form-control select2 {{ $errors->has('product') ? 'is-invalid' : '' }}" name="product_id" id="product_id">
-                    @foreach($products as $id => $entry)
-                        <option value="{{ $id }}" {{ (old('product_id') ? old('product_id') : $clientPrice->product->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('product'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('product') }}
-                    </div>
+                <div class="form-check {{ $errors->has('published') ? 'is-invalid' : '' }}">
+                    <input type="hidden" name="published" value="0">
+                    <input class="form-check-input" type="checkbox" name="published" id="published" value="1" {{ $clientPrice->published || old('published', 0) === 1 ? 'checked' : '' }}>
+                    <label class="form-check-label" for="published">{{ trans('cruds.clientPrice.fields.published') }}</label>
+                </div>
+                @if($errors->has('published'))
+                    <span class="text-danger">{{ $errors->first('published') }}</span>
                 @endif
-                <span class="help-block">{{ trans('cruds.clientPrice.fields.product_helper') }}</span>
+                <span class="help-block">{{ trans('cruds.clientPrice.fields.published_helper') }}</span>
             </div>
             <div class="form-group">
                 <label for="price">{{ trans('cruds.clientPrice.fields.price') }}</label>
                 <input class="form-control {{ $errors->has('price') ? 'is-invalid' : '' }}" type="number" name="price" id="price" value="{{ old('price', $clientPrice->price) }}" step="0.01">
                 @if($errors->has('price'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('price') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('price') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.price_helper') }}</span>
             </div>
@@ -38,9 +33,7 @@
                 <label for="sku">{{ trans('cruds.clientPrice.fields.sku') }}</label>
                 <input class="form-control {{ $errors->has('sku') ? 'is-invalid' : '' }}" type="text" name="sku" id="sku" value="{{ old('sku', $clientPrice->sku) }}">
                 @if($errors->has('sku'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('sku') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('sku') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.sku_helper') }}</span>
             </div>
@@ -48,9 +41,7 @@
                 <label for="mpn">{{ trans('cruds.clientPrice.fields.mpn') }}</label>
                 <input class="form-control {{ $errors->has('mpn') ? 'is-invalid' : '' }}" type="text" name="mpn" id="mpn" value="{{ old('mpn', $clientPrice->mpn) }}">
                 @if($errors->has('mpn'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('mpn') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('mpn') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.mpn_helper') }}</span>
             </div>
@@ -58,9 +49,7 @@
                 <label for="gtin">{{ trans('cruds.clientPrice.fields.gtin') }}</label>
                 <input class="form-control {{ $errors->has('gtin') ? 'is-invalid' : '' }}" type="text" name="gtin" id="gtin" value="{{ old('gtin', $clientPrice->gtin) }}">
                 @if($errors->has('gtin'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('gtin') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('gtin') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.gtin_helper') }}</span>
             </div>
@@ -68,9 +57,7 @@
                 <label for="upc">{{ trans('cruds.clientPrice.fields.upc') }}</label>
                 <input class="form-control {{ $errors->has('upc') ? 'is-invalid' : '' }}" type="text" name="upc" id="upc" value="{{ old('upc', $clientPrice->upc) }}">
                 @if($errors->has('upc'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('upc') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('upc') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.upc_helper') }}</span>
             </div>
@@ -78,9 +65,7 @@
                 <label for="qb_1">{{ trans('cruds.clientPrice.fields.qb_1') }}</label>
                 <input class="form-control {{ $errors->has('qb_1') ? 'is-invalid' : '' }}" type="text" name="qb_1" id="qb_1" value="{{ old('qb_1', $clientPrice->qb_1) }}">
                 @if($errors->has('qb_1'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('qb_1') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('qb_1') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.qb_1_helper') }}</span>
             </div>
@@ -88,9 +73,7 @@
                 <label for="qb_2">{{ trans('cruds.clientPrice.fields.qb_2') }}</label>
                 <input class="form-control {{ $errors->has('qb_2') ? 'is-invalid' : '' }}" type="text" name="qb_2" id="qb_2" value="{{ old('qb_2', $clientPrice->qb_2) }}">
                 @if($errors->has('qb_2'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('qb_2') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('qb_2') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.qb_2_helper') }}</span>
             </div>
@@ -99,9 +82,7 @@
                 <div class="needsclick dropzone {{ $errors->has('barcode_image') ? 'is-invalid' : '' }}" id="barcode_image-dropzone">
                 </div>
                 @if($errors->has('barcode_image'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('barcode_image') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('barcode_image') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.barcode_image_helper') }}</span>
             </div>
@@ -113,9 +94,7 @@
                     @endforeach
                 </select>
                 @if($errors->has('client'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('client') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('client') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.clientPrice.fields.client_helper') }}</span>
             </div>

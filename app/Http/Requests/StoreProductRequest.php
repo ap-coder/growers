@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Product;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 
@@ -37,6 +37,9 @@ class StoreProductRequest extends FormRequest
                 'integer',
             ],
             'clients' => [
+                'array',
+            ],
+            'additional_photos' => [
                 'array',
             ],
         ];

@@ -30,19 +30,19 @@
                                         {{ trans('cruds.product.fields.id') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.product.fields.name') }}
+                                        {{ trans('cruds.product.fields.published') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.product.fields.description') }}
+                                        {{ trans('cruds.product.fields.name') }}
                                     </th>
                                     <th>
                                         {{ trans('cruds.product.fields.category') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.product.fields.tag') }}
+                                        {{ trans('cruds.product.fields.photo') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.product.fields.photo') }}
+                                        {{ trans('cruds.product.fields.clients') }}
                                     </th>
                                     <th>
                                         &nbsp;
@@ -56,18 +56,14 @@
                                             {{ $product->id ?? '' }}
                                         </td>
                                         <td>
+                                            <span style="display:none">{{ $product->published ?? '' }}</span>
+                                            <input type="checkbox" disabled="disabled" {{ $product->published ? 'checked' : '' }}>
+                                        </td>
+                                        <td>
                                             {{ $product->name ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $product->description ?? '' }}
-                                        </td>
-                                        <td>
                                             @foreach($product->categories as $key => $item)
-                                                <span>{{ $item->name }}</span>
-                                            @endforeach
-                                        </td>
-                                        <td>
-                                            @foreach($product->tags as $key => $item)
                                                 <span>{{ $item->name }}</span>
                                             @endforeach
                                         </td>
@@ -77,6 +73,11 @@
                                                     <img src="{{ $product->photo->getUrl('thumb') }}">
                                                 </a>
                                             @endif
+                                        </td>
+                                        <td>
+                                            @foreach($product->clients as $key => $item)
+                                                <span>{{ $item->name }}</span>
+                                            @endforeach
                                         </td>
                                         <td>
                                             @can('product_show')

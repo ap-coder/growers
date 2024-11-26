@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Notifications\VerifyUserNotification;
 use Carbon\Carbon;
 use DateTimeInterface;
-use Illuminate\Support\Facades\Hash;
+use Hash;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -76,7 +76,6 @@ class User extends Authenticatable
 
     public function getIsAdminAttribute()
     {
-     //   \Log::info('User Roles:', $this->roles->toArray());
         return $this->roles()->where('id', 1)->exists();
     }
 

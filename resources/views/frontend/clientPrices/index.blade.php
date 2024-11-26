@@ -30,13 +30,22 @@
                                         {{ trans('cruds.clientPrice.fields.id') }}
                                     </th>
                                     <th>
+                                        {{ trans('cruds.clientPrice.fields.published') }}
+                                    </th>
+                                    <th>
                                         {{ trans('cruds.clientPrice.fields.price') }}
                                     </th>
                                     <th>
                                         {{ trans('cruds.clientPrice.fields.sku') }}
                                     </th>
                                     <th>
-                                        {{ trans('cruds.clientPrice.fields.gtin') }}
+                                        {{ trans('cruds.clientPrice.fields.qb_1') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.clientPrice.fields.qb_2') }}
+                                    </th>
+                                    <th>
+                                        {{ trans('cruds.clientPrice.fields.client') }}
                                     </th>
                                     <th>
                                         &nbsp;
@@ -50,13 +59,23 @@
                                             {{ $clientPrice->id ?? '' }}
                                         </td>
                                         <td>
+                                            <span style="display:none">{{ $clientPrice->published ?? '' }}</span>
+                                            <input type="checkbox" disabled="disabled" {{ $clientPrice->published ? 'checked' : '' }}>
+                                        </td>
+                                        <td>
                                             {{ $clientPrice->price ?? '' }}
                                         </td>
                                         <td>
                                             {{ $clientPrice->sku ?? '' }}
                                         </td>
                                         <td>
-                                            {{ $clientPrice->gtin ?? '' }}
+                                            {{ $clientPrice->qb_1 ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $clientPrice->qb_2 ?? '' }}
+                                        </td>
+                                        <td>
+                                            {{ $clientPrice->client->name ?? '' }}
                                         </td>
                                         <td>
                                             @can('client_price_show')
