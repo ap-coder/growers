@@ -12,7 +12,7 @@
                     @csrf
                     <div class="form-group">
                         <label for="category-name">Category Name</label>
-                        <input type="text" class="form-control" id="category-name" name="name" required>
+                        <input type="text" class="form-control" id="category-name" name="category_name" required>
                     </div>
                     <div id="category-error" class="text-danger"></div>
                 </form>

@@ -27,6 +27,7 @@ class Client extends Model
 
     protected $fillable = [
         'name',
+        'published',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -45,7 +46,7 @@ class Client extends Model
 
     public function clientPrices()
     {
-        return $this->hasMany(ClientPrice::class, 'client_id');
+        return $this->hasMany(ClientPrice::class);
     }
 
     public function products()
@@ -53,12 +54,6 @@ class Client extends Model
         return $this->belongsToMany(Product::class, 'client_prices', 'client_id', 'product_id')
             ->withPivot('price', 'sku', 'mpn', 'gtin', 'upc', 'qb_1', 'qb_2')
             ->withTimestamps();
-    }
-
-
-    public function customers()
-    {
-        return $this->hasMany(Customer::class);
     }
 
     public function team()

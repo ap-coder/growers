@@ -26,37 +26,30 @@
                 <th>QB 2</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="client-pricing-tbody">
             @foreach($product->clientPrices as $clientPrice)
                 <tr>
                     <td>{{ $clientPrice->client->name }}</td>
                     <td>
-                        <input type="number" name="prices[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->price ?? '' }}" placeholder="Enter price">
+                        <input type="number" name="prices[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->price ?? '' }}" placeholder="Enter price">
                     </td>
                     <td>
-                        <input type="text" name="skus[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->sku ?? '' }}" placeholder="Enter SKU">
+                        <input type="text" name="skus[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->sku ?? '' }}" placeholder="Enter SKU">
                     </td>
                     <td>
-                        <input type="text" name="mpns[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->mpn ?? '' }}" placeholder="Enter MPN">
+                        <input type="text" name="mpns[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->mpn ?? '' }}" placeholder="Enter MPN">
                     </td>
                     <td>
-                        <input type="text" name="gtins[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->gtin ?? '' }}" placeholder="Enter GTIN">
+                        <input type="text" name="gtins[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->gtin ?? '' }}" placeholder="Enter GTIN">
                     </td>
                     <td>
-                        <input type="text" name="upcs[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->upc ?? '' }}" placeholder="Enter UPC">
+                        <input type="text" name="upcs[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->upc ?? '' }}" placeholder="Enter UPC">
                     </td>
                     <td>
-                        <input type="text" name="qb_1[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->qb_1 ?? '' }}" placeholder="Enter QB 1">
+                        <input type="text" name="qb_1[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->qb_1 ?? '' }}" placeholder="Enter QB 1">
                     </td>
                     <td>
-                        <input type="text" name="qb_2[{{ $clientPrice->client_id }}]" class="form-control"
-                            value="{{ $clientPrice->qb_2 ?? '' }}" placeholder="Enter QB 2">
+                        <input type="text" name="qb_2[{{ $clientPrice->client_id }}]" class="form-control" value="{{ $clientPrice->qb_2 ?? '' }}" placeholder="Enter QB 2">
                     </td>
                 </tr>
             @endforeach

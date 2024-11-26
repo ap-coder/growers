@@ -38,6 +38,7 @@ class ClientPrice extends Model implements HasMedia
         'qb_1',
         'qb_2',
         'created_at',
+        'published',
         'client_id',
         'updated_at',
         'deleted_at',
@@ -62,7 +63,7 @@ class ClientPrice extends Model implements HasMedia
 
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id');
+        return $this->belongsTo(Product::class);
     }
 
     public function getBarcodeImageAttribute()
@@ -79,7 +80,7 @@ class ClientPrice extends Model implements HasMedia
 
     public function client()
     {
-        return $this->belongsTo(Client::class, 'client_id');
+        return $this->belongsTo(Client::class);
     }
 
     public function clients()
