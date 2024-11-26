@@ -30,11 +30,10 @@ class ProductController extends Controller
 
         if ($request->ajax()) {
             try {
-                $query = Product::with(['categories', 'tags', 'clients', 'team'])->select(sprintf('%s.*', (new Product)->table));
+                // Updated to load product_categories instead of categories
+                $query = Product::with(['product_categories', 'tags', 'clients', 'team'])
+                    ->select(sprintf('%s.*', (new Product)->table));
                 $table = Datatables::of($query);
-
-                Log::info($query->toSql());
-                Log::info($query->getBindings());
 
                 $table->addColumn('placeholder', '&nbsp;');
                 $table->addColumn('actions', '&nbsp;');
@@ -57,14 +56,17 @@ class ProductController extends Controller
                 $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
                 $table->editColumn('name', fn ($row) => $row->name ? $row->name : '');
                 $table->editColumn('description', fn ($row) => $row->description ? $row->description : '');
+
+                // Updated to refer to product_categories instead of categories
                 $table->editColumn('category', function ($row) {
                     $labels = [];
-                    foreach ($row->categories as $category) {
+                    foreach ($row->product_categories as $category) {
                         $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $category->name);
                     }
 
                     return implode(' ', $labels);
                 });
+
                 $table->editColumn('tag', function ($row) {
                     $labels = [];
                     foreach ($row->tags as $tag) {
@@ -73,6 +75,7 @@ class ProductController extends Controller
 
                     return implode(' ', $labels);
                 });
+
                 $table->editColumn('photo', function ($row) {
                     if ($photo = $row->photo) {
                         return sprintf(
@@ -86,9 +89,7 @@ class ProductController extends Controller
                 });
 
                 $table->rawColumns(['actions', 'placeholder', 'category', 'tag', 'photo']);
-
                 return $table->make(true);
-
 
             } catch (\Exception $e) {
                 Log::error('Error loading products datatable: ' . $e->getMessage());
@@ -103,11 +104,11 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $categories = ProductCategory::all();
+        $product_categories = ProductCategory::pluck('name', 'id');
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::pluck('name', 'id');
 
-        return view('admin.products.create', compact('categories', 'clients', 'tags'));
+        return view('admin.products.create', compact('product_categories', 'clients', 'tags'));
     }
 
     public function store(StoreProductRequest $request)
@@ -116,42 +117,40 @@ class ProductController extends Controller
             // Create product
             $product = Product::create($request->all());
 
-            // Sync categories and tags
-            $product->categories()->sync($request->input('categories', []));
+            // Sync categories, tags, and clients
+            $product->product_categories()->sync($request->input('product_categories', []));
             $product->tags()->sync($request->input('tags', []));
 
             // Handle ClientPrice records
             $clients = $request->input('clients', []);
-            $prices = $request->input('prices', []);
 
             foreach ($clients as $client_id) {
                 ClientPrice::create([
                     'product_id' => $product->id,
                     'client_id' => $client_id,
-                    'price' => $prices[$client_id] ?? null,
+                    'price' => $request->input("prices.$client_id") ?? null,
                     'sku' => $request->input("skus.$client_id") ?? null,
                     'mpn' => $request->input("mpns.$client_id") ?? null,
                     'gtin' => $request->input("gtins.$client_id") ?? null,
                     'upc' => $request->input("upcs.$client_id") ?? null,
                     'qb_1' => $request->input("qb_1.$client_id") ?? null,
                     'qb_2' => $request->input("qb_2.$client_id") ?? null,
-                    'team_id' => auth()->user()->team_id, // Example for default field
+                    'team_id' => auth()->user()->team_id,
                 ]);
             }
 
-            // Handle additional photos
-            if ($request->has('additional_photos')) {
-                foreach ($request->input('additional_photos', []) as $file) {
-                    $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
-                }
-            }
-
-            // Handle main photo
             if ($request->input('photo', false)) {
                 $product->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
             }
 
-            // Log successful creation
+            foreach ($request->input('additional_photos', []) as $file) {
+                $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
+            }
+
+            if ($media = $request->input('ck-media', false)) {
+                Media::whereIn('id', $media)->update(['model_id' => $product->id]);
+            }
+
             Log::info('Product created successfully', [
                 'product_id' => $product->id,
                 'request_data' => $request->all(),
@@ -160,7 +159,6 @@ class ProductController extends Controller
 
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
-            // Log error details
             Log::error('Failed to create product', [
                 'error' => $e->getMessage(),
                 'request_data' => $request->all(),
@@ -171,77 +169,48 @@ class ProductController extends Controller
         }
     }
 
-
     public function edit(Product $product)
     {
         abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $categories = ProductCategory::all();
+        $product_categories = ProductCategory::pluck('name', 'id');
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::pluck('name', 'id');
-        $product->load('categories', 'tags', 'clientPrices.client');
 
-        return view('admin.products.edit', compact('categories', 'clients', 'product', 'tags'));
+        $product->load('product_categories', 'tags', 'clients', 'clientPrices.client', 'team');
+
+        return view('admin.products.edit', compact('product_categories', 'clients', 'product', 'tags'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        // Update product details
         $product->update($request->all());
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
+        $product->clients()->sync($request->input('clients', []));
 
-        // Update ClientPrice records
-        $clients = $request->input('clients', []);
-        $prices = $request->input('prices', []);
+        $clientPrices = $request->input('client_price', []);
 
-        try {
-            // Delete existing client prices for this product
-            ClientPrice::where('product_id', $product->id)->delete();
-
-            // Create new client prices
-            foreach ($clients as $client_id) {
-                ClientPrice::create([
+        foreach ($request->input('client_price', []) as $client_id => $clientPriceData) {
+            ClientPrice::updateOrCreate(
+                [
                     'product_id' => $product->id,
-                    'client_id' => $client_id,
-                    'price' => $prices[$client_id] ?? null,
-                    'sku' => $request->input("skus.$client_id") ?? null,
-                    'mpn' => $request->input("mpns.$client_id") ?? null,
-                    'gtin' => $request->input("gtins.$client_id") ?? null,
-                    'upc' => $request->input("upcs.$client_id") ?? null,
-                    'qb_1' => $request->input("qb_1.$client_id") ?? null,
-                    'qb_2' => $request->input("qb_2.$client_id") ?? null,
-                    'team_id' => auth()->user()->team_id, // Example for default field
-                ]);
-            }
-        } catch (\Exception $e) {
-            Log::error('Failed to update ClientPrice records', [
-                'product_id' => $product->id,
-                'error' => $e->getMessage(),
-                'request_data' => $request->all(),
-            ]);
-
-            return redirect()->back()->withErrors('There was an issue updating client pricing.');
+                    'client_id' => $client_id
+                ],
+                [
+                    'price' => $clientPriceData['price'] ?? 0,
+                    'sku' => $clientPriceData['sku'] ?? null,
+                    'mpn' => $clientPriceData['mpn'] ?? null,
+                    'gtin' => $clientPriceData['gtin'] ?? null,
+                    'upc' => $clientPriceData['upc'] ?? null,
+                    'qb_1' => $clientPriceData['qb_1'] ?? null,
+                    'qb_2' => $clientPriceData['qb_2'] ?? null
+                ]
+            );
         }
 
-        // Handle additional photos
-        if ($product->additional_photos->isNotEmpty()) {
-            foreach ($product->additional_photos as $media) {
-                if (!in_array($media->file_name, $request->input('additional_photos', []))) {
-                    $media->delete();
-                }
-            }
-        }
-        $existingMedia = $product->additional_photos->pluck('file_name')->toArray();
-        foreach ($request->input('additional_photos', []) as $file) {
-            if (empty($existingMedia) || !in_array($file, $existingMedia)) {
-                $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
-            }
-        }
-
-        // Handle main photo
         if ($request->input('photo', false)) {
-            if (!$product->photo || $request->input('photo') !== $product->photo->file_name) {
+            if (! $product->photo || $request->input('photo') !== $product->photo->file_name) {
                 if ($product->photo) {
                     $product->photo->delete();
                 }
@@ -250,17 +219,72 @@ class ProductController extends Controller
         } elseif ($product->photo) {
             $product->photo->delete();
         }
-        //dd($request->all());
-        // Logging for debugging
-        Log::info('Product updated successfully', [
-            'product_id' => $product->id,
-            'user_id' => auth()->id(),
-            'request_data' => $request->all(),
-        ]);
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        if (count($product->additional_photos) > 0) {
+            foreach ($product->additional_photos as $media) {
+                if (! in_array($media->file_name, $request->input('additional_photos', []))) {
+                    $media->delete();
+                }
+            }
+        }
+        $media = $product->additional_photos->pluck('file_name')->toArray();
+        foreach ($request->input('additional_photos', []) as $file) {
+            if (count($media) === 0 || ! in_array($file, $media)) {
+                $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
+            }
+        }
+
+        return redirect()->route('admin.products.index');
     }
 
+//    public function update(UpdateProductRequest $request, Product $product)
+//    {
+//        //dd($request->all());
+//
+//        Log::info('Update method called', $request->all());
+//
+//        try {
+//            $validatedData = $request->validated();
+//
+//            $product->update($request->only(['name', 'description', 'published', 'featured']));
+//
+//            $product->product_categories()->sync($request->input('product_categories', []));
+//            $product->tags()->sync($request->input('tags', []));
+//
+//            foreach ($request->input('clients', []) as $client_id) {
+//                $clientPriceData = [
+//                    'product_id' => $product->id,
+//                    'client_id' => $client_id,
+//                    'price' => $request->input("prices.$client_id") ?? 0,
+//                    'sku' => $request->input("skus.$client_id") ?? null,
+//                    'mpn' => $request->input("mpns.$client_id") ?? null,
+//                    'gtin' => $request->input("gtins.$client_id") ?? null,
+//                    'upc' => $request->input("upcs.$client_id") ?? null,
+//                    'qb_1' => $request->input("qb_1.$client_id") ?? null,
+//                    'qb_2' => $request->input("qb_2.$client_id") ?? null
+//                ];
+//
+//                ClientPrice::updateOrCreate(
+//                    ['product_id' => $product->id, 'client_id' => $client_id],
+//                    $clientPriceData
+//                );
+//            }
+//
+//            $product->clients()->sync($request->input('clients', []));
+//
+//            Log::info('Product updated successfully', [
+//                'product_id' => $product->id,
+//                'user_id' => auth()->id(),
+//                'request_data' => $request->all(),
+//            ]);
+//
+//            return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+//
+//        } catch (\Exception $e) {
+//            Log::error('Error updating product', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+//            return redirect()->back()->withErrors('An error occurred while updating the product. Please check all inputs and try again.');
+//        }
+//    }
 
     public function show(Product $product)
     {

@@ -12,7 +12,17 @@
             @method('PUT')
             @csrf
             <div class="row">
-                @include('admin.products.partials.tab-headers')
+
+            {{-- @include('admin.products.partials.tab-headers') --}}
+
+                <div class="col-5 col-sm-3">
+                    <div class="nav flex-column nav-tabs h-100" id="vert-tabs-tab" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link active" id="vert-tabs-gen-tab" data-toggle="pill" href="#vert-tabs-gen" role="tab" aria-controls="vert-tabs-gen" aria-selected="true">General</a>
+                            <a class="nav-link" id="vert-tabs-cat-tab" data-toggle="pill" href="#vert-tabs-cat" role="tab" aria-controls="vert-tabs-cat" aria-selected="false">Categories</a>
+                            <a class="nav-link" id="vert-tabs-pricing-tab" data-toggle="pill" href="#vert-tabs-pricing" role="tab" aria-controls="vert-tabs-pricing" aria-selected="false">Pricing</a>
+                            <a class="nav-link" id="vert-tabs-settings-tab" data-toggle="pill" href="#vert-tabs-settings" role="tab" aria-controls="vert-tabs-settings" aria-selected="false">Settings</a>
+                        </div>
+                </div>
 
 
                 <!-- Tab Content -->
@@ -20,7 +30,36 @@
                 <div class="tab-content" id="vert-tabs-tabContent">
                     <!-- General Tab -->
                     <div class="tab-pane text-left fade show active" id="vert-tabs-gen" role="tabpanel" aria-labelledby="vert-tabs-gen-tab">
-                        @include('admin.products.partials.general')
+                        {{-- @include('admin.products.partials.general') --}}
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="published">Published</label>
+                                    <select name="published" class="form-control">
+                                        <option value="1" {{ $product->published == 1 ? 'selected' : '' }}>Active</option>
+                                        <option value="0" {{ $product->published == 0 ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-group form-check mb-0">
+                                    <input type="checkbox" class="form-check-input" id="featured" name="featured" value="1" {{ old('featured', $product->featured) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="featured">Featured</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="name">Product Name</label>
+                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $product->name) }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea name="description" id="description" class="form-control" rows="4">{{ old('description', $product->description) }}</textarea>
+                        </div>
+
 
                         <!-- Photo Upload using Dropzone -->
                         <div class="form-group mt-4">
@@ -32,33 +71,145 @@
                             <label for="additional_photos">{{ trans('cruds.product.fields.additional_photos') }}</label>
                             <div class="needsclick dropzone {{ $errors->has('additional_photos') ? 'is-invalid' : '' }}" id="additional_photos-dropzone">
                             </div>
-                                @if($errors->has('additional_photos'))
-                                    <div class="invalid-feedback">
+                            @if($errors->has('additional_photos'))
+                                <div class="invalid-feedback">
                                     {{ $errors->first('additional_photos') }}
                                     </div>
-                                @endif
-                                <span class="help-block">{{ trans('cruds.product.fields.additional_photos_helper') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.product.fields.additional_photos_helper') }}</span>
                         </div>
                     </div>
 
                     <!-- Categories Tab -->
                     <div class="tab-pane fade" id="vert-tabs-cat" role="tabpanel" aria-labelledby="vert-tabs-cat-tab">
-                        @include('admin.products.partials.categories')
+                        {{-- @include('admin.products.partials.categories') --}}
+
+                        <div class="form-group">
+                            <label for="product_categories">{{ trans('cruds.product.fields.category') }}</label>
+                            <div style="padding-bottom: 4px">
+                                <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
+                                <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
+                            </div>
+                            <select class="form-control select2 {{ $errors->has('product_categories') ? 'is-invalid' : '' }}" style="width: 100%;" name="product_categories[]" id="product_categories" multiple>
+                                @foreach($product_categories as $id => $category)
+                                    <option value="{{ $id }}" {{ in_array($id, old('product_categories', $product->product_categories->pluck('id')->toArray())) ? 'selected' : '' }}>
+                                        {{ $category }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('product_categories'))
+                                <span class="text-danger">{{ $errors->first('product_categories') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.product.fields.category_helper') }}</span>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addProductCategoryModal">
+                                Add New Product Category
+                            </button>
+                        </div>
+
+                        <div class="modal fade" id="addProductCategoryModal" tabindex="-1" aria-labelledby="addProductCategoryModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addProductCategoryModalLabel">Add New Product Category</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="addProductCategoryForm">
+                                            @csrf
+                                            <div class="form-group">
+                                                <label for="product-category-name">Product Category Name</label>
+                                                <input type="text" class="form-control" id="product-category-name" name="product_category_name" required>
+                                            </div>
+                                            <div id="product-category-error" class="text-danger"></div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                        <button type="button" class="btn btn-primary" id="saveProductCategoryButton">Save</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- @include('admin.products.partials.add-category-modal') --}}
                     </div>
+
 
                     <!-- Pricing Tab -->
                     <div class="tab-pane fade" id="vert-tabs-pricing" role="tabpanel" aria-labelledby="vert-tabs-pricing-tab">
-                        @include('admin.products.partials.client_prices')
+                        {{-- @include('admin.products.partials.client_prices') --}}
+
+                        <!-- Select Clients -->
+                        <div class="form-group">
+                            <label for="clients">{{ trans('cruds.product.fields.clients') }}</label>
+                            <div style="padding-bottom: 4px">
+                                <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
+                                <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
+                            </div>
+                            <select class="form-control select2 {{ $errors->has('clients') ? 'is-invalid' : '' }}" style="width: 100%;" name="clients[]" id="clients" multiple>
+                                @foreach($clients as $id => $client)
+                                    <option value="{{ $id }}" {{ (in_array($id, old('clients', [])) || $product->clients->contains($id)) ? 'selected' : '' }}>{{ $client }}</option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('clients'))
+                                <span class="text-danger">{{ $errors->first('clients') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.product.fields.clients_helper') }}</span>
+                        </div>
+
+
+                        <!-- Client Pricing Fields -->
+                        <div id="client-pricing-fields" class="mt-4">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Price</th>
+                                        <th>SKU</th>
+                                        <th>MPN</th>
+                                        <th>GTIN</th>
+                                        <th>UPC</th>
+                                        <th>QB 1</th>
+                                        <th>QB 2</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="client-pricing-tbody">
+                                    @foreach($product->clientPrices as $clientPrice)
+                                        <tr data-client-id="{{ $clientPrice->client_id }}">
+                                            <td>{{ $clientPrice->client->name }}</td>
+                                            <td><input type="number" name="client_price[{{ $clientPrice->client_id }}][price]" class="form-control" value="{{ $clientPrice->price ?? '' }}" placeholder="Enter price"></td>
+                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][sku]" class="form-control" value="{{ $clientPrice->sku ?? '' }}" placeholder="Enter SKU"></td>
+                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][mpn]" class="form-control" value="{{ $clientPrice->mpn ?? '' }}" placeholder="Enter MPN"></td>
+                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][gtin]" class="form-control" value="{{ $clientPrice->gtin ?? '' }}" placeholder="Enter GTIN"></td>
+                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][upc]" class="form-control" value="{{ $clientPrice->upc ?? '' }}" placeholder="Enter UPC"></td>
+                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][qb_1]" class="form-control" value="{{ $clientPrice->qb_1 ?? '' }}" placeholder="Enter QB 1"></td>
+                                            <td><input type="text" name="client_price[{{ $clientPrice->client_id }}][qb_2]" class="form-control" value="{{ $clientPrice->qb_2 ?? '' }}" placeholder="Enter QB 2"></td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+
                     </div>
 
                     <!-- Settings Tab -->
                     <div class="tab-pane fade" id="vert-tabs-settings" role="tabpanel" aria-labelledby="vert-tabs-settings-tab">
-                        @include('admin.products.partials.settings')
+                        {{--  @include('admin.products.partials.settings') --}}
+
+
                     </div>
                 </div>
             </div>
 
-            <!-- Submit Button -->
+                <!-- Submit Button -->
             <div class="form-group mt-4">
                 <button class="btn btn-danger" type="submit">
                     Save
@@ -72,65 +223,54 @@
 
 @section('scripts')
     <script>
-    // CoreUI Tab Switching JS
-    const triggerTabList = [].slice.call(document.querySelectorAll('#v-pills-tab button'))
-    triggerTabList.forEach(function (triggerEl) {
-        const tabTrigger = new coreui.Tab(triggerEl)
+    window.clientsData = @json($clients);
 
-        triggerEl.addEventListener('click', function (event) {
-            event.preventDefault()
-            tabTrigger.show()
-        })
-    })
-
-    // Dynamically show pricing fields for selected clients
     document.addEventListener('DOMContentLoaded', function () {
         const clientsDropdown = document.getElementById('clients');
-        const pricingFieldsContainer = document.getElementById('client-pricing-fields');
+        const pricingFieldsContainer = document.getElementById('client-pricing-tbody');
+
+        if (!clientsDropdown || !pricingFieldsContainer) {
+            console.error('Required elements not found');
+            return;
+        }
 
         clientsDropdown.addEventListener('change', function () {
-            pricingFieldsContainer.innerHTML = ''; // Clear any existing fields
+            const selectedClientIds = Array.from(this.selectedOptions).map(option => option.value);
 
-            const selectedClients = Array.from(this.selectedOptions).map(option => option.value);
-            selectedClients.forEach(clientId => {
-                const pricingRow = `
-                    <div class="form-row">
-                        <div class="form-group col-md-2">
-                            <label for="price-${clientId}">Price</label>
-                            <input type="number" name="prices[${clientId}]" id="price-${clientId}" class="form-control" placeholder="Enter price">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="sku-${clientId}">SKU</label>
-                            <input type="text" name="skus[${clientId}]" id="sku-${clientId}" class="form-control" placeholder="Enter SKU">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="mpn-${clientId}">MPN</label>
-                            <input type="text" name="mpns[${clientId}]" id="mpn-${clientId}" class="form-control" placeholder="Enter MPN">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="gtin-${clientId}">GTIN</label>
-                            <input type="text" name="gtins[${clientId}]" id="gtin-${clientId}" class="form-control" placeholder="Enter GTIN">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="upc-${clientId}">UPC</label>
-                            <input type="text" name="upcs[${clientId}]" id="upc-${clientId}" class="form-control" placeholder="Enter UPC">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="qb1-${clientId}">QB 1</label>
-                            <input type="text" name="qb_1[${clientId}]" id="qb1-${clientId}" class="form-control" placeholder="Enter QB 1">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="qb2-${clientId}">QB 2</label>
-                            <input type="text" name="qb_2[${clientId}]" id="qb2-${clientId}" class="form-control" placeholder="Enter QB 2">
-                        </div>
-                    </div>
+            // Remove rows for clients that are no longer selected
+            const existingRows = Array.from(pricingFieldsContainer.querySelectorAll('tr'));
+            existingRows.forEach(row => {
+                const clientId = row.getAttribute('data-client-id');
+                if (!selectedClientIds.includes(clientId)) {
+                    console.log(`Removing row for client ID: ${clientId}`);
+                    row.remove();
+                }
+            });
+
+            // Add rows for newly selected clients
+            selectedClientIds.forEach(clientId => {
+                // Only add row if it does not exist already
+                if (!pricingFieldsContainer.querySelector(`tr[data-client-id="${clientId}"]`)) {
+                    const clientName = getClientName(clientId);
+                    const pricingRow = `
+                    <tr data-client-id="${clientId}">
+                        <td>${clientName}</td>
+                        <td><input type="number" name="prices[${clientId}]" class="form-control" placeholder="Enter price" value="0"></td>
+                        <td><input type="text" name="skus[${clientId}]" class="form-control" placeholder="Enter SKU" value=""></td>
+                        <td><input type="text" name="mpns[${clientId}]" class="form-control" placeholder="Enter MPN" value=""></td>
+                        <td><input type="text" name="gtins[${clientId}]" class="form-control" placeholder="Enter GTIN" value=""></td>
+                        <td><input type="text" name="upcs[${clientId}]" class="form-control" placeholder="Enter UPC" value=""></td>
+                        <td><input type="text" name="qb_1[${clientId}]" class="form-control" placeholder="Enter QB 1" value=""></td>
+                        <td><input type="text" name="qb_2[${clientId}]" class="form-control" placeholder="Enter QB 2" value=""></td>
+                    </tr>
                 `;
-                pricingFieldsContainer.insertAdjacentHTML('beforeend', pricingRow);
+                    console.log(`Adding row for client ID: ${clientId}`);
+                    pricingFieldsContainer.insertAdjacentHTML('beforeend', pricingRow);
+                }
             });
         });
     });
 
-    // Dropzone Configuration for Photo Upload
     Dropzone.options.photoDropzone = {
         url: '{{ route('admin.products.storeMedia') }}',
         maxFilesize: 2, // MB
@@ -179,9 +319,9 @@
             });
         }
     }
-</script>
-    <script>
+
     var uploadedAdditionalPhotosMap = {}
+
     Dropzone.options.additionalPhotosDropzone = {
         url: '{{ route('admin.products.storeMedia') }}',
         maxFilesize: 2, // MB
@@ -240,48 +380,59 @@
         }
     }
 
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('saveProductCategoryButton').addEventListener('click', function () {
+            const form = document.getElementById('addProductCategoryForm');
+            const name = document.getElementById('product-category-name').value;
+            const errorDiv = document.getElementById('product-category-error');
+
+            if (!name) {
+                errorDiv.textContent = 'Product category name is required';
+                return;
+            }
+
+            fetch('/admin/product-categories', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ product_category_name: name }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const select = document.getElementById('product_categories');
+                        let option = Array.from(select.options).find(option => option.value == data.product_category.id);
+                        if (!option) {
+                            option = document.createElement('option');
+                            option.value = data.product_category.id;
+                            option.textContent = data.product_category.name;
+                            select.appendChild(option);
+                        }
+                        option.selected = true;
+
+                        $('#addProductCategoryModal').modal('hide');
+                        form.reset();
+                        errorDiv.textContent = '';
+                    } else {
+                        errorDiv.textContent = data.message || 'An error occurred';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    errorDiv.textContent = 'An error occurred. Please try again.';
+                });
+        });
+    });
+
+
+    function getClientName(clientId) {
+        const clients = window.clientsData || {};
+        return clients[clientId] || 'Unknown Client';
+    }
+
 </script>
-    <script>
-        document.getElementById('saveCategoryButton').addEventListener('click', function () {
-           const form = document.getElementById('addCategoryForm');
-           const name = document.getElementById('category-name').value;
-           const errorDiv = document.getElementById('category-error');
 
-           fetch('/admin/product-categories', {
-               method: 'POST',
-               headers: {
-                   'Content-Type': 'application/json',
-                   'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-               },
-               body: JSON.stringify({ category_name: name }),
-           })
-               .then(response => response.json())
-               .then(data => {
-                   if (data.success) {
-                       // Add new category to the dropdown
-                       const select = document.getElementById('categories');
-                       let option = Array.from(select.options).find(option => option.value == data.category.id);
-                       if (!option) {
-                           option = document.createElement('option');
-                           option.value = data.category.id;
-                           option.textContent = data.category.name;
-                           select.appendChild(option);
-                       }
-                       option.selected = true;
-
-                       // Close modal and reset form
-                       $('#addCategoryModal').modal('hide');
-                       form.reset();
-                       errorDiv.textContent = '';
-                   } else {
-                       errorDiv.textContent = data.message || 'An error occurred';
-                   }
-               })
-               .catch(error => {
-                   console.error('Error:', error);
-                   errorDiv.textContent = 'An error occurred. Please try again.';
-               });
-       });
-    </script>
 @endsection
 
