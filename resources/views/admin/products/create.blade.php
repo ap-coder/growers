@@ -94,6 +94,20 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.product.fields.clients_helper') }}</span>
             </div>
+
+            <div class="form-group">
+                <label for="additional_photos">{{ trans('cruds.product.fields.additional_photos') }}</label>
+                <div class="needsclick dropzone {{ $errors->has('additional_photos') ? 'is-invalid' : '' }}" id="additional_photos-dropzone">
+                </div>
+                @if($errors->has('additional_photos'))
+                    <div class="invalid-feedback">
+                        {{ $errors->first('additional_photos') }}
+                    </div>
+                @endif
+                <span class="help-block">{{ trans('cruds.product.fields.additional_photos_helper') }}</span>
+            </div>
+
+
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}
@@ -162,5 +176,106 @@
     }
 }
 
+</script>
+<script>
+    var uploadedAdditionalPhotosMap = {}
+    Dropzone.options.additionalPhotosDropzone = {
+        url: '{{ route('admin.products.storeMedia') }}',
+        maxFilesize: 2, // MB
+        acceptedFiles: '.jpeg,.jpg,.png,.gif',
+        addRemoveLinks: true,
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        },
+        params: {
+            size: 2,
+            width: 4096,
+            height: 4096
+        },
+        success: function (file, response) {
+            $('form').append('<input type="hidden" name="additional_photos[]" value="' + response.name + '">')
+            uploadedAdditionalPhotosMap[file.name] = response.name
+        },
+        removedfile: function (file) {
+            console.log(file)
+            file.previewElement.remove()
+            var name = ''
+            if (typeof file.file_name !== 'undefined') {
+                name = file.file_name
+            } else {
+                name = uploadedAdditionalPhotosMap[file.name]
+            }
+            $('form').find('input[name="additional_photos[]"][value="' + name + '"]').remove()
+        },
+        init: function () {
+            @if(isset($product) && $product->additional_photos)
+            var files = {!! json_encode($product->additional_photos) !!}
+            for (var i in files) {
+                var file = files[i]
+                this.options.addedfile.call(this, file)
+                this.options.thumbnail.call(this, file, file.preview ?? file.preview_url)
+                file.previewElement.classList.add('dz-complete')
+                $('form').append('<input type="hidden" name="additional_photos[]" value="' + file.file_name + '">')
+            }
+            @endif
+        },
+        error: function (file, response) {
+            if ($.type(response) === 'string') {
+                var message = response //dropzone sends it's own error messages in string
+            } else {
+                var message = response.errors.file
+            }
+            file.previewElement.classList.add('dz-error')
+            _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+            _results = []
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                node = _ref[_i]
+                _results.push(node.textContent = message)
+            }
+
+            return _results
+        }
+    }
+
+</script>
+<script>
+   document.getElementById('saveCategoryButton').addEventListener('click', function () {
+       const form = document.getElementById('addCategoryForm');
+       const name = document.getElementById('category-name').value;
+       const errorDiv = document.getElementById('category-error');
+
+       fetch('{{ route("admin.product-categories.store") }}', {
+           method: 'POST',
+           headers: {
+               'Content-Type': 'application/json',
+               'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+           },
+           body: JSON.stringify({ name }),
+       })
+           .then(response => response.json())
+           .then(data => {
+               if (data.success) {
+                   const select = document.getElementById('categories');
+                   let option = Array.from(select.options).find(option => option.value == data.category.id);
+                   if (!option) {
+                       option = document.createElement('option');
+                       option.value = data.category.id;
+                       option.textContent = data.category.name;
+                       select.appendChild(option);
+                   }
+                   option.selected = true;
+
+                   $('#addCategoryModal').modal('hide');
+                   form.reset();
+                   errorDiv.textContent = '';
+               } else {
+                   errorDiv.textContent = data.message || 'An error occurred';
+               }
+           })
+           .catch(error => {
+               console.error('Error:', error);
+               errorDiv.textContent = 'An error occurred. Please try again.';
+           });
+   });
 </script>
 @endsection

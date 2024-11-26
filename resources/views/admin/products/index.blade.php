@@ -86,7 +86,16 @@
                 {data: 'name', name: 'name'},
                 {data: 'category', name: 'categories.name', defaultContent: ''},
                 {data: 'photo', name: 'photo', sortable: false, searchable: false, defaultContent: ''},
-                {data: 'clients', name: 'clients.name', defaultContent: ''},
+                {
+                    data: 'clients',
+                    name: 'clients',
+                    render: function(data, type, row) {
+                        if (Array.isArray(data)) {
+                            return data.map(client => client.name).join(', ');
+                        }
+                        return data.name || 'No clients';
+                    }
+                },
                 {data: 'actions', name: '{{ trans('global.actions') }}', defaultContent: ''}
             ],
             {{--    columns: [--}}

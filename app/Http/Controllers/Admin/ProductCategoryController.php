@@ -35,18 +35,82 @@ class ProductCategoryController extends Controller
 
     public function store(StoreProductCategoryRequest $request)
     {
-        $productCategory = ProductCategory::create($request->all());
+        // Check if the category already exists
+        $existingCategory = ProductCategory::where('name', $request->input('name'))->first();
 
-        if ($request->input('photo', false)) {
-            $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
+        if ($existingCategory) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This category already exists.',
+                'category' => $existingCategory, // Return the existing category for selection
+            ]);
         }
 
-        if ($media = $request->input('ck-media', false)) {
-            Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
-        }
+        try {
+            // Create the product category
+            $productCategory = ProductCategory::create($request->all());
 
-        return redirect()->route('admin.product-categories.index');
+            // Handle photo upload if provided
+            if ($request->input('photo', false)) {
+                $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
+            }
+
+            // Link CKEditor media if applicable
+            if ($media = $request->input('ck-media', false)) {
+                Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Category added successfully.',
+                'category' => $productCategory, // Return the new category details for UI
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Failed to save category: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while saving the category. Please try again.',
+            ], 500);
+        }
     }
+
+//    public function store(StoreProductCategoryRequest $request)
+//    {
+//        // Check if the category already exists
+//        $existingCategory = ProductCategory::where('name', $request->input('name'))->first();
+//
+//        if ($existingCategory) {
+//            return response()->json([
+//                'success' => false,
+//                'message' => 'This category already exists.',
+//                'category' => $existingCategory, // Return the existing category for UI to update
+//            ]);
+//        }
+//
+//        // Create a new category
+//        $productCategory = ProductCategory::create($request->all());
+//
+//        if ($request->input('photo', false)) {
+//            $productCategory->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
+//        }
+//
+//        if ($media = $request->input('ck-media', false)) {
+//            Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
+//        }
+//
+//        // Return JSON for dynamic updates
+//        if ($request->ajax()) {
+//            return response()->json([
+//                'success' => true,
+//                'message' => 'Category added successfully.',
+//                'category' => $productCategory, // Return the new category details
+//            ]);
+//        }
+//
+//        // Fallback for non-AJAX requests
+//        return redirect()->route('admin.product-categories.index');
+//    }
+
 
     public function edit(ProductCategory $productCategory)
     {
