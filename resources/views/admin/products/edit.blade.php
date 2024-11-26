@@ -241,5 +241,37 @@
     }
 
 </script>
+    <script>
+        $('#add-category-form').on('submit', function (e) {
+            e.preventDefault();
+
+            const form = $(this);
+
+            $.ajax({
+                url: '{{ route("admin.product-categories.store") }}',
+                method: 'POST',
+                data: form.serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        // Add the new category to the dropdown and select it
+                        $('#categories').append(
+                            `<option value="${response.category.id}" selected>${response.category.name}</option>`
+                        ).trigger('change');
+
+                        // Hide the modal and reset the form
+                        $('#addCategoryModal').modal('hide');
+                        form[0].reset();
+                        alert(response.message);
+                    } else {
+                        alert(response.message); // Notify the user if the category already exists
+                    }
+                },
+                error: function (xhr) {
+                    console.error(xhr);
+                    alert('An error occurred while adding the category.');
+                },
+            });
+        });
+    </script>
 @endsection
 

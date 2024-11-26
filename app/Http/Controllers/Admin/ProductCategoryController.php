@@ -35,6 +35,18 @@ class ProductCategoryController extends Controller
 
     public function store(StoreProductCategoryRequest $request)
     {
+        // Check if the category already exists
+        $existingCategory = ProductCategory::where('name', $request->input('name'))->first();
+
+        if ($existingCategory) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This category already exists.',
+                'category' => $existingCategory, // Return the existing category for UI to update
+            ]);
+        }
+
+        // Create a new category
         $productCategory = ProductCategory::create($request->all());
 
         if ($request->input('photo', false)) {
@@ -45,8 +57,19 @@ class ProductCategoryController extends Controller
             Media::whereIn('id', $media)->update(['model_id' => $productCategory->id]);
         }
 
+        // Return JSON for dynamic updates
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Category added successfully.',
+                'category' => $productCategory, // Return the new category details
+            ]);
+        }
+
+        // Fallback for non-AJAX requests
         return redirect()->route('admin.product-categories.index');
     }
+
 
     public function edit(ProductCategory $productCategory)
     {
