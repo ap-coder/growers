@@ -72,63 +72,52 @@
 
 @section('scripts')
     <script>
-    // CoreUI Tab Switching JS
-    const triggerTabList = [].slice.call(document.querySelectorAll('#v-pills-tab button'))
-    triggerTabList.forEach(function (triggerEl) {
-        const tabTrigger = new coreui.Tab(triggerEl)
 
-        triggerEl.addEventListener('click', function (event) {
-            event.preventDefault()
-            tabTrigger.show()
-        })
-    })
-
-    // Dynamically show pricing fields for selected clients
-    document.addEventListener('DOMContentLoaded', function () {
-        const clientsDropdown = document.getElementById('clients');
-        const pricingFieldsContainer = document.getElementById('client-pricing-fields');
-
-        clientsDropdown.addEventListener('change', function () {
-            pricingFieldsContainer.innerHTML = ''; // Clear any existing fields
-
-            const selectedClients = Array.from(this.selectedOptions).map(option => option.value);
-            selectedClients.forEach(clientId => {
-                const pricingRow = `
-                    <div class="form-row">
-                        <div class="form-group col-md-2">
-                            <label for="price-${clientId}">Price</label>
-                            <input type="number" name="prices[${clientId}]" id="price-${clientId}" class="form-control" placeholder="Enter price">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="sku-${clientId}">SKU</label>
-                            <input type="text" name="skus[${clientId}]" id="sku-${clientId}" class="form-control" placeholder="Enter SKU">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="mpn-${clientId}">MPN</label>
-                            <input type="text" name="mpns[${clientId}]" id="mpn-${clientId}" class="form-control" placeholder="Enter MPN">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="gtin-${clientId}">GTIN</label>
-                            <input type="text" name="gtins[${clientId}]" id="gtin-${clientId}" class="form-control" placeholder="Enter GTIN">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="upc-${clientId}">UPC</label>
-                            <input type="text" name="upcs[${clientId}]" id="upc-${clientId}" class="form-control" placeholder="Enter UPC">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="qb1-${clientId}">QB 1</label>
-                            <input type="text" name="qb_1[${clientId}]" id="qb1-${clientId}" class="form-control" placeholder="Enter QB 1">
-                        </div>
-                        <div class="form-group col-md-2">
-                            <label for="qb2-${clientId}">QB 2</label>
-                            <input type="text" name="qb_2[${clientId}]" id="qb2-${clientId}" class="form-control" placeholder="Enter QB 2">
-                        </div>
-                    </div>
-                `;
-                pricingFieldsContainer.insertAdjacentHTML('beforeend', pricingRow);
-            });
-        });
-    });
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     const clientsDropdown = document.getElementById('clients');
+    //     const pricingFieldsContainer = document.getElementById('client-pricing-fields');
+    //
+    //     clientsDropdown.addEventListener('change', function () {
+    //         pricingFieldsContainer.innerHTML = ''; // Clear any existing fields
+    //
+    //         const selectedClients = Array.from(this.selectedOptions).map(option => option.value);
+    //         selectedClients.forEach(clientId => {
+    //             const pricingRow = `
+    //                 <div class="form-row">
+    //                     <div class="form-group col-md-2">
+    //                         <label for="price-${clientId}">Price</label>
+    //                         <input type="number" name="prices[${clientId}]" id="price-${clientId}" class="form-control" placeholder="Enter price">
+    //                     </div>
+    //                     <div class="form-group col-md-2">
+    //                         <label for="sku-${clientId}">SKU</label>
+    //                         <input type="text" name="skus[${clientId}]" id="sku-${clientId}" class="form-control" placeholder="Enter SKU">
+    //                     </div>
+    //                     <div class="form-group col-md-2">
+    //                         <label for="mpn-${clientId}">MPN</label>
+    //                         <input type="text" name="mpns[${clientId}]" id="mpn-${clientId}" class="form-control" placeholder="Enter MPN">
+    //                     </div>
+    //                     <div class="form-group col-md-2">
+    //                         <label for="gtin-${clientId}">GTIN</label>
+    //                         <input type="text" name="gtins[${clientId}]" id="gtin-${clientId}" class="form-control" placeholder="Enter GTIN">
+    //                     </div>
+    //                     <div class="form-group col-md-2">
+    //                         <label for="upc-${clientId}">UPC</label>
+    //                         <input type="text" name="upcs[${clientId}]" id="upc-${clientId}" class="form-control" placeholder="Enter UPC">
+    //                     </div>
+    //                     <div class="form-group col-md-2">
+    //                         <label for="qb1-${clientId}">QB 1</label>
+    //                         <input type="text" name="qb_1[${clientId}]" id="qb1-${clientId}" class="form-control" placeholder="Enter QB 1">
+    //                     </div>
+    //                     <div class="form-group col-md-2">
+    //                         <label for="qb2-${clientId}">QB 2</label>
+    //                         <input type="text" name="qb_2[${clientId}]" id="qb2-${clientId}" class="form-control" placeholder="Enter QB 2">
+    //                     </div>
+    //                 </div>
+    //             `;
+    //             pricingFieldsContainer.insertAdjacentHTML('beforeend', pricingRow);
+    //         });
+    //     });
+    // });
 
     // Dropzone Configuration for Photo Upload
     Dropzone.options.photoDropzone = {
