@@ -1,10 +1,12 @@
 @can('setting_access')
-    <li class="c-sidebar-nav-item">
-                <a href="{{ route("admin.settings.index") }}" class="c-sidebar-nav-link {{ request()->is("admin/settings") || request()->is("admin/settings/*") ? "c-active" : "" }}">
-                    <i class="fa-fw fas fa-cogs c-sidebar-nav-icon">
+    <li class="nav-item">
+                        <a href="{{ route("admin.settings.index") }}" class="nav-link {{ request()->is("admin/settings") || request()->is("admin/settings/*") ? "active" : "" }}">
+                            <i class="fa-fw nav-icon fas fa-cogs">
 
-                    </i>
-                    {{ trans('cruds.setting.title') }}
-                </a>
-            </li>
+                            </i>
+                            <p>
+                                {{ trans('cruds.setting.title') }}
+                            </p>
+                        </a>
+                    </li>
 @endcan

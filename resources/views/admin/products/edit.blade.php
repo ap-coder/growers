@@ -11,28 +11,15 @@
         <form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data">
             @method('PUT')
             @csrf
+            <div class="row">
+                @include('admin.products.partials.tab-headers')
 
-            <div class="d-flex align-items-start">
-                <!-- Vertical Pills Navigation -->
-                <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                    <button class="nav-link active" id="v-pills-general-tab" data-coreui-toggle="pill" data-coreui-target="#v-pills-general" type="button" role="tab" aria-controls="v-pills-general" aria-selected="true">
-                        General
-                    </button>
-                    <button class="nav-link" id="v-pills-categories-tab" data-coreui-toggle="pill" data-coreui-target="#v-pills-categories" type="button" role="tab" aria-controls="v-pills-categories" aria-selected="false">
-                        Categories
-                    </button>
-                    <button class="nav-link" id="v-pills-pricing-tab" data-coreui-toggle="pill" data-coreui-target="#v-pills-pricing" type="button" role="tab" aria-controls="v-pills-pricing" aria-selected="false">
-                        Pricing
-                    </button>
-                    <button class="nav-link" id="v-pills-settings-tab" data-coreui-toggle="pill" data-coreui-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings" aria-selected="false">
-                        Settings
-                    </button>
-                </div>
 
                 <!-- Tab Content -->
-                <div class="tab-content" id="v-pills-tabContent">
+                <div class="col-7 col-sm-9">
+                <div class="tab-content" id="vert-tabs-tabContent">
                     <!-- General Tab -->
-                    <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel" aria-labelledby="v-pills-general-tab" tabindex="0">
+                    <div class="tab-pane text-left fade show active" id="vert-tabs-gen" role="tabpanel" aria-labelledby="vert-tabs-gen-tab">
                         @include('admin.products.partials.general')
 
                         <!-- Photo Upload using Dropzone -->
@@ -40,37 +27,32 @@
                             <label for="photo">Product Photo</label>
                             <div class="needsclick dropzone" id="photo-dropzone"></div>
                         </div>
+
+                        <div class="form-group">
+                            <label for="additional_photos">{{ trans('cruds.product.fields.additional_photos') }}</label>
+                            <div class="needsclick dropzone {{ $errors->has('additional_photos') ? 'is-invalid' : '' }}" id="additional_photos-dropzone">
+                            </div>
+                                @if($errors->has('additional_photos'))
+                                    <div class="invalid-feedback">
+                                    {{ $errors->first('additional_photos') }}
+                                    </div>
+                                @endif
+                                <span class="help-block">{{ trans('cruds.product.fields.additional_photos_helper') }}</span>
+                        </div>
                     </div>
 
                     <!-- Categories Tab -->
-                    <div class="tab-pane fade" id="v-pills-categories" role="tabpanel" aria-labelledby="v-pills-categories-tab" tabindex="0">
+                    <div class="tab-pane fade" id="vert-tabs-cat" role="tabpanel" aria-labelledby="vert-tabs-cat-tab">
                         @include('admin.products.partials.categories')
                     </div>
 
                     <!-- Pricing Tab -->
-                    <div class="tab-pane fade" id="v-pills-pricing" role="tabpanel" aria-labelledby="v-pills-pricing-tab">
+                    <div class="tab-pane fade" id="vert-tabs-pricing" role="tabpanel" aria-labelledby="vert-tabs-pricing-tab">
                         @include('admin.products.partials.client_prices')
                     </div>
 
-                    {{--                    <!-- Pricing Tab -->--}}
-{{--                    <div class="tab-pane fade" id="v-pills-pricing" role="tabpanel" aria-labelledby="v-pills-pricing-tab" tabindex="0">--}}
-{{--                        <div class="form-group">--}}
-{{--                            <label for="clients">Select Clients</label>--}}
-{{--                            <select class="form-control select2" name="clients[]" id="clients" multiple>--}}
-{{--                                @foreach($clients as $id => $client)--}}
-{{--                                    <option value="{{ $id }}">{{ $client }}</option>--}}
-{{--                                @endforeach--}}
-{{--                            </select>--}}
-{{--                        </div>--}}
-
-{{--                        <!-- Client Pricing Fields -->--}}
-{{--                        <div id="client-pricing-fields" class="mt-4">--}}
-{{--                            <!-- Client-specific pricing fields will be dynamically added here -->--}}
-{{--                        </div>--}}
-{{--                    </div>--}}
-
                     <!-- Settings Tab -->
-                    <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab" tabindex="0">
+                    <div class="tab-pane fade" id="vert-tabs-settings" role="tabpanel" aria-labelledby="vert-tabs-settings-tab">
                         @include('admin.products.partials.settings')
                     </div>
                 </div>
@@ -197,6 +179,67 @@
             });
         }
     }
+</script>
+    <script>
+    var uploadedAdditionalPhotosMap = {}
+    Dropzone.options.additionalPhotosDropzone = {
+        url: '{{ route('admin.products.storeMedia') }}',
+        maxFilesize: 2, // MB
+        acceptedFiles: '.jpeg,.jpg,.png,.gif',
+        addRemoveLinks: true,
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        },
+        params: {
+            size: 2,
+            width: 4096,
+            height: 4096
+        },
+        success: function (file, response) {
+            $('form').append('<input type="hidden" name="additional_photos[]" value="' + response.name + '">')
+            uploadedAdditionalPhotosMap[file.name] = response.name
+        },
+        removedfile: function (file) {
+            console.log(file)
+            file.previewElement.remove()
+            var name = ''
+            if (typeof file.file_name !== 'undefined') {
+                name = file.file_name
+            } else {
+                name = uploadedAdditionalPhotosMap[file.name]
+            }
+            $('form').find('input[name="additional_photos[]"][value="' + name + '"]').remove()
+        },
+        init: function () {
+            @if(isset($product) && $product->additional_photos)
+            var files = {!! json_encode($product->additional_photos) !!}
+            for (var i in files) {
+                var file = files[i]
+                this.options.addedfile.call(this, file)
+                this.options.thumbnail.call(this, file, file.preview ?? file.preview_url)
+                file.previewElement.classList.add('dz-complete')
+                $('form').append('<input type="hidden" name="additional_photos[]" value="' + file.file_name + '">')
+            }
+            @endif
+        },
+        error: function (file, response) {
+            if ($.type(response) === 'string') {
+                var message = response //dropzone sends it's own error messages in string
+            } else {
+                var message = response.errors.file
+            }
+            file.previewElement.classList.add('dz-error')
+            _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+            _results = []
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                node = _ref[_i]
+                _results.push(node.textContent = message)
+            }
+
+            return _results
+        }
+    }
+
 </script>
 @endsection
 
