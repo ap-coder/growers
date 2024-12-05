@@ -31,6 +31,16 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.product.fields.featured_helper') }}</span>
             </div>
+
+            <div class="form-group">
+                <label for="quantity">{{ trans('cruds.product.fields.quantity') }}</label>
+                <input class="form-control {{ $errors->has('quantity') ? 'is-invalid' : '' }}" type="number" name="quantity" id="quantity" value="{{ old('quantity', '') }}" step="1">
+                            @if($errors->has('quantity'))
+                                <span class="text-danger">{{ $errors->first('quantity') }}</span>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.product.fields.quantity_helper') }}</span>
+            </div>
+
             <div class="form-group">
                 <label class="required" for="name">{{ trans('cruds.product.fields.name') }}</label>
                 <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>

@@ -32,6 +32,7 @@ class Product extends Model implements HasMedia
     protected $fillable = [
         'published',
         'featured',
+        'quantity',
         'name',
         'description',
         'created_at',
@@ -39,6 +40,8 @@ class Product extends Model implements HasMedia
         'deleted_at',
         'team_id',
     ];
+
+    protected $with = ['categories', 'clients', 'clientPrices'];
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -73,11 +76,6 @@ class Product extends Model implements HasMedia
         return $file;
     }
 
-    public function clients()
-    {
-        return $this->belongsToMany(Client::class);
-    }
-
     public function getAdditionalPhotosAttribute()
     {
         $files = $this->getMedia('additional_photos');
@@ -88,6 +86,21 @@ class Product extends Model implements HasMedia
         });
 
         return $files;
+    }
+
+    public function clients()
+    {
+        return $this->belongsToMany(Client::class, 'client_product');
+    }
+
+    public function clientPrices()
+    {
+        return $this->hasMany(ClientPrice::class, 'product_id', 'id');
+    }
+
+    public function newQuery($excludeDeleted = true)
+    {
+        return parent::newQuery($excludeDeleted)->with(['categories', 'clients', 'clientPrices']);
     }
 
     public function team()

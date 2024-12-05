@@ -40,6 +40,16 @@ class Client extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'client_product', 'client_id', 'product_id');
+    }
+
+    public function clientPrices()
+    {
+        return $this->hasMany(ClientPrice::class, 'client_id', 'id');
+    }
+
     public function clientClientPrices()
     {
         return $this->hasMany(ClientPrice::class, 'client_id', 'id');
@@ -49,6 +59,7 @@ class Client extends Model
     {
         return $this->belongsToMany(Product::class);
     }
+
 
     public function prices()
     {

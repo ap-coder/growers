@@ -16,32 +16,45 @@ class UpdateProductRequest extends FormRequest
 
     public function rules()
     {
-        return [
-            'name' => [
-                'string',
-                'required',
-            ],
-            'categories.*' => [
-                'integer',
-            ],
-            'categories' => [
-                'array',
-            ],
-            'tags.*' => [
-                'integer',
-            ],
-            'tags' => [
-                'array',
-            ],
-            'clients.*' => [
-                'integer',
-            ],
-            'clients' => [
-                'array',
-            ],
-            'additional_photos' => [
-                'array',
-            ],
-        ];
+//        return [
+//            'name' => [
+//                'string',
+//                'required',
+//            ],
+//            'categories.*' => [
+//                'integer',
+//            ],
+//            'categories' => [
+//                'array',
+//            ],
+//            'tags.*' => [
+//                'integer',
+//            ],
+//            'tags' => [
+//                'array',
+//            ],
+//            'clients.*' => [
+//                'integer',
+//            ],
+//            'clients' => [
+//                'array',
+//            ],
+//            'client_prices' => [
+//                'array',
+//                'nullable',
+//            ],
+//            'client_prices.*.price' => [
+//                'required', 'numeric', 'min:0'
+//            ],
+//            'additional_photos' => [
+//                'nullable', 'array',
+//            ],
+//            'additional_photos.*' => [
+//                'nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'
+//            ],
+//        ];
+        return [];
     }
+
+
 }

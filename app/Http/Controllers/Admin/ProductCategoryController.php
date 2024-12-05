@@ -98,6 +98,18 @@ class ProductCategoryController extends Controller
         return redirect()->route('admin.product-categories.index');
     }
 
+    public function storeAjax(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|unique:product_categories,name',
+        ]);
+
+        $category = ProductCategory::create($validatedData);
+
+        return response()->json(['id' => $category->id, 'name' => $category->name]);
+    }
+
+
     public function edit(ProductCategory $productCategory)
     {
         abort_if(Gate::denies('product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');

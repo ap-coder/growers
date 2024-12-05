@@ -327,6 +327,8 @@ return [
             'published_helper'         => ' ',
             'featured'                 => 'Featured',
             'featured_helper'          => ' ',
+            'quantity'                 => 'Quantity',
+            'quantity_helper'          => ' ',
         ],
     ],
     'taskManagement' => [

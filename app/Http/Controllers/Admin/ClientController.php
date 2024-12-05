@@ -78,6 +78,17 @@ class ClientController extends Controller
         return redirect()->route('admin.clients.index');
     }
 
+    public function storeAjax(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|unique:clients,name',
+        ]);
+
+        $client = Client::create($validatedData);
+
+        return response()->json(['id' => $client->id, 'name' => $client->name]);
+    }
+
     public function edit(Client $client)
     {
         abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');

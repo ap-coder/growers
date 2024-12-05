@@ -28,8 +28,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (app()->isLocal()) {
-            Auth::login(User::first());
+        if (app()->isLocal() && !Auth::check()) {
+            $userId = env('LOCAL_AUTO_LOGIN_USER_ID', 1);
+            $user = User::find($userId);
+            if ($user) {
+                Auth::login($user);
+            }
         }
+
     }
 }
