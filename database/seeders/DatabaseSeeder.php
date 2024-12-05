@@ -14,11 +14,7 @@ class DatabaseSeeder extends Seeder
             PermissionRoleTableSeeder::class,
             UsersTableSeeder::class,
             RoleUserTableSeeder::class,
-            TaskStatusTableSeeder::class,
+            ClientsTableSeeder::class,
         ]);
-        $this->call(UsersTableSeeder::class);
-        $this->call(ProductCategoriesTableSeeder::class);
-        $this->call(ClientsTableSeeder::class);
-        $this->call(RoleUserTableSeeder::class);
     }
 }
