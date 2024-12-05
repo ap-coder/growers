@@ -9,7 +9,7 @@ use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
 use App\Models\ClientPrice;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,7 +21,7 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clients = Client::with(['products', 'team'])->get();
+        $clients = Client::with(['prices', 'team'])->get();
 
         return view('frontend.clients.index', compact('clients'));
     }
@@ -30,15 +30,14 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = ClientPrice::pluck('price', 'id');
+        $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('frontend.clients.create', compact('products'));
+        return view('frontend.clients.create', compact('prices'));
     }
 
     public function store(StoreClientRequest $request)
     {
         $client = Client::create($request->all());
-        $client->products()->sync($request->input('products', []));
 
         return redirect()->route('frontend.clients.index');
     }
@@ -47,17 +46,16 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = ClientPrice::pluck('price', 'id');
+        $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $client->load('products', 'team');
+        $client->load('prices', 'team');
 
-        return view('frontend.clients.edit', compact('client', 'products'));
+        return view('frontend.clients.edit', compact('client', 'prices'));
     }
 
     public function update(UpdateClientRequest $request, Client $client)
     {
         $client->update($request->all());
-        $client->products()->sync($request->input('products', []));
 
         return redirect()->route('frontend.clients.index');
     }
@@ -66,7 +64,7 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $client->load('products', 'team');
+        $client->load('prices', 'team', 'clientClientPrices', 'clientsProducts');
 
         return view('frontend.clients.show', compact('client'));
     }

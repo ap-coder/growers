@@ -14,6 +14,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        
+
         \DB::table('users')->delete();
         
         \DB::table('users')->insert(array (
@@ -33,7 +35,7 @@ class UsersTableSeeder extends Seeder
                 'remember_token' => NULL,
                 'two_factor_expires_at' => NULL,
                 'created_at' => NULL,
-                'updated_at' => '2024-08-30 00:52:59',
+                'updated_at' => '2024-08-30 07:52:59',
                 'deleted_at' => NULL,
                 'team_id' => NULL,
             ),
@@ -50,10 +52,10 @@ class UsersTableSeeder extends Seeder
                 'verification_token' => NULL,
                 'two_factor' => 0,
                 'two_factor_code' => NULL,
-                'remember_token' => NULL,
+                'remember_token' => 'Z9cOLMT63ypDeA9ZVO4OWLrekZSzrhpETl2YpXpAuyzVHtIFQeUL2GAkLnOJ',
                 'two_factor_expires_at' => NULL,
-                'created_at' => '2024-08-30 00:56:10',
-                'updated_at' => '2024-08-30 00:56:11',
+                'created_at' => '2024-08-30 07:56:10',
+                'updated_at' => '2024-08-30 07:56:11',
                 'deleted_at' => NULL,
                 'team_id' => NULL,
             ),

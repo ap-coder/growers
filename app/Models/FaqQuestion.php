@@ -20,6 +20,7 @@ class FaqQuestion extends Model
     ];
 
     protected $fillable = [
+        'published',
         'category_id',
         'question',
         'answer',

@@ -7,7 +7,7 @@ use App\Http\Requests\MassDestroyTaskTagRequest;
 use App\Http\Requests\StoreTaskTagRequest;
 use App\Http\Requests\UpdateTaskTagRequest;
 use App\Models\TaskTag;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 

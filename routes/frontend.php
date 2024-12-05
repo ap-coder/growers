@@ -1,6 +1,6 @@
 <?php
 
-Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['auth', '2fa']], function () {
+Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['localAutoLogin', 'auth', '2fa']], function () {
     Route::get('/home', 'HomeController@index')->name('home');
 
     // Permissions

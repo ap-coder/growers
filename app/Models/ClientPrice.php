@@ -29,7 +29,7 @@ class ClientPrice extends Model implements HasMedia
     ];
 
     protected $fillable = [
-        'product_id',
+        'published',
         'price',
         'sku',
         'mpn',
@@ -38,17 +38,11 @@ class ClientPrice extends Model implements HasMedia
         'qb_1',
         'qb_2',
         'created_at',
-        'published',
         'client_id',
         'updated_at',
         'deleted_at',
         'team_id',
     ];
-
-    public function scopePublished($query)
-    {
-        return $query->where('published', true);
-    }
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -59,11 +53,6 @@ class ClientPrice extends Model implements HasMedia
     {
         $this->addMediaConversion('thumb')->fit('crop', 50, 50);
         $this->addMediaConversion('preview')->fit('crop', 120, 120);
-    }
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
     }
 
     public function getBarcodeImageAttribute()
@@ -78,16 +67,14 @@ class ClientPrice extends Model implements HasMedia
         return $file;
     }
 
-    public function client()
+    public function product()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Product::class, 'product_id', 'id');
     }
 
-    public function clients()
+    public function client()
     {
-        return $this->belongsToMany(Client::class, 'client_prices', 'product_id', 'client_id')
-            ->withPivot('price', 'sku', 'mpn', 'gtin', 'upc', 'qb_1', 'qb_2')
-            ->withTimestamps();
+        return $this->belongsTo(Client::class, 'client_id', 'id');
     }
 
     public function team()

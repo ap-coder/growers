@@ -21,6 +21,7 @@ class FaqCategory extends Model
 
     protected $fillable = [
         'category',
+        'published',
         'created_at',
         'updated_at',
         'deleted_at',

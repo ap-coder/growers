@@ -8,11 +8,11 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Models\ClientPrice;
+use App\Models\Client;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +38,7 @@ class ProductController extends Controller
 
         $tags = ProductTag::pluck('name', 'id');
 
-        $clients = ClientPrice::pluck('price', 'id');
+        $clients = Client::pluck('name', 'id');
 
         return view('frontend.products.create', compact('categories', 'clients', 'tags'));
     }
@@ -51,6 +51,10 @@ class ProductController extends Controller
         $product->clients()->sync($request->input('clients', []));
         if ($request->input('photo', false)) {
             $product->addMedia(storage_path('tmp/uploads/' . basename($request->input('photo'))))->toMediaCollection('photo');
+        }
+
+        foreach ($request->input('additional_photos', []) as $file) {
+            $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
         }
 
         if ($media = $request->input('ck-media', false)) {
@@ -68,7 +72,7 @@ class ProductController extends Controller
 
         $tags = ProductTag::pluck('name', 'id');
 
-        $clients = ClientPrice::pluck('price', 'id');
+        $clients = Client::pluck('name', 'id');
 
         $product->load('categories', 'tags', 'clients', 'team');
 
@@ -92,6 +96,20 @@ class ProductController extends Controller
             $product->photo->delete();
         }
 
+        if (count($product->additional_photos) > 0) {
+            foreach ($product->additional_photos as $media) {
+                if (! in_array($media->file_name, $request->input('additional_photos', []))) {
+                    $media->delete();
+                }
+            }
+        }
+        $media = $product->additional_photos->pluck('file_name')->toArray();
+        foreach ($request->input('additional_photos', []) as $file) {
+            if (count($media) === 0 || ! in_array($file, $media)) {
+                $product->addMedia(storage_path('tmp/uploads/' . basename($file)))->toMediaCollection('additional_photos');
+            }
+        }
+
         return redirect()->route('frontend.products.index');
     }
 
@@ -99,7 +117,7 @@ class ProductController extends Controller
     {
         abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $product->load('categories', 'tags', 'clients', 'team', 'productsOrders');
+        $product->load('categories', 'tags', 'clients', 'team');
 
         return view('frontend.products.show', compact('product'));
     }

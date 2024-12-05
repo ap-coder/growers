@@ -8,8 +8,9 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyClientPriceRequest;
 use App\Http\Requests\StoreClientPriceRequest;
 use App\Http\Requests\UpdateClientPriceRequest;
+use App\Models\Client;
 use App\Models\ClientPrice;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,7 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientPrices = ClientPrice::with(['team', 'media'])->get();
+        $clientPrices = ClientPrice::with(['client', 'team', 'media'])->get();
 
         return view('frontend.clientPrices.index', compact('clientPrices'));
     }
@@ -31,7 +32,9 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('frontend.clientPrices.create');
+        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+
+        return view('frontend.clientPrices.create', compact('clients'));
     }
 
     public function store(StoreClientPriceRequest $request)
@@ -53,9 +56,11 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientPrice->load('team');
+        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('frontend.clientPrices.edit', compact('clientPrice'));
+        $clientPrice->load('client', 'team');
+
+        return view('frontend.clientPrices.edit', compact('clientPrice', 'clients'));
     }
 
     public function update(UpdateClientPriceRequest $request, ClientPrice $clientPrice)
@@ -80,7 +85,7 @@ class ClientPriceController extends Controller
     {
         abort_if(Gate::denies('client_price_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clientPrice->load('team');
+        $clientPrice->load('client', 'team');
 
         return view('frontend.clientPrices.show', compact('clientPrice'));
     }

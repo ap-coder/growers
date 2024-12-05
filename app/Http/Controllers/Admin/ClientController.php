@@ -9,7 +9,7 @@ use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
 use App\Models\ClientPrice;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -23,7 +23,7 @@ class ClientController extends Controller
         abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = Client::with(['products', 'team'])->select(sprintf('%s.*', (new Client)->table));
+            $query = Client::with(['prices', 'team'])->select(sprintf('%s.*', (new Client)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -44,18 +44,17 @@ class ClientController extends Controller
                 ));
             });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->editColumn('name', fn ($row) => $row->name ? $row->name : '');
-            $table->editColumn('products', function ($row) {
-                $labels = [];
-                foreach ($row->products as $product) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $product->price);
-                }
-
-                return implode(' ', $labels);
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->editColumn('published', function ($row) {
+                return '<input type="checkbox" disabled ' . ($row->published ? 'checked' : null) . '>';
+            });
+            $table->editColumn('name', function ($row) {
+                return $row->name ? $row->name : '';
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'products']);
+            $table->rawColumns(['actions', 'placeholder', 'published']);
 
             return $table->make(true);
         }
@@ -67,34 +66,43 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = ClientPrice::pluck('price', 'id');
+        $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        return view('admin.clients.create', compact('products'));
+        return view('admin.clients.create', compact('prices'));
     }
 
     public function store(StoreClientRequest $request)
     {
         $client = Client::create($request->all());
-        $client->products()->sync($request->input('products', []));
 
         return redirect()->route('admin.clients.index');
+    }
+
+    public function storeAjax(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|unique:clients,name',
+        ]);
+
+        $client = Client::create($validatedData);
+
+        return response()->json(['id' => $client->id, 'name' => $client->name]);
     }
 
     public function edit(Client $client)
     {
         abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $products = ClientPrice::pluck('price', 'id');
+        $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $client->load('products', 'team');
+        $client->load('prices', 'team');
 
-        return view('admin.clients.edit', compact('client', 'products'));
+        return view('admin.clients.edit', compact('client', 'prices'));
     }
 
     public function update(UpdateClientRequest $request, Client $client)
     {
         $client->update($request->all());
-        $client->products()->sync($request->input('products', []));
 
         return redirect()->route('admin.clients.index');
     }
@@ -103,7 +111,7 @@ class ClientController extends Controller
     {
         abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $client->load('products', 'team');
+        $client->load('prices', 'team', 'clientClientPrices', 'clientsProducts');
 
         return view('admin.clients.show', compact('client'));
     }

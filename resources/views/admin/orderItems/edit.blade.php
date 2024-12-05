@@ -18,9 +18,7 @@
                     @endforeach
                 </select>
                 @if($errors->has('product'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('product') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('product') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.product_helper') }}</span>
             </div>
@@ -28,9 +26,7 @@
                 <label for="gtin">{{ trans('cruds.orderItem.fields.gtin') }}</label>
                 <input class="form-control {{ $errors->has('gtin') ? 'is-invalid' : '' }}" type="text" name="gtin" id="gtin" value="{{ old('gtin', $orderItem->gtin) }}">
                 @if($errors->has('gtin'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('gtin') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('gtin') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.gtin_helper') }}</span>
             </div>
@@ -38,9 +34,7 @@
                 <label for="sku">{{ trans('cruds.orderItem.fields.sku') }}</label>
                 <input class="form-control {{ $errors->has('sku') ? 'is-invalid' : '' }}" type="text" name="sku" id="sku" value="{{ old('sku', $orderItem->sku) }}">
                 @if($errors->has('sku'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('sku') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('sku') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.sku_helper') }}</span>
             </div>
@@ -48,9 +42,7 @@
                 <label for="mpn">{{ trans('cruds.orderItem.fields.mpn') }}</label>
                 <input class="form-control {{ $errors->has('mpn') ? 'is-invalid' : '' }}" type="text" name="mpn" id="mpn" value="{{ old('mpn', $orderItem->mpn) }}">
                 @if($errors->has('mpn'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('mpn') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('mpn') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.mpn_helper') }}</span>
             </div>
@@ -58,9 +50,7 @@
                 <label for="price">{{ trans('cruds.orderItem.fields.price') }}</label>
                 <input class="form-control {{ $errors->has('price') ? 'is-invalid' : '' }}" type="number" name="price" id="price" value="{{ old('price', $orderItem->price) }}" step="0.01">
                 @if($errors->has('price'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('price') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('price') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.price_helper') }}</span>
             </div>
@@ -68,9 +58,7 @@
                 <label for="quantity">{{ trans('cruds.orderItem.fields.quantity') }}</label>
                 <input class="form-control {{ $errors->has('quantity') ? 'is-invalid' : '' }}" type="number" name="quantity" id="quantity" value="{{ old('quantity', $orderItem->quantity) }}" step="1">
                 @if($errors->has('quantity'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('quantity') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('quantity') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.quantity_helper') }}</span>
             </div>
@@ -78,9 +66,7 @@
                 <label for="total_price">{{ trans('cruds.orderItem.fields.total_price') }}</label>
                 <input class="form-control {{ $errors->has('total_price') ? 'is-invalid' : '' }}" type="number" name="total_price" id="total_price" value="{{ old('total_price', $orderItem->total_price) }}" step="0.01">
                 @if($errors->has('total_price'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('total_price') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('total_price') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.total_price_helper') }}</span>
             </div>
@@ -92,9 +78,7 @@
                     @endforeach
                 </select>
                 @if($errors->has('items'))
-                    <div class="invalid-feedback">
-                        {{ $errors->first('items') }}
-                    </div>
+                    <span class="text-danger">{{ $errors->first('items') }}</span>
                 @endif
                 <span class="help-block">{{ trans('cruds.orderItem.fields.items_helper') }}</span>
             </div>

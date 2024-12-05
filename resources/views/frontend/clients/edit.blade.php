@@ -14,6 +14,19 @@
                         @method('PUT')
                         @csrf
                         <div class="form-group">
+                            <div>
+                                <input type="hidden" name="published" value="0">
+                                <input type="checkbox" name="published" id="published" value="1" {{ $client->published || old('published', 0) === 1 ? 'checked' : '' }}>
+                                <label for="published">{{ trans('cruds.client.fields.published') }}</label>
+                            </div>
+                            @if($errors->has('published'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('published') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.client.fields.published_helper') }}</span>
+                        </div>
+                        <div class="form-group">
                             <label for="name">{{ trans('cruds.client.fields.name') }}</label>
                             <input class="form-control" type="text" name="name" id="name" value="{{ old('name', $client->name) }}">
                             @if($errors->has('name'))
@@ -24,22 +37,18 @@
                             <span class="help-block">{{ trans('cruds.client.fields.name_helper') }}</span>
                         </div>
                         <div class="form-group">
-                            <label for="products">{{ trans('cruds.client.fields.products') }}</label>
-                            <div style="padding-bottom: 4px">
-                                <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                                <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                            </div>
-                            <select class="form-control select2" name="products[]" id="products" multiple>
-                                @foreach($products as $id => $product)
-                                    <option value="{{ $id }}" {{ (in_array($id, old('products', [])) || $client->products->contains($id)) ? 'selected' : '' }}>{{ $product }}</option>
+                            <label for="prices_id">{{ trans('cruds.client.fields.prices') }}</label>
+                            <select class="form-control select2" name="prices_id" id="prices_id">
+                                @foreach($prices as $id => $entry)
+                                    <option value="{{ $id }}" {{ (old('prices_id') ? old('prices_id') : $client->prices->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
                                 @endforeach
                             </select>
-                            @if($errors->has('products'))
+                            @if($errors->has('prices'))
                                 <div class="invalid-feedback">
-                                    {{ $errors->first('products') }}
+                                    {{ $errors->first('prices') }}
                                 </div>
                             @endif
-                            <span class="help-block">{{ trans('cruds.client.fields.products_helper') }}</span>
+                            <span class="help-block">{{ trans('cruds.client.fields.prices_helper') }}</span>
                         </div>
                         <div class="form-group">
                             <button class="btn btn-danger" type="submit">

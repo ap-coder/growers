@@ -30,20 +30,18 @@ class Product extends Model implements HasMedia
     ];
 
     protected $fillable = [
+        'published',
+        'featured',
+        'quantity',
         'name',
         'description',
-        'featured',
-        'published',
         'created_at',
         'updated_at',
         'deleted_at',
         'team_id',
     ];
 
-    public function scopePublished($query)
-    {
-        return $query->where('published', true);
-    }
+    protected $with = ['categories', 'clients', 'clientPrices'];
 
     protected function serializeDate(DateTimeInterface $date)
     {
@@ -58,17 +56,12 @@ class Product extends Model implements HasMedia
 
     public function categories()
     {
-        return $this->belongsToMany(ProductCategory::class, 'product_product_category');
-    }
-
-    public function product_categories()
-    {
-        return $this->belongsToMany(ProductCategory::class, 'product_product_category');
+        return $this->belongsToMany(ProductCategory::class);
     }
 
     public function tags()
     {
-        return $this->belongsToMany(ProductTag::class, 'product_product_tag');
+        return $this->belongsToMany(ProductTag::class);
     }
 
     public function getPhotoAttribute()
@@ -95,14 +88,19 @@ class Product extends Model implements HasMedia
         return $files;
     }
 
-    public function clientPrices()
-    {
-        return $this->hasMany(ClientPrice::class);
-    }
-
     public function clients()
     {
-        return $this->hasManyThrough(Client::class, ClientPrice::class, 'product_id', 'id', 'id', 'client_id');
+        return $this->belongsToMany(Client::class, 'client_product');
+    }
+
+    public function clientPrices()
+    {
+        return $this->hasMany(ClientPrice::class, 'product_id', 'id');
+    }
+
+    public function newQuery($excludeDeleted = true)
+    {
+        return parent::newQuery($excludeDeleted)->with(['categories', 'clients', 'clientPrices']);
     }
 
     public function clients_prices()

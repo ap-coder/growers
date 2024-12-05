@@ -30,9 +30,4 @@ class ProductTag extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
-
-    public function products()
-    {
-        return $this->belongsToMany(Product::class, 'product_tag');
-    }
 }

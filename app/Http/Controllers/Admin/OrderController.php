@@ -8,7 +8,7 @@ use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Models\Client;
 use App\Models\Order;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -41,14 +41,28 @@ class OrderController extends Controller
                 ));
             });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->addColumn('client_name', fn ($row) => $row->client ? $row->client->name : '');
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->addColumn('client_name', function ($row) {
+                return $row->client ? $row->client->name : '';
+            });
 
-            $table->editColumn('number', fn ($row) => $row->number ? $row->number : '');
-            $table->editColumn('status', fn ($row) => $row->status ? Order::STATUS_SELECT[$row->status] : '');
-            $table->editColumn('shipping_cost', fn ($row) => $row->shipping_cost ? $row->shipping_cost : '');
-            $table->editColumn('order_total', fn ($row) => $row->order_total ? $row->order_total : '');
-            $table->editColumn('total_price', fn ($row) => $row->total_price ? $row->total_price : '');
+            $table->editColumn('number', function ($row) {
+                return $row->number ? $row->number : '';
+            });
+            $table->editColumn('status', function ($row) {
+                return $row->status ? Order::STATUS_SELECT[$row->status] : '';
+            });
+            $table->editColumn('shipping_cost', function ($row) {
+                return $row->shipping_cost ? $row->shipping_cost : '';
+            });
+            $table->editColumn('order_total', function ($row) {
+                return $row->order_total ? $row->order_total : '';
+            });
+            $table->editColumn('total_price', function ($row) {
+                return $row->total_price ? $row->total_price : '';
+            });
 
             $table->rawColumns(['actions', 'placeholder', 'client']);
 

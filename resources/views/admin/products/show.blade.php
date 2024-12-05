@@ -25,6 +25,22 @@
                     </tr>
                     <tr>
                         <th>
+                            {{ trans('cruds.product.fields.published') }}
+                        </th>
+                        <td>
+                            <input type="checkbox" disabled="disabled" {{ $product->published ? 'checked' : '' }}>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.product.fields.featured') }}
+                        </th>
+                        <td>
+                            <input type="checkbox" disabled="disabled" {{ $product->featured ? 'checked' : '' }}>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
                             {{ trans('cruds.product.fields.name') }}
                         </th>
                         <td>
@@ -77,7 +93,19 @@
                         </th>
                         <td>
                             @foreach($product->clients as $key => $clients)
-                                <span class="label label-info">{{ $clients->price }}</span>
+                                <span class="label label-info">{{ $clients->name }}</span>
+                            @endforeach
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.product.fields.additional_photos') }}
+                        </th>
+                        <td>
+                            @foreach($product->additional_photos as $key => $media)
+                                <a href="{{ $media->getUrl() }}" target="_blank" style="display: inline-block">
+                                    <img src="{{ $media->getUrl('thumb') }}">
+                                </a>
                             @endforeach
                         </td>
                     </tr>

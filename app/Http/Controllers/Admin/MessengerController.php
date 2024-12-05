@@ -7,7 +7,7 @@ use App\Http\Requests\QaTopicCreateRequest;
 use App\Http\Requests\QaTopicReplyRequest;
 use App\Models\QaTopic;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

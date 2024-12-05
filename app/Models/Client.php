@@ -26,9 +26,10 @@ class Client extends Model
     ];
 
     protected $fillable = [
-        'name',
         'published',
+        'name',
         'created_at',
+        'prices_id',
         'updated_at',
         'deleted_at',
         'team_id',
@@ -39,21 +40,30 @@ class Client extends Model
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function scopePublished($query)
+    public function products()
     {
-        return $query->where('published', true);
+        return $this->belongsToMany(Product::class, 'client_product', 'client_id', 'product_id');
     }
 
     public function clientPrices()
     {
-        return $this->hasMany(ClientPrice::class);
+        return $this->hasMany(ClientPrice::class, 'client_id', 'id');
     }
 
-    public function products()
+    public function clientClientPrices()
     {
-        return $this->belongsToMany(Product::class, 'client_prices', 'client_id', 'product_id')
-            ->withPivot('price', 'sku', 'mpn', 'gtin', 'upc', 'qb_1', 'qb_2')
-            ->withTimestamps();
+        return $this->hasMany(ClientPrice::class, 'client_id', 'id');
+    }
+
+    public function clientsProducts()
+    {
+        return $this->belongsToMany(Product::class);
+    }
+
+
+    public function prices()
+    {
+        return $this->belongsTo(ClientPrice::class, 'prices_id');
     }
 
     public function team()

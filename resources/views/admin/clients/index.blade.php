@@ -29,10 +29,10 @@
                         {{ trans('cruds.client.fields.id') }}
                     </th>
                     <th>
-                        {{ trans('cruds.client.fields.name') }}
+                        {{ trans('cruds.client.fields.published') }}
                     </th>
                     <th>
-                        {{ trans('cruds.client.fields.products') }}
+                        {{ trans('cruds.client.fields.name') }}
                     </th>
                     <th>
                         &nbsp;
@@ -91,8 +91,8 @@
     columns: [
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
+{ data: 'published', name: 'published' },
 { data: 'name', name: 'name' },
-{ data: 'products', name: 'products.price' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

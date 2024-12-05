@@ -7,8 +7,7 @@ use App\Http\Requests\MassDestroySettingRequest;
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Models\Setting;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Cache;
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -41,9 +40,15 @@ class SettingController extends Controller
                 ));
             });
 
-            $table->editColumn('id', fn ($row) => $row->id ? $row->id : '');
-            $table->editColumn('key', fn ($row) => $row->key ? $row->key : '');
-            $table->editColumn('value', fn ($row) => $row->value ? $row->value : '');
+            $table->editColumn('id', function ($row) {
+                return $row->id ? $row->id : '';
+            });
+            $table->editColumn('key', function ($row) {
+                return $row->key ? $row->key : '';
+            });
+            $table->editColumn('value', function ($row) {
+                return $row->value ? $row->value : '';
+            });
 
             $table->rawColumns(['actions', 'placeholder']);
 
@@ -64,10 +69,6 @@ class SettingController extends Controller
     {
         $setting = Setting::create($request->all());
 
-        // Refresh the entire settings cache
-        Cache::forget('settings');
-        Cache::forever('settings', Setting::pluck('value', 'key')->all());
-
         return redirect()->route('admin.settings.index');
     }
 
@@ -82,20 +83,14 @@ class SettingController extends Controller
     {
         $setting->update($request->all());
 
-        // Refresh the entire settings cache
-        Cache::forget('settings');
-        Cache::forever('settings', Setting::pluck('value', 'key')->all());
-
         return redirect()->route('admin.settings.index');
     }
 
     public function destroy(Setting $setting)
     {
-        // Delete the specific setting and refresh the cache
-        $setting->delete();
+        abort_if(Gate::denies('setting_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        Cache::forget('settings');
-        Cache::forever('settings', Setting::pluck('value', 'key')->all());
+        $setting->delete();
 
         return back();
     }
@@ -107,10 +102,6 @@ class SettingController extends Controller
         foreach ($settings as $setting) {
             $setting->delete();
         }
-
-        // Refresh the entire settings cache
-        Cache::forget('settings');
-        Cache::forever('settings', Setting::pluck('value', 'key')->all());
 
         return response(null, Response::HTTP_NO_CONTENT);
     }

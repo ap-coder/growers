@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'site_title' => 'growers',
+    'site_title' => 'PPGrowers',
 
 ];

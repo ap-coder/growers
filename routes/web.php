@@ -1,17 +1,13 @@
 <?php
 
-//Route::get('r', function () { return view('site.routes'); })->name('assigned-routes')->middleware('auth');
-
-Route::get('r', function () { return view('site.routes'); })->name('assigned-routes');
-
-
-
+Route::get('r', function () { return view('site.routes'); })->name('assigned-routes'); //->middleware('auth');
 
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
 
 Auth::routes();
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa', 'admin']], function () {
+
     Route::get('/', 'HomeController@index')->name('home');
 
     // Permissions
@@ -78,6 +74,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('products/process-csv-import', 'ProductController@processCsvImport')->name('products.processCsvImport');
     Route::resource('products', 'ProductController');
 
+
+    Route::post('product-categories/store-ajax', 'ProductCategoryController@storeAjax')->name('product-categories.store-ajax');
+    Route::post('clients/store-ajax', 'ClientController@storeAjax')->name('clients.store-ajax');
+
     // Task Status
     Route::delete('task-statuses/destroy', 'TaskStatusController@massDestroy')->name('task-statuses.massDestroy');
     Route::resource('task-statuses', 'TaskStatusController');
@@ -136,7 +136,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 });
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {
-
+    // Change password
     if (file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php'))) {
         Route::get('password', 'ChangePasswordController@edit')->name('password.edit');
         Route::post('password', 'ChangePasswordController@update')->name('password.update');
@@ -145,8 +145,6 @@ Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 
         Route::post('profile/two-factor', 'ChangePasswordController@toggleTwoFactor')->name('password.toggleTwoFactor');
     }
 });
-
-
 
 Route::group(['namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {
     // Two Factor Authentication

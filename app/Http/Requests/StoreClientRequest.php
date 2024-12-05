@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Client;
-use Illuminate\Support\Facades\Gate;
+use Gate;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Response;
 
@@ -20,12 +20,6 @@ class StoreClientRequest extends FormRequest
             'name' => [
                 'string',
                 'nullable',
-            ],
-            'products.*' => [
-                'integer',
-            ],
-            'products' => [
-                'array',
             ],
         ];
     }

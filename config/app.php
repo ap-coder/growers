@@ -182,7 +182,6 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
 
-
         /*
          * Package Service Providers...
          */
@@ -196,7 +195,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
-        App\Providers\SettingServiceProvider::class,
 
     ],
 
@@ -212,7 +210,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'Setting' => App\Facades\Setting::class
+        // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
 ];

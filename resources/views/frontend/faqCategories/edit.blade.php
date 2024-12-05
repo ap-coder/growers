@@ -24,6 +24,19 @@
                             <span class="help-block">{{ trans('cruds.faqCategory.fields.category_helper') }}</span>
                         </div>
                         <div class="form-group">
+                            <div>
+                                <input type="hidden" name="published" value="0">
+                                <input type="checkbox" name="published" id="published" value="1" {{ $faqCategory->published || old('published', 0) === 1 ? 'checked' : '' }}>
+                                <label for="published">{{ trans('cruds.faqCategory.fields.published') }}</label>
+                            </div>
+                            @if($errors->has('published'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('published') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.faqCategory.fields.published_helper') }}</span>
+                        </div>
+                        <div class="form-group">
                             <button class="btn btn-danger" type="submit">
                                 {{ trans('global.save') }}
                             </button>

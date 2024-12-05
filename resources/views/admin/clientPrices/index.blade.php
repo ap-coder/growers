@@ -29,7 +29,7 @@
                         {{ trans('cruds.clientPrice.fields.id') }}
                     </th>
                     <th>
-                        {{ trans('cruds.clientPrice.fields.product') }}
+                        {{ trans('cruds.clientPrice.fields.published') }}
                     </th>
                     <th>
                         {{ trans('cruds.clientPrice.fields.price') }}
@@ -103,7 +103,7 @@
     columns: [
       { data: 'placeholder', name: 'placeholder' },
 { data: 'id', name: 'id' },
-{ data: 'product_name', name: 'product.name' },
+{ data: 'published', name: 'published' },
 { data: 'price', name: 'price' },
 { data: 'sku', name: 'sku' },
 { data: 'qb_1', name: 'qb_1' },

@@ -14,6 +14,19 @@
                         @method('POST')
                         @csrf
                         <div class="form-group">
+                            <div>
+                                <input type="hidden" name="published" value="0">
+                                <input type="checkbox" name="published" id="published" value="1" {{ old('published', 0) == 1 || old('published') === null ? 'checked' : '' }}>
+                                <label for="published">{{ trans('cruds.faqQuestion.fields.published') }}</label>
+                            </div>
+                            @if($errors->has('published'))
+                                <div class="invalid-feedback">
+                                    {{ $errors->first('published') }}
+                                </div>
+                            @endif
+                            <span class="help-block">{{ trans('cruds.faqQuestion.fields.published_helper') }}</span>
+                        </div>
+                        <div class="form-group">
                             <label class="required" for="category_id">{{ trans('cruds.faqQuestion.fields.category') }}</label>
                             <select class="form-control select2" name="category_id" id="category_id" required>
                                 @foreach($categories as $id => $entry)

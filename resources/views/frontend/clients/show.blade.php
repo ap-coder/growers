@@ -28,6 +28,14 @@
                                 </tr>
                                 <tr>
                                     <th>
+                                        {{ trans('cruds.client.fields.published') }}
+                                    </th>
+                                    <td>
+                                        <input type="checkbox" disabled="disabled" {{ $client->published ? 'checked' : '' }}>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
                                         {{ trans('cruds.client.fields.name') }}
                                     </th>
                                     <td>
@@ -36,12 +44,10 @@
                                 </tr>
                                 <tr>
                                     <th>
-                                        {{ trans('cruds.client.fields.products') }}
+                                        {{ trans('cruds.client.fields.prices') }}
                                     </th>
                                     <td>
-                                        @foreach($client->products as $key => $products)
-                                            <span class="label label-info">{{ $products->price }}</span>
-                                        @endforeach
+                                        {{ $client->prices->price ?? '' }}
                                     </td>
                                 </tr>
                             </tbody>

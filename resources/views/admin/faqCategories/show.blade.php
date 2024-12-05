@@ -31,6 +31,14 @@
                             {{ $faqCategory->category }}
                         </td>
                     </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.faqCategory.fields.published') }}
+                        </th>
+                        <td>
+                            <input type="checkbox" disabled="disabled" {{ $faqCategory->published ? 'checked' : '' }}>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <div class="form-group">

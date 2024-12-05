@@ -26,13 +26,13 @@
                                         {{ trans('cruds.faqQuestion.fields.id') }}
                                     </th>
                                     <th>
+                                        {{ trans('cruds.faqQuestion.fields.published') }}
+                                    </th>
+                                    <th>
                                         {{ trans('cruds.faqQuestion.fields.category') }}
                                     </th>
                                     <th>
                                         {{ trans('cruds.faqQuestion.fields.question') }}
-                                    </th>
-                                    <th>
-                                        {{ trans('cruds.faqQuestion.fields.answer') }}
                                     </th>
                                     <th>
                                         &nbsp;
@@ -46,13 +46,14 @@
                                             {{ $faqQuestion->id ?? '' }}
                                         </td>
                                         <td>
+                                            <span style="display:none">{{ $faqQuestion->published ?? '' }}</span>
+                                            <input type="checkbox" disabled="disabled" {{ $faqQuestion->published ? 'checked' : '' }}>
+                                        </td>
+                                        <td>
                                             {{ $faqQuestion->category->category ?? '' }}
                                         </td>
                                         <td>
                                             {{ $faqQuestion->question ?? '' }}
-                                        </td>
-                                        <td>
-                                            {{ $faqQuestion->answer ?? '' }}
                                         </td>
                                         <td>
                                             @can('faq_question_show')
