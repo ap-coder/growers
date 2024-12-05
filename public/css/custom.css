@@ -39,8 +39,8 @@ table.dataTable thead th {
 }
 
 .select2 {
-    max-width: 100%;
-    width: 100%;
+    max-width: 80%!important;
+    width: 80%!important;
 }
 
 table.dataTable thead .sorting,

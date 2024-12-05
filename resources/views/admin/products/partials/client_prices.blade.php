@@ -2,7 +2,7 @@
 <div class="form-group">
     <label for="clientSelect">Select Clients</label>
     <div class="input-group">
-        <select id="clientSelect" class="form-control select2" name="clients[]" multiple style="width: 90%;">
+        <select id="clientSelect" class="form-control select2" name="clients[]" multiple style="width: 80%;">
             @foreach($clients as $client)
                 <option style="width: 100%;" value="{{ $client->id }}" {{ (in_array($client->id, old('clients', $product->clients->pluck('id')->toArray()))) ? 'selected' : '' }}>
                     {{ $client->name }}
@@ -51,19 +51,7 @@
 
                 </tr>
             @endforeach
-{{--            @foreach ($product->clientPrices as $clientPrice)--}}
-{{--                <tr id="pricing-row-{{ $clientPrice->client_id }}">--}}
-{{--                    <td>{{ $clientPrice->client->name }}</td>--}}
-{{--                    <td><input type="number" name="client_prices[{{ $clientPrice->client_id }}][price]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.price', $clientPrice->price) }}" required></td>--}}
-{{--                    <td><input type="text" name="client_prices[{{ $clientPrice->client_id }}][sku]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.sku', $clientPrice->sku) }}"></td>--}}
-{{--                    <td><input type="text" name="client_prices[{{ $clientPrice->client_id }}][mpn]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.mpn', $clientPrice->mpn) }}"></td>--}}
-{{--                    <td><input type="text" name="client_prices[{{ $clientPrice->client_id }}][gtin]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.gtin', $clientPrice->gtin) }}"></td>--}}
-{{--                    <td><input type="text" name="client_prices[{{ $clientPrice->client_id }}][upc]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.upc', $clientPrice->upc) }}"></td>--}}
-{{--                    <td><input type="text" name="client_prices[{{ $clientPrice->client_id }}][qb_1]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.qb_1', $clientPrice->qb_1) }}"></td>--}}
-{{--                    <td><input type="text" name="client_prices[{{ $clientPrice->client_id }}][qb_2]" class="form-control" value="{{ old('client_prices.' . $clientPrice->client_id . '.qb_2', $clientPrice->qb_2) }}"></td>--}}
-{{--                    <input type="hidden" name="client_prices[{{ $clientPrice->client_id }}][published]" value="true">--}}
-{{--                </tr>--}}
-{{--            @endforeach--}}
+
         </tbody>
     </table>
 </div>
