@@ -1,56 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-@include("account.layouts.partials.head")
-
-
-
-
-
-
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@yield('title', 'Account Dashboard')</title>
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/nouislider/nouislider.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/vendor/animate/animate.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/skin/skin-1.css') }}">
+</head>
 <body>
 <div class="page-wraper">
-
-	<div id="loading-area" class="loading-page-1">
-		<div class="text"><span class="text-primary">Plant</span>Zone</div>
-	</div>
-	
-@include("account.layouts.partials.header")
-
-
-
-
-
-	
-	<div class="page-content">
-@yield('page-content')
-
-	</div>
-
-@include("account.layouts.partials.footer")
-
-
-
-
-
-	
-	<button class="scroltop" type="button"><i class="fas fa-arrow-up"></i></button>
-
+    @include('account.layouts.partials.header')
+    <div class="page-content">
+        @yield('content')
+    </div>
+    @include('account.layouts.partials.footer')
 </div>
-<!-- JAVASCRIPT FILES ========================================= -->
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script><!-- JQUERY MIN JS -->
-<script src="{{ asset('assets/vendor/wow/wow.min.js') }}"></script><!-- WOW JS -->
-<script src="{{ asset('assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script><!-- BOOTSTRAP MIN JS -->
-<script src="{{ asset('assets/vendor/apexchart/apexchart.js') }}"></script><!-- apex chart MIN JS -->
-<script src="{{ asset('assets/js/dashbord-account.js') }}"></script>
-<script src="{{ asset('assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script><!-- BOOTSTRAP SELECT MIN JS -->
-<script src="{{ asset('assets/vendor/bootstrap-touchspin/bootstrap-touchspin.js') }}"></script><!-- BOOTSTRAP TOUCHSPIN JS -->
-<script src="{{ asset('assets/vendor/counter/waypoints-min.js') }}"></script><!-- WAYPOINTS JS -->
-<script src="{{ asset('assets/vendor/swiper/swiper-bundle.min.js') }}"></script><!-- SWIPER JS -->
-<script src="{{ asset('assets/vendor/countdown/jquery.countdown.js') }}"></script><!-- COUNTDOWN FUCTIONS  -->
-<script src="{{ asset('assets/vendor/wnumb/wNumb.js') }}"></script><!-- WNUMB -->
-<script src="{{ asset('assets/vendor/nouislider/nouislider.min.js') }}"></script><!-- NOUSLIDER MIN JS-->
-<script src="{{ asset('assets/js/dz.carousel.js') }}"></script><!-- DZ CAROUSEL JS -->
-<script src="{{ asset('assets/js/dz.ajax.js') }}"></script><!-- AJAX -->
-<script src="{{ asset('assets/js/custom.js') }}"></script><!-- CUSTOM JS -->
+<script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('assets/js/main.js') }}"></script>
 </body>
 </html>
