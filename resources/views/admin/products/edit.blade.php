@@ -7,6 +7,7 @@
         #clientPricingTable input[type="number"]:focus, #clientPricingTable input[type="text"]:focus { border: none!important; outline: none!important; }
         #clientPricingTable { border-collapse: collapse; }
         #clientPricingTable th, #clientPricingTable td { padding: 10px; text-align: left; }
+        .select2 { max-width: 80%!important; width: 80%!important; }
     </style>
 
 @endsection
