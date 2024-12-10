@@ -39,7 +39,7 @@
 						</div>
 					</div>
 					<div class="col-xl-3 col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
- 
+
 					</div>
 					<div class="col-xl-2 col-md-4 col-sm-4 col-6 wow fadeInUp" data-wow-delay="0.3s">
 						<div class="widget widget_services">

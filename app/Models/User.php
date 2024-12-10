@@ -79,6 +79,12 @@ class User extends Authenticatable
         return $this->roles()->where('id', 1)->exists();
     }
 
+    public function getIsClientAttribute()
+    {
+        return !$this->is_admin;
+    }
+
+
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);

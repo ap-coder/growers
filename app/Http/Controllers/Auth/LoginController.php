@@ -11,12 +11,12 @@ use Illuminate\Http\Request;
 class LoginController extends Controller
 {
     /*
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     | Login Controller
-    |--------------------------------------------------------------------------
+    |----------------------------------------------------------------------
     |
     | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
+    | redirecting them to their home screen. The controller uses a trait
     | to conveniently provide its functionality to your applications.
     |
     */
@@ -40,20 +40,29 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
-    public function redirectTo()
+    /**
+     * Redirect the user after login based on their role.
+     *
+     * @return string
+     */
+    protected function authenticated(Request $request, $user)
     {
-        if (auth()->user()->is_admin) {
-            return '/admin';
+        // Check if the user is an admin
+        if ($user->is_admin) {
+            return redirect()->route('admin.dashboard');  // Admin dashboard
         }
 
-        return '/home';
+        // Regular user, redirect to their private pages
+        return redirect()->route('account.dashboard');  // account user dashboard
     }
 
-protected function authenticated(Request $request, $user)
-{
-    if ($user->two_factor) {
-        $user->generateTwoFactorCode();
-        $user->notify(new TwoFactorCodeNotification());
+    /**
+     * Show the login form for users.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showLoginForm()
+    {
+        return view('site.pages.login.index');  // The same login page for all users
     }
-}
 }
