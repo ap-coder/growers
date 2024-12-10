@@ -146,8 +146,8 @@ Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 
     }
 });
 
+
 Route::group(['namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {
-    // Two Factor Authentication
     if (file_exists(app_path('Http/Controllers/Auth/TwoFactorController.php'))) {
         Route::get('two-factor', 'TwoFactorController@show')->name('twoFactor.show');
         Route::post('two-factor', 'TwoFactorController@check')->name('twoFactor.check');
