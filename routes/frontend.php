@@ -1,7 +1,7 @@
 <?php
 
-Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['localAutoLogin', 'auth', '2fa']], function () {
-    Route::get('/home', 'HomeController@index')->name('home');
+Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['auth', '2fa']], function () {
+//    Route::get('/home', 'HomeController@index')->name('home');
 
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
