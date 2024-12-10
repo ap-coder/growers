@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Account\AccountController;
+
 Route::get('r', function () { return view('site.routes'); })->name('assigned-routes'); //->middleware('auth');
 
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
@@ -133,6 +135,26 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('messenger/{topic}/reply', 'MessengerController@showReply')->name('messenger.showReply');
     Route::get('team-members', 'TeamMembersController@index')->name('team-members.index');
     Route::post('team-members', 'TeamMembersController@invite')->name('team-members.invite');
+});
+
+
+Route::group(['as' => 'account.', 'namespace' => 'Account', 'middleware' => ['auth', '2fa']], function () {
+    Route::get('account/dashboard', [AccountController::class, 'dashboard'])->name('account.dashboard');
+    Route::get('account/address', [AccountController::class, 'address'])->name('account.address');
+    Route::get('account/billing-address', [AccountController::class, 'billingAddress'])->name('account.billing_address');
+    Route::get('account/order-confirmation', [AccountController::class, 'orderConfirmation'])->name('account.order_confirmation');
+    Route::get('account/order-details', [AccountController::class, 'orderDetails'])->name('account.order_details');
+    Route::get('account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('account/profile', [AccountController::class, 'profile'])->name('account.profile');
+    Route::get('account/shipping-address', [AccountController::class, 'shippingAddress'])->name('account.shipping_address');
+    Route::get('account/shipping-methods', [AccountController::class, 'shippingMethods'])->name('account.shipping_methods');
+    Route::get('account/return-request', [AccountController::class, 'returnRequest'])->name('account.return_request');
+    Route::get('account/cancellation-requests', [AccountController::class, 'cancellationRequests'])->name('account.cancellation_requests');
+    Route::get('account/refund-requests-confirmed', [AccountController::class, 'refundRequestsConfirmed'])->name('account.refund_requests_confirmed');
+    Route::get('account/return-request-detail', [AccountController::class, 'returnRequestDetail'])->name('account.return_request_detail');
+    Route::get('account/downloads', [AccountController::class, 'downloads'])->name('account.downloads');
+    Route::get('account/payment-methods', [AccountController::class, 'paymentMethods'])->name('account.payment_methods');
+    Route::get('account/review', [AccountController::class, 'review'])->name('account.review');
 });
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {
