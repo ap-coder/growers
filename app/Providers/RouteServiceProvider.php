@@ -21,6 +21,8 @@ class RouteServiceProvider extends ServiceProvider
     public const ACCOUNT = '/account';
     public const ADMIN = '/admin';
 
+    public const ACCOUNT = '/account';
+
     /**
      * The controller namespace for the application.
      *
@@ -49,6 +51,7 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::namespace($this->namespace)
                 ->group(base_path('routes/site.php'));
+
         });
     }
 
