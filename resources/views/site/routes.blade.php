@@ -79,6 +79,7 @@
     @php
         $sections = [
             'Site Navigation' => [],
+            'Account' => ['account'],
             'Admin' => ['admin'],
             'API' => ['api/'],
             'Development' => ['_debugbar', 'log-viewer', 'sanctum', '_ignition', 'wecodelaravel', 'horizon', 'telescope', 'userVerificatio'],
