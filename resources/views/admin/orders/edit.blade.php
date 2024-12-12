@@ -67,6 +67,24 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.order.fields.total_price_helper') }}</span>
             </div>
+
+            <div class="form-group">
+                <label for="special_instructions">{{ trans('cruds.order.fields.special_instructions') }}</label>
+                <textarea class="form-control ckeditor {{ $errors->has('special_instructions') ? 'is-invalid' : '' }}" name="special_instructions" id="special_instructions">{!! old('special_instructions', $order->special_instructions) !!}</textarea>
+                @if($errors->has('special_instructions'))
+                    <span class="text-danger">{{ $errors->first('special_instructions') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.order.fields.special_instructions_helper') }}</span>
+            </div>
+
+            <div class="form-group">
+                <label for="order_notes">{{ trans('cruds.order.fields.order_notes') }}</label>
+                <textarea class="form-control {{ $errors->has('order_notes') ? 'is-invalid' : '' }}" name="order_notes" id="order_notes">{{ old('order_notes', $order->order_notes) }}</textarea>
+                @if($errors->has('order_notes'))
+                    <span class="text-danger">{{ $errors->first('order_notes') }}</span>
+                @endif
+                <span class="help-block">{{ trans('cruds.order.fields.order_notes_helper') }}</span>
+            </div>
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

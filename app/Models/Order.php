@@ -39,6 +39,8 @@ class Order extends Model
         'shipping_cost',
         'order_total',
         'total_price',
+        'special_instructions',
+        'order_notes',
         'created_at',
         'updated_at',
         'deleted_at',
