@@ -30,7 +30,7 @@ class AccountLoginController extends Controller
 
         // Check for user authentication (using the default 'web' guard)
         if (Auth::guard('web')->attempt($credentials)) {
-            return redirect()->intended('/account-dashboard');  // Redirect to the private account pages (site pages)
+            return redirect()->intended('/dashboard');  // Redirect to the private account pages (site pages)
         }
 
         // If login fails, redirect back to login with an error message
