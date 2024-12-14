@@ -9,7 +9,7 @@
 		</div>
 			
 		<!-- Header Star -->
-		@include('account.layouts.partials.header')
+		@include('site.layouts.partials.header')
 		<!-- Header End -->
 				
 		<div class="page-content">
@@ -17,7 +17,7 @@
 		</div>
 	
 		<!-- Footer -->
-		@include('account.layouts.partials.footer')
+		@include('site.layouts.partials.footer')
 		<!-- Footer End -->
 		
 		<button class="scroltop" type="button"><i class="fas fa-arrow-up"></i></button>
@@ -36,5 +36,8 @@
 	<script src="{{ asset('assets/js/dz.carousel.js') }}"></script><!-- DZ CAROUSEL JS -->
 	<script src="{{ asset('assets/js/dz.ajax.js') }}"></script><!-- AJAX -->
 	<script src="{{ asset('assets/js/custom.js') }}"></script><!-- CUSTOM JS -->
+
+	<!-- Scripts -->
+	@stack('scripts') <!-- For additional scripts on specific pages -->
 	</body>
 </html>

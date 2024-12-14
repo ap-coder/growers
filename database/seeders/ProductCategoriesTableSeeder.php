@@ -14,6 +14,6 @@ class ProductCategoriesTableSeeder extends Seeder
      */
     public function run()
     {
-        \DB::table('product_categories')->delete();
+//        \DB::table('product_categories')->delete();
     }
 }

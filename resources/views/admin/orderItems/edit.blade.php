@@ -63,12 +63,12 @@
                 <span class="help-block">{{ trans('cruds.orderItem.fields.quantity_helper') }}</span>
             </div>
             <div class="form-group">
-                <label for="total_price">{{ trans('cruds.orderItem.fields.total_price') }}</label>
-                <input class="form-control {{ $errors->has('total_price') ? 'is-invalid' : '' }}" type="number" name="total_price" id="total_price" value="{{ old('total_price', $orderItem->total_price) }}" step="0.01">
-                @if($errors->has('total_price'))
-                    <span class="text-danger">{{ $errors->first('total_price') }}</span>
+                <label for="sub_total">{{ trans('cruds.orderItem.fields.sub_total') }}</label>
+                <input class="form-control {{ $errors->has('sub_total') ? 'is-invalid' : '' }}" type="number" name="sub_total" id="sub_total" value="{{ old('sub_total', $orderItem->sub_total) }}" step="0.01">
+                @if($errors->has('sub_total'))
+                    <span class="text-danger">{{ $errors->first('sub_total') }}</span>
                 @endif
-                <span class="help-block">{{ trans('cruds.orderItem.fields.total_price_helper') }}</span>
+                <span class="help-block">{{ trans('cruds.orderItem.fields.sub_total_helper') }}</span>
             </div>
             <div class="form-group">
                 <label for="items_id">{{ trans('cruds.orderItem.fields.items') }}</label>

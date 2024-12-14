@@ -1,3 +1,13 @@
+@extends('shop.layouts.cart')
+
+@section('title', 'Cart')
+
+@section('styles')
+    @parent
+
+@endsection
+
+@section('content')
 
 			<!--Banner Start-->
 			<div class="dz-bnr-inr" style="background-image:url(images/background/bg1.jpg);">
@@ -199,4 +209,10 @@
 					</div>
 				</div>
 			</section>
-		<!-- Newsletter End -->
+		    <!-- Newsletter End -->
+@endsection
+
+@section('scripts')
+	@parent
+
+@endsection

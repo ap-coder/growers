@@ -17,6 +17,9 @@ class Client extends Model
 
     public static $searchable = [
         'name',
+        'company_name',
+        'email',
+        'phone'
     ];
 
     protected $dates = [
@@ -28,6 +31,10 @@ class Client extends Model
     protected $fillable = [
         'published',
         'name',
+        'company_name',
+        'email',
+        'phone',
+        'is_verified',
         'created_at',
         'prices_id',
         'updated_at',
@@ -64,6 +71,11 @@ class Client extends Model
     public function prices()
     {
         return $this->belongsTo(ClientPrice::class, 'prices_id');
+    }
+
+    public function locations()
+    {
+        return $this->hasMany(Location::class);
     }
 
     public function team()

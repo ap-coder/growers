@@ -1,7 +1,7 @@
 	<head>
 
 		<!-- Title -->
-		<title>PlantZone Shop & eCommerce HTML Template | DexignZone</title>
+		<title>@yield('title', 'Pacific Plant Growers')</title>
 	
 		<!-- Meta -->
 		<meta charset="utf-8">
@@ -12,20 +12,20 @@
 		
 		<meta name="keywords" content="garden shop, flowers, landscape gardener, delivery, ecommerce, greenery, order, shopping, store, portfolio, plant template, plant store, plant showcase, nursery technology, ecommerce web, eCommerce website, minimal shop, online shop, online shopping, plantzone, user interface, user experience, trendy, stylish, development, farmer">
 		
-		<meta name="description" content="Elevate your online retail presence with PlantZone Shop & eCommerce HTML Template. Meticulously crafted, this responsive and feature-rich template offers a seamless and visually stunning shopping experience for plant enthusiasts. Explore a world of possibilities with modern design elements, intuitive navigation, and customizable features. Transform your website into a dynamic online storefront with PlantZone, where style seamlessly meets functionality, ensuring a captivating and user-friendly eCommerce journey through the lush world of plants.">
+		<meta name="description" content="">
 		
-		<meta property="og:title" content="PlantZone Shop & eCommerce HTML Template | DexignZone">
-		<meta property="og:description" content="Elevate your online retail presence with PlantZone Shop & eCommerce HTML Template. Meticulously crafted, this responsive and feature-rich template offers a seamless and visually stunning shopping experience for plant enthusiasts. Explore a world of possibilities with modern design elements, intuitive navigation, and customizable features. Transform your website into a dynamic online storefront with PlantZone, where style seamlessly meets functionality, ensuring a captivating and user-friendly eCommerce journey through the lush world of plants.">
-		<meta property="og:image" content="https://plantzone.dexignzone.com/xhtml/social-image.png">
+		<meta property="og:title" content="">
+		<meta property="og:description" content="">
+		<meta property="og:image" content="">
 		
 		<!-- TWITTER META -->
-		<meta name="twitter:title" content="PlantZone: Shop & eCommerce Bootstrap HTML Template | DexignZone">
-		<meta name="twitter:description" content="Elevate your online retail presence with PlantZone Shop & eCommerce HTML Template. Meticulously crafted, this responsive and feature-rich template offers a seamless and visually stunning shopping experience for plant enthusiasts. Explore a world of possibilities with modern design elements, intuitive navigation, and customizable features. Transform your website into a dynamic online storefront with PlantZone, where style seamlessly meets functionality, ensuring a captivating and user-friendly eCommerce journey through the lush world of plants.">
-		<meta name="twitter:image" content="https://plantzone.dexignzone.com/xhtml/social-image.png">
+		<meta name="twitter:title" content="">
+		<meta name="twitter:description" content="">
+		<meta name="twitter:image" content="">
 		<meta name="twitter:card" content="summary_large_image">
 		
 		<!-- CANONICAL URL -->
-		<link rel="canonical" href="https://plantzone.dexignzone.com/xhtml/shop-card.html">
+		<link rel="canonical" href=" {{ url()->current() }}">
 		
 		<!-- FAVICONS ICON -->
 		<link rel="icon" type="image/x-icon" href="{{ asset('assets/images/favicon.png') }}">
@@ -47,4 +47,6 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
+
+		@stack('styles')
 </head>

@@ -28,7 +28,7 @@ class OrderItem extends Model
         'mpn',
         'price',
         'quantity',
-        'total_price',
+        'sub_total',
         'created_at',
         'items_id',
         'updated_at',

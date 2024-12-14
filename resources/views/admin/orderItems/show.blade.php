@@ -73,10 +73,10 @@
                     </tr>
                     <tr>
                         <th>
-                            {{ trans('cruds.orderItem.fields.total_price') }}
+                            {{ trans('cruds.orderItem.fields.sub_total') }}
                         </th>
                         <td>
-                            {{ $orderItem->total_price }}
+                            {{ $orderItem->sub_total }}
                         </td>
                     </tr>
                     <tr>

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Notifications\VerifyUserNotification;
 use Carbon\Carbon;
+use App\Notifications\VerifyUserNotification;
 use DateTimeInterface;
 use Hash;
 use Illuminate\Auth\Notifications\ResetPassword;

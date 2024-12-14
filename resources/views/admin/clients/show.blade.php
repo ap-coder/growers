@@ -47,6 +47,38 @@
                             {{ $client->prices->price ?? '' }}
                         </td>
                     </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.client.fields.company_name') }}
+                        </th>
+                        <td>
+                            {{ $client->company_name }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.client.fields.email') }}
+                        </th>
+                        <td>
+                            {{ $client->email }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.client.fields.phone') }}
+                        </th>
+                        <td>
+                            {{ $client->phone }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            {{ trans('cruds.client.fields.is_verified') }}
+                        </th>
+                        <td>
+                            <input type="checkbox" disabled="disabled" {{ $client->is_verified ? 'checked' : '' }}>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
             <div class="form-group">

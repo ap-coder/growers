@@ -33,28 +33,28 @@ class SiteController extends Controller
      */
     public function about()
     {
-        return view('site.about');
+        return view('site.pages.about.index');
     }
 
-    /**
-     * Show the login page.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function login()
-    {
-        return view('site.login');
-    }
+    // /**
+    //  * Show the login page.
+    //  *
+    //  * @return \Illuminate\Contracts\Support\Renderable
+    //  */
+    // public function login()
+    // {
+    //     return view('site.login');
+    // }
 
-    /**
-     * Show the registration page.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function register()
-    {
-        return view('site.registration');
-    }
+    // /**
+    //  * Show the registration page.
+    //  *
+    //  * @return \Illuminate\Contracts\Support\Renderable
+    //  */
+    // public function register()
+    // {
+    //     return view('site.registration');
+    // }
 
     /**
      * Show the "What We Do" page.
@@ -63,7 +63,7 @@ class SiteController extends Controller
      */
     public function whatWeDo()
     {
-        return view('site.what-we-do');
+        return view('site.pages.what-we-do.index');
     }
 
     /**
@@ -73,6 +73,6 @@ class SiteController extends Controller
      */
     public function contact()
     {
-        return view('site.contact');
+        return view('site.pages.contact.index');
     }
 }

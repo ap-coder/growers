@@ -9,6 +9,7 @@ use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
 use App\Models\ClientPrice;
+use App\Models\Team;
 use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -74,6 +75,15 @@ class ClientController extends Controller
     public function store(StoreClientRequest $request)
     {
         $client = Client::create($request->all());
+        $teamName = $request->company_name ?? $request->name;
+
+        $team = Team::create([
+            'name' => $teamName,
+            'client_id' => $client->id,
+        ]);
+
+        $client->team_id = $team->id;
+        $client->save();
 
         return redirect()->route('admin.clients.index');
     }

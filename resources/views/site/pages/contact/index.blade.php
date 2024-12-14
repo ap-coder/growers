@@ -2,6 +2,11 @@
 
 @section('title', 'Contact Us')
 
+@section('styles')
+    @parent
+
+@endsection
+
 @section('content')
 <div class="container">
     <div class="contact-section py-5">
@@ -28,4 +33,9 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+    @parent
+
 @endsection

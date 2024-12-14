@@ -23,7 +23,7 @@
     <meta name="twitter:card" content="">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="">
+    <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Favicon Icon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/favicon.png') }}">

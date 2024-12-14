@@ -13,6 +13,10 @@
 </head>
 <body>
 <div class="page-wraper">
+    <div id="loading-area" class="loading-page-1">
+		<div class="text"><span class="text-primary">Pacific Plant </span>Growers</div>
+    </div>
+
     @include('account.layouts.partials.header')
     <div class="page-content">
         @yield('content')

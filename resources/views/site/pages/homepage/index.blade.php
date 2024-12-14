@@ -1,4 +1,4 @@
-@extends('site.layouts.site')
+@extends('shop.layouts.cart')
 
 @section('styles')
     @parent

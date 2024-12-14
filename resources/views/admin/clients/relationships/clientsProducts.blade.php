@@ -28,6 +28,9 @@
                                 {{ trans('cruds.product.fields.published') }}
                             </th>
                             <th>
+                                {{ trans('cruds.product.fields.quantity') }}
+                            </th>
+                            <th>
                                 {{ trans('cruds.product.fields.name') }}
                             </th>
                             <th>
@@ -56,6 +59,9 @@
                                 <td>
                                     <span style="display:none">{{ $product->published ?? '' }}</span>
                                     <input type="checkbox" disabled="disabled" {{ $product->published ? 'checked' : '' }}>
+                                </td>
+                                <td>
+                                    {{ $product->quantity ?? '' }}
                                 </td>
                                 <td>
                                     {{ $product->name ?? '' }}

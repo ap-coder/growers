@@ -3,6 +3,13 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Product;
+use App\Models\ProductCategory;
+use App\Models\Client;
+use App\Models\Location;
+use App\Models\Team;
+use App\Models\User;
+use App\Models\ClientPrice;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,5 +23,13 @@ class DatabaseSeeder extends Seeder
             RoleUserTableSeeder::class,
             ClientsTableSeeder::class,
         ]);
+
+        Product::factory(24)->withClientPrices()->create();
+        ProductCategory::factory(5)->create();
+        Client::factory(5)->create();
+        Location::factory(5)->create();
+        Team::factory(5)->create();
+
+
     }
 }

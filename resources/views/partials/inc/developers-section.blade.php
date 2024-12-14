@@ -46,6 +46,18 @@
                                     </a>
                                 </li>
                             @endcan
+                                @can('location_access')
+                                    <li class="nav-item">
+                                    <a href="{{ route("admin.locations.index") }}" class="nav-link {{ request()->is("admin/locations") || request()->is("admin/locations/*") ? "active" : "" }}">
+                                        <i class="fa-fw nav-icon fas fa-map-marker">
+
+                                        </i>
+                                        <p>
+                                            {{ trans('cruds.location.title') }}
+                                        </p>
+                                    </a>
+                                </li>
+                                @endcan
                         </ul>
                     </li>
 @endcan

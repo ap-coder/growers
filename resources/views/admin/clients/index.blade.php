@@ -35,6 +35,12 @@
                         {{ trans('cruds.client.fields.name') }}
                     </th>
                     <th>
+                        {{ trans('cruds.client.fields.company_name') }}
+                    </th>
+                    <th>
+                        {{ trans('cruds.client.fields.is_verified') }}
+                    </th>
+                    <th>
                         &nbsp;
                     </th>
                 </tr>
@@ -93,6 +99,8 @@
 { data: 'id', name: 'id' },
 { data: 'published', name: 'published' },
 { data: 'name', name: 'name' },
+{ data: 'company_name', name: 'company_name' },
+{ data: 'is_verified', name: 'is_verified' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

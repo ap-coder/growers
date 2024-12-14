@@ -13,6 +13,7 @@
         "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.8",
         "laraveldaily/laravel-charts": "^0.1.29",
+        "nesbot/carbon": "^2.72",
         "nuovo/spreadsheet-reader": "^0.5.11",
         "opcodesio/log-viewer": "^3.6",
         "orangehill/iseed": "^3.0",

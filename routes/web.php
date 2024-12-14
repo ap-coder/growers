@@ -6,6 +6,14 @@ Route::get('userVerification/{token}', 'UserVerificationController@approve')->na
 
 Auth::routes();
 
+use App\Http\Controllers\ShopController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
+    Route::get('/shop/cart', [ShopController::class, 'cart'])->name('shop.cart');
+    Route::get('/shop/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
+});
+
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa', 'admin']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
@@ -120,6 +128,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Order Item
     Route::delete('order-items/destroy', 'OrderItemController@massDestroy')->name('order-items.massDestroy');
     Route::resource('order-items', 'OrderItemController');
+
+    // Location
+    Route::delete('locations/destroy', 'LocationController@massDestroy')->name('locations.massDestroy');
+    Route::resource('locations', 'LocationController');
 
     Route::get('global-search', 'GlobalSearchController@search')->name('globalSearch');
     Route::get('messenger', 'MessengerController@index')->name('messenger.index');

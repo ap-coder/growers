@@ -11,6 +11,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Spatie\Image\Manipulations;
+use Illuminate\Support\Facades\Cache;
+
 
 class Product extends Model implements HasMedia
 {
@@ -50,8 +53,13 @@ class Product extends Model implements HasMedia
 
     public function registerMediaConversions(Media $media = null): void
     {
-        $this->addMediaConversion('thumb')->fit('crop', 50, 50);
-        $this->addMediaConversion('preview')->fit('crop', 120, 120);
+        $this->addMediaConversion('original')->format(Manipulations::FORMAT_WEBP)->nonQueued();
+        $this->addMediaConversion('thumb')->format(Manipulations::FORMAT_WEBP)->width(150)->height(150)->nonQueued();
+        $this->addMediaConversion('preview')->format(Manipulations::FORMAT_WEBP)->width(120)->height(120)->nonQueued();
+        $this->addMediaConversion('additional')->crop('crop-center', 500, 500)->format(Manipulations::FORMAT_WEBP)->nonQueued();
+        $this->addMediaConversion('product')->crop('crop-center', 600, 600)->format(Manipulations::FORMAT_WEBP)->nonQueued();
+        $this->addMediaConversion('featured')->crop('crop-center', 120, 120)->format(Manipulations::FORMAT_WEBP)->nonQueued();
+        $this->addMediaConversion('responsive')->crop('crop-center', 470, 730)->format(Manipulations::FORMAT_WEBP)->withResponsiveImages()->nonQueued();
     }
 
     public function categories()
@@ -68,13 +76,37 @@ class Product extends Model implements HasMedia
     {
         $file = $this->getMedia('photo')->last();
         if ($file) {
-            $file->url       = $file->getUrl();
+            $file->url = $file->getUrl();
+            $file->original = $file->getUrl('original');
             $file->thumbnail = $file->getUrl('thumb');
-            $file->preview   = $file->getUrl('preview');
+            $file->preview = $file->getUrl('preview');
+            $file->additional = $file->getUrl('additional');
+            $file->product = $file->getUrl('product');
+            $file->featured = $file->getUrl('featured');
+            $file->responsive = $file->getUrl('responsive');
         }
 
         return $file;
     }
+
+//    public function getPhotoAttribute()
+//    {
+//        return Cache::remember("product_{$this->id}_photo", now()->addMinutes(10), function () {
+//            $file = $this->getMedia('photo')->last();
+//            if ($file) {
+//                $file->url = $file->getUrl();
+//                $file->original = $file->getUrl('original');
+//                $file->thumbnail = $file->getUrl('thumb');
+//                $file->preview = $file->getUrl('preview');
+//                $file->additional = $file->getUrl('additional');
+//                $file->product = $file->getUrl('product');
+//                $file->featured = $file->getUrl('featured');
+//                $file->responsive = $file->getUrl('responsive');
+//            }
+//
+//            return $file;
+//        });
+//    }
 
     public function getAdditionalPhotosAttribute()
     {
@@ -83,6 +115,8 @@ class Product extends Model implements HasMedia
             $item->url       = $item->getUrl();
             $item->thumbnail = $item->getUrl('thumb');
             $item->preview   = $item->getUrl('preview');
+            $item->additional = $item->getUrl('additional');
+            $item->responsive = $item->getUrl('responsive');
         });
 
         return $files;
@@ -98,15 +132,6 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ClientPrice::class, 'product_id', 'id');
     }
 
-    public function newQuery($excludeDeleted = true)
-    {
-        return parent::newQuery($excludeDeleted)->with(['categories', 'clients', 'clientPrices']);
-    }
-
-    public function clients_prices()
-    {
-        return $this->belongsTo(ClientPrice::class, 'clients_prices_id');
-    }
     public function team()
     {
         return $this->belongsTo(Team::class, 'team_id');

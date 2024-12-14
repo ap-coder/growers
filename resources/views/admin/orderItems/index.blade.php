@@ -34,7 +34,7 @@
                         {{ trans('cruds.orderItem.fields.quantity') }}
                     </th>
                     <th>
-                        {{ trans('cruds.orderItem.fields.total_price') }}
+                        {{ trans('cruds.orderItem.fields.sub_total') }}
                     </th>
                     <th>
                         &nbsp;
@@ -96,7 +96,7 @@
 { data: 'product_name', name: 'product.name' },
 { data: 'price', name: 'price' },
 { data: 'quantity', name: 'quantity' },
-{ data: 'total_price', name: 'total_price' },
+{ data: 'sub_total', name: 'sub_total' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,
@@ -108,7 +108,7 @@
       $($.fn.dataTable.tables(true)).DataTable()
           .columns.adjust();
   });
-  
+
 });
 
 </script>

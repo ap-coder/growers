@@ -2,6 +2,11 @@
 
 @section('title', 'About Us')
 
+@section('styles')
+    @parent
+
+@endsection
+
 @section('content')
 <div class="container">
     <div class="about-section">
@@ -23,4 +28,9 @@
         <p>Whether you are a seasoned gardener or just starting out, PlantZone offers everything you need to create your green oasis. From tropical plants to succulents, our goal is to provide you with a joyful experience as you cultivate your personal green space.</p>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+    @parent
+
 @endsection
