@@ -82,7 +82,9 @@
             'Account' => ['account'],
             'Admin' => ['admin'],
             'API' => ['api/'],
-            'Development' => ['_debugbar', 'log-viewer', 'sanctum', '_ignition', 'wecodelaravel', 'horizon', 'telescope', 'userVerificatio'],
+            'Logs' => ['log-viewer'],
+            'Telescope' => ['telescope'],
+            'Development' => ['_debugbar', 'sanctum', '_ignition', 'wecodelaravel', 'horizon', 'telescope', 'userVerificatio'],
         ];
     @endphp
 
