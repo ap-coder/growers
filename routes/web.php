@@ -14,6 +14,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
     Route::get('/shop/cart', [ShopController::class, 'cart'])->name('shop.cart');
     Route::get('/shop/checkout', [ShopController::class, 'checkout'])->name('shop.checkout');
+    Route::get('/shop/product/{product}', [ShopController::class, 'show'])->name('product.show');
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa', 'admin']], function () {
