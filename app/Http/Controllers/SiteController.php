@@ -47,7 +47,6 @@ class SiteController extends Controller
 //        return view('site.registration');
 //    }
 
-
     /**
      * Show the "What We Do" page.
      *

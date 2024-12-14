@@ -63,6 +63,6 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        return view('site.pages.login.index');  // The same login page for all users
+        return view('site.pages.login.index');
     }
 }
