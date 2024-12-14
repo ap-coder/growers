@@ -8,7 +8,7 @@
         <div class="page-wraper" id="scroll-container">
 
             <div id="loading-area" class="loading-page-1">
-                <div class="text"><span class="text-primary">Plant</span>Zone</div>
+                <div class="text"><span class="text-primary">Pacific Plant </span>Growers</div>
             </div>
 
             <!-- Header Section -->

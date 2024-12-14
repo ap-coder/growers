@@ -36,25 +36,17 @@ class SiteController extends Controller
         return view('site.pages.about.index');
     }
 
-    // /**
-    //  * Show the login page.
-    //  *
-    //  * @return \Illuminate\Contracts\Support\Renderable
-    //  */
-    // public function login()
-    // {
-    //     return view('site.login');
-    // }
+//    public function login()
+//    {
+//        return view('site.pages.login.index');
+//    }
+//
+//
+//    public function register()
+//    {
+//        return view('site.registration');
+//    }
 
-    // /**
-    //  * Show the registration page.
-    //  *
-    //  * @return \Illuminate\Contracts\Support\Renderable
-    //  */
-    // public function register()
-    // {
-    //     return view('site.registration');
-    // }
 
     /**
      * Show the "What We Do" page.
