@@ -6,65 +6,72 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <style>
-        body {padding-top: 30px; }
-        .explanation {margin-bottom: 20px; }
-        .panel-heading {cursor: pointer; }
-        .search-input {margin-bottom: 20px; }
+        body {
+            padding-top: 30px;
+        }
+        .explanation {
+            margin-bottom: 20px;
+        }
+        .panel-heading {
+            cursor: pointer;
+        }
+        .search-input {
+            margin-bottom: 20px;
+        }
+        #no-results-message {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             function searchRoutes() {
                 var searchTerm = $(".search-input").val().toLowerCase();
-                var panelFound = false;
+                var panelFound = false; // Tracks if any panel contains a match
 
                 // Iterate over each panel (section)
-                $(".panel").each(function() {
+                $(".panel").each(function () {
                     var panel = $(this);
-                    var hasVisibleRow = false;
+                    var hasVisibleRow = false; // Tracks if this panel has matching rows
 
-                    // Iterate over each row in the current panel's table
-                    panel.find(".routes-table tbody tr").each(function() {
+                    // Check each row within this panel's table
+                    panel.find(".routes-table tbody tr").each(function () {
                         var row = $(this);
-                        if (row.text().toLowerCase().indexOf(searchTerm) > -1) {
-                            row.show();
+                        if (row.text().toLowerCase().includes(searchTerm)) {
+                            row.show(); // Show matching row
                             hasVisibleRow = true;
                         } else {
-                            row.hide();
+                            row.hide(); // Hide non-matching row
                         }
                     });
 
-                    // If any row is visible in this panel, open the panel
+                    // Expand or collapse the panel based on whether it has visible rows
                     if (hasVisibleRow) {
-                        panel.find(".panel-collapse").collapse('show');
+                        panel.find(".panel-collapse").collapse('show'); // Expand the panel
                         panelFound = true;
                     } else {
-                        panel.find(".panel-collapse").collapse('hide');
+                        panel.find(".panel-collapse").collapse('hide'); // Collapse the panel
                     }
                 });
 
-                // Check if search returned any results at all
+                // Show or hide the "No matching routes found" message
                 if (!panelFound) {
-                    // Optionally display a message if no results are found
-                    console.log('No matching routes found.');
+                    $("#no-results-message").show();
+                } else {
+                    $("#no-results-message").hide();
                 }
             }
 
-            // Trigger search on keyup and on pressing Enter
-            $(".search-input").on("keyup", function(event) {
+            // Trigger search on input
+            $(".search-input").on("input", function () {
                 searchRoutes();
-            });
-
-            $(".search-input").on("keypress", function(event) {
-                if (event.keyCode === 13) {
-                    event.preventDefault(); // Prevent form submission on Enter
-                    searchRoutes();
-                }
             });
         });
     </script>
 </head>
 <body>
-<div class='container-fluid'>
+<div class="container-fluid">
     <div class="explanation">
         <p>Click on each section below to expand and view the routes. Sections are categorized into Development, API, Admin, and Non-Admin routes.</p>
     </div>
@@ -73,6 +80,7 @@
     <div class="row">
         <div class="col-md-12">
             <input type="text" class="form-control search-input" placeholder="Search routes...">
+            <div id="no-results-message">No matching routes found.</div>
         </div>
     </div>
 
@@ -84,7 +92,7 @@
             'API' => ['api/'],
             'Logs' => ['log-viewer'],
             'Telescope' => ['telescope'],
-            'Development' => ['_debugbar', 'sanctum', '_ignition', 'wecodelaravel', 'horizon', 'telescope', 'userVerificatio'],
+            'Development' => ['_debugbar', 'sanctum', '_ignition', 'wecodelaravel', 'horizon', 'telescope', 'userVerification'],
         ];
     @endphp
 
@@ -98,7 +106,32 @@
                 </div>
                 <div id="collapse{{ $loop->index }}" class="panel-collapse collapse">
                     <div class="panel-body">
-                        @include('site.layouts.partials.routes_table', ['routes' => Route::getRoutes(), 'prefixes' => $prefixes, 'section' => strtolower($section)])
+                        <table class="routes-table table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Method</th>
+                                    <th>URI</th>
+                                    <th>Name</th>
+                                    <th>Controller</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (Route::getRoutes() as $route)
+                                    @if (empty($prefixes) || collect($prefixes)->some(fn($prefix) => str_contains($route->uri, $prefix)))
+                                        <tr>
+                                            <td>{{ implode('|', $route->methods) }}</td>
+                                            <td>
+                                                <a href="{{ url($route->uri) }}" target="_blank">
+                                                    {{ $route->uri }}
+                                                </a>
+                                            </td>
+                                            <td>{{ $route->getName() }}</td>
+                                            <td>{{ $route->getActionName() }}</td>
+                                        </tr>
+                                    @endif
+                                @endforeach
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
