@@ -84,6 +84,7 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 
 ### Low Priority
 5. **Seasonal categories/tags** - Valentines, Spring, Mother's Day, etc.
+6. **Product identifiers** - Need clarification on identifiers table for checkout vs accounting
 
 ## Database Migrations Run
 - `2024_12_31_000001_create_accessory_types_table`
@@ -94,6 +95,8 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - `2024_12_31_000006_add_client_id_to_users_table`
 - `2024_12_31_000007_add_fields_to_clients_table`
 - `2024_12_31_000008_add_fields_to_orders_table`
+- `2024_12_31_000009_add_fields_to_settings_table`
+- `2024_12_31_000010_add_logo_to_clients_table`
 
 ## Key Business Rules (from guidelines/)
 - No pricing visible to public - must be logged in

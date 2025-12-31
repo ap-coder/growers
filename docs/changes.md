@@ -119,7 +119,33 @@ Created placeholder structure for future frontend integration:
 - Copied `xhtml/vendor/` → `public/site/vendor/`
 - Copied `xhtml/images/` → `public/site/images/`
 - All site views reference `public/site/` paths
+- Disabled newsletter popup modal in `public/site/js/custom.js`
 - `xhtml/` folder can be removed once all pages are integrated
+
+#### Settings System (Enhanced)
+- Added `type`, `group`, `label`, `description` fields to settings table
+- Types: text, textarea, image, boolean, select
+- Groups: general, login, branding, contact
+- Helper methods: `Setting::get($key)`, `Setting::set($key, $value, ...)`
+- Admin forms updated with dynamic value inputs based on type
+- Image upload support for settings
+
+#### Client Settings
+- Added `logo` field to clients table
+- Logo upload support in Client admin forms
+- Logos stored in `storage/app/public/clients/`
+
+#### Order Layout (Guidelines Match)
+- Updated Order show view with two-column layout
+- Left side: Client info, order details, items grouped by category, special instructions
+- Right side: UPC codes table with Qty, UPC, Product
+- Added print route and printable order ticket view
+- Print view matches guidelines layout exactly
+
+#### Profile Page Updates
+- Added Company Information section showing client details
+- Displays: Company Name, Store Number, Contact Name/Phone/Email, Delivery Address, Delivery Notes
+- Read-only display (admin manages client info)
 
 ---
 
