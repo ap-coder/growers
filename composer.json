@@ -16,6 +16,7 @@
         "nuovo/spreadsheet-reader": "^0.5.11",
         "opcodesio/log-viewer": "^3.6",
         "orangehill/iseed": "^3.0",
+        "pragmarx/health": "^0.3.3",
         "spatie/laravel-medialibrary": "^10.7",
         "wecodelaravel/laravel-menu": "dev-master",
         "yajra/laravel-datatables-oracle": "^10.3"

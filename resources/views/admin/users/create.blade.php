@@ -73,6 +73,25 @@
                 <span class="help-block">{{ trans('cruds.user.fields.team_helper') }}</span>
             </div>
             <div class="form-group">
+                <label for="client_id">Client</label>
+                <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id">
+                    @foreach($clients as $id => $entry)
+                        <option value="{{ $id }}" {{ old('client_id') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                    @endforeach
+                </select>
+                @if($errors->has('client_id'))
+                    <span class="text-danger">{{ $errors->first('client_id') }}</span>
+                @endif
+                <span class="help-block">Assign this user to a client for frontend access</span>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}" type="text" name="phone" id="phone" value="{{ old('phone', '') }}">
+                @if($errors->has('phone'))
+                    <span class="text-danger">{{ $errors->first('phone') }}</span>
+                @endif
+            </div>
+            <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}
                 </button>

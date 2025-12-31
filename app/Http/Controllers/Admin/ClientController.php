@@ -73,7 +73,14 @@ class ClientController extends Controller
 
     public function store(StoreClientRequest $request)
     {
-        $client = Client::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('clients', 'public');
+            $data['logo'] = $path;
+        }
+
+        $client = Client::create($data);
 
         return redirect()->route('admin.clients.index');
     }
@@ -102,7 +109,14 @@ class ClientController extends Controller
 
     public function update(UpdateClientRequest $request, Client $client)
     {
-        $client->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('logo')) {
+            $path = $request->file('logo')->store('clients', 'public');
+            $data['logo'] = $path;
+        }
+
+        $client->update($data);
 
         return redirect()->route('admin.clients.index');
     }

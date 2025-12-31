@@ -44,6 +44,47 @@
                 <span class="help-block">{{ trans('cruds.order.fields.status_helper') }}</span>
             </div>
             <div class="form-group">
+                <label for="delivery_date">Requested Delivery Date</label>
+                <input class="form-control date {{ $errors->has('delivery_date') ? 'is-invalid' : '' }}" type="text" name="delivery_date" id="delivery_date" value="{{ old('delivery_date', $order->delivery_date) }}">
+                @if($errors->has('delivery_date'))
+                    <span class="text-danger">{{ $errors->first('delivery_date') }}</span>
+                @endif
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="ordered_by_name">Ordered By (Name)</label>
+                        <input class="form-control {{ $errors->has('ordered_by_name') ? 'is-invalid' : '' }}" type="text" name="ordered_by_name" id="ordered_by_name" value="{{ old('ordered_by_name', $order->ordered_by_name) }}">
+                        @if($errors->has('ordered_by_name'))
+                            <span class="text-danger">{{ $errors->first('ordered_by_name') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="ordered_by_phone">Ordered By (Phone)</label>
+                        <input class="form-control {{ $errors->has('ordered_by_phone') ? 'is-invalid' : '' }}" type="text" name="ordered_by_phone" id="ordered_by_phone" value="{{ old('ordered_by_phone', $order->ordered_by_phone) }}">
+                        @if($errors->has('ordered_by_phone'))
+                            <span class="text-danger">{{ $errors->first('ordered_by_phone') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="special_request">Special Request</label>
+                <textarea class="form-control {{ $errors->has('special_request') ? 'is-invalid' : '' }}" name="special_request" id="special_request" rows="3">{{ old('special_request', $order->special_request) }}</textarea>
+                @if($errors->has('special_request'))
+                    <span class="text-danger">{{ $errors->first('special_request') }}</span>
+                @endif
+            </div>
+            <div class="form-group">
+                <label for="delivery_details">Delivery Details</label>
+                <textarea class="form-control {{ $errors->has('delivery_details') ? 'is-invalid' : '' }}" name="delivery_details" id="delivery_details" rows="2">{{ old('delivery_details', $order->delivery_details) }}</textarea>
+                @if($errors->has('delivery_details'))
+                    <span class="text-danger">{{ $errors->first('delivery_details') }}</span>
+                @endif
+            </div>
+            <div class="form-group">
                 <label for="shipping_cost">{{ trans('cruds.order.fields.shipping_cost') }}</label>
                 <input class="form-control {{ $errors->has('shipping_cost') ? 'is-invalid' : '' }}" type="number" name="shipping_cost" id="shipping_cost" value="{{ old('shipping_cost', $order->shipping_cost) }}" step="0.01">
                 @if($errors->has('shipping_cost'))

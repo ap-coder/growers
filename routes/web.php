@@ -1,5 +1,7 @@
 <?php
 
+Route::get('/', function () { return redirect('/login'); });
+
 Route::get('r', function () { return view('site.routes'); })->name('assigned-routes'); //->middleware('auth');
 
 Route::get('userVerification/{token}', 'UserVerificationController@approve')->name('userVerification');
@@ -97,6 +99,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Order
     Route::delete('orders/destroy', 'OrderController@massDestroy')->name('orders.massDestroy');
+    Route::get('orders/{order}/print', 'OrderController@print')->name('orders.print');
     Route::resource('orders', 'OrderController');
 
     // Client
@@ -133,6 +136,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('messenger/{topic}/reply', 'MessengerController@showReply')->name('messenger.showReply');
     Route::get('team-members', 'TeamMembersController@index')->name('team-members.index');
     Route::post('team-members', 'TeamMembersController@invite')->name('team-members.invite');
+
+    // Accessory Types
+    Route::delete('accessory-types/destroy', 'AccessoryTypeController@massDestroy')->name('accessory-types.massDestroy');
+    Route::resource('accessory-types', 'AccessoryTypeController');
+
+    // Accessories
+    Route::delete('accessories/destroy', 'AccessoryController@massDestroy')->name('accessories.massDestroy');
+    Route::resource('accessories', 'AccessoryController');
 });
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {

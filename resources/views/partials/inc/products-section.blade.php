@@ -1,6 +1,6 @@
 @can('product_management_access')
-    <li class="nav-item has-treeview {{ request()->is("admin/products*") ? "menu-open" : "" }} {{ request()->is("admin/product-categories*") ? "menu-open" : "" }} {{ request()->is("admin/product-tags*") ? "menu-open" : "" }}">
-                        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/products*") ? "active" : "" }} {{ request()->is("admin/product-categories*") ? "active" : "" }} {{ request()->is("admin/product-tags*") ? "active" : "" }}" href="#">
+    <li class="nav-item has-treeview {{ request()->is("admin/products*") ? "menu-open" : "" }} {{ request()->is("admin/product-categories*") ? "menu-open" : "" }} {{ request()->is("admin/product-tags*") ? "menu-open" : "" }} {{ request()->is("admin/accessor*") ? "menu-open" : "" }}">
+                        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/products*") ? "active" : "" }} {{ request()->is("admin/product-categories*") ? "active" : "" }} {{ request()->is("admin/product-tags*") ? "active" : "" }} {{ request()->is("admin/accessor*") ? "active" : "" }}" href="#">
                             <i class="fa-fw nav-icon fas fa-shopping-cart">
 
                             </i>
@@ -42,6 +42,30 @@
                                         </i>
                                         <p>
                                             {{ trans('cruds.productTag.title') }}
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('accessory_type_access')
+                                <li class="nav-item">
+                                    <a href="{{ route("admin.accessory-types.index") }}" class="nav-link {{ request()->is("admin/accessory-types") || request()->is("admin/accessory-types/*") ? "active" : "" }}">
+                                        <i class="fa-fw nav-icon fas fa-puzzle-piece">
+
+                                        </i>
+                                        <p>
+                                            Accessory Types
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('accessory_access')
+                                <li class="nav-item">
+                                    <a href="{{ route("admin.accessories.index") }}" class="nav-link {{ request()->is("admin/accessories") || request()->is("admin/accessories/*") ? "active" : "" }}">
+                                        <i class="fa-fw nav-icon fas fa-plus-circle">
+
+                                        </i>
+                                        <p>
+                                            Accessories
                                         </p>
                                     </a>
                                 </li>

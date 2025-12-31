@@ -39,6 +39,8 @@ class User extends Authenticatable
         'email',
         'email_verified_at',
         'password',
+        'phone',
+        'client_id',
         'approved',
         'verified',
         'verified_at',
@@ -154,6 +156,11 @@ class User extends Authenticatable
     public function team()
     {
         return $this->belongsTo(Team::class, 'team_id');
+    }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
     }
 
     public function getTwoFactorExpiresAtAttribute($value)

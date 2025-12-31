@@ -137,7 +137,7 @@ class ProductController extends Controller
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::select('id', 'name')->get();
 
-        $product->load('categories', 'tags', 'clients', 'clientPrices', 'clientPrices.client', 'team');
+        $product->load('categories', 'tags', 'clients', 'clientPrices', 'clientPrices.client', 'team', 'accessories');
 
         $prices = $product->clientPrices;
 
@@ -152,6 +152,16 @@ class ProductController extends Controller
         $product->categories()->sync($request->input('categories', []));
         $product->tags()->sync($request->input('tags', []));
         $product->clients()->sync($request->input('clients', []));
+
+        // Sync accessories with pivot data
+        $accessoriesData = [];
+        foreach ($request->input('accessories', []) as $accessoryId) {
+            $accessoriesData[$accessoryId] = [
+                'is_default' => $request->has("accessory_defaults.{$accessoryId}"),
+                'is_required' => $request->has("accessory_required.{$accessoryId}"),
+            ];
+        }
+        $product->accessories()->sync($accessoriesData);
 
         if ($request->has('client_prices')) {
             $clientPricesData = [];

@@ -110,9 +110,18 @@ class OrderController extends Controller
     {
         abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $order->load('client', 'team');
+        $order->load('client', 'team', 'orderItems.product.categories');
 
         return view('admin.orders.show', compact('order'));
+    }
+
+    public function print(Order $order)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $order->load('client', 'team', 'orderItems.product.categories');
+
+        return view('admin.orders.print', compact('order'));
     }
 
     public function destroy(Order $order)

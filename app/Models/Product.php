@@ -111,4 +111,22 @@ class Product extends Model implements HasMedia
     {
         return $this->belongsTo(Team::class, 'team_id');
     }
+
+    public function accessories()
+    {
+        return $this->belongsToMany(Accessory::class, 'product_accessory')
+            ->withPivot(['is_default', 'is_required'])
+            ->withTimestamps();
+    }
+
+    /**
+     * Get accessories grouped by their type for display
+     */
+    public function getAccessoriesByType()
+    {
+        return $this->accessories()
+            ->with('accessoryType')
+            ->get()
+            ->groupBy('accessory_type_id');
+    }
 }

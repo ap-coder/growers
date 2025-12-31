@@ -39,6 +39,7 @@ class ClientPrice extends Model implements HasMedia
         'qb_2',
         'created_at',
         'client_id',
+        'product_id',
         'updated_at',
         'deleted_at',
         'team_id',

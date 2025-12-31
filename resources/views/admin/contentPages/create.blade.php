@@ -29,6 +29,43 @@
                 <span class="help-block">{{ trans('cruds.contentPage.fields.title_helper') }}</span>
             </div>
             <div class="form-group">
+                <label for="slug">Slug (URL)</label>
+                <input class="form-control {{ $errors->has('slug') ? 'is-invalid' : '' }}" type="text" name="slug" id="slug" value="{{ old('slug', '') }}">
+                @if($errors->has('slug'))
+                    <span class="text-danger">{{ $errors->first('slug') }}</span>
+                @endif
+                <span class="help-block">Leave blank to auto-generate from title</span>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="page_type">Page Type</label>
+                        <select class="form-control {{ $errors->has('page_type') ? 'is-invalid' : '' }}" name="page_type" id="page_type">
+                            @foreach($pageTypes as $key => $label)
+                                <option value="{{ $key }}" {{ old('page_type') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @if($errors->has('page_type'))
+                            <span class="text-danger">{{ $errors->first('page_type') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="client_id">Client (for client-specific pages)</label>
+                        <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id">
+                            @foreach($clients as $id => $name)
+                                <option value="{{ $id }}" {{ old('client_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                            @endforeach
+                        </select>
+                        @if($errors->has('client_id'))
+                            <span class="text-danger">{{ $errors->first('client_id') }}</span>
+                        @endif
+                        <span class="help-block">Select a client to make this page visible only to that client</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
                 <label for="categories">{{ trans('cruds.contentPage.fields.category') }}</label>
                 <div style="padding-bottom: 4px">
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>

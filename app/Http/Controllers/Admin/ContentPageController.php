@@ -7,6 +7,7 @@ use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroyContentPageRequest;
 use App\Http\Requests\StoreContentPageRequest;
 use App\Http\Requests\UpdateContentPageRequest;
+use App\Models\Client;
 use App\Models\ContentCategory;
 use App\Models\ContentPage;
 use App\Models\ContentTag;
@@ -33,10 +34,11 @@ class ContentPageController extends Controller
         abort_if(Gate::denies('content_page_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = ContentCategory::pluck('name', 'id');
-
         $tags = ContentTag::pluck('name', 'id');
+        $clients = Client::pluck('name', 'id')->prepend('-- General (All Clients) --', '');
+        $pageTypes = ContentPage::PAGE_TYPE_SELECT;
 
-        return view('admin.contentPages.create', compact('categories', 'tags'));
+        return view('admin.contentPages.create', compact('categories', 'tags', 'clients', 'pageTypes'));
     }
 
     public function store(StoreContentPageRequest $request)
@@ -60,12 +62,13 @@ class ContentPageController extends Controller
         abort_if(Gate::denies('content_page_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = ContentCategory::pluck('name', 'id');
-
         $tags = ContentTag::pluck('name', 'id');
+        $clients = Client::pluck('name', 'id')->prepend('-- General (All Clients) --', '');
+        $pageTypes = ContentPage::PAGE_TYPE_SELECT;
 
-        $contentPage->load('categories', 'tags');
+        $contentPage->load('categories', 'tags', 'client');
 
-        return view('admin.contentPages.edit', compact('categories', 'contentPage', 'tags'));
+        return view('admin.contentPages.edit', compact('categories', 'contentPage', 'tags', 'clients', 'pageTypes'));
     }
 
     public function update(UpdateContentPageRequest $request, ContentPage $contentPage)

@@ -62,12 +62,22 @@ class SettingController extends Controller
     {
         abort_if(Gate::denies('setting_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.settings.create');
+        $types = Setting::TYPE_SELECT;
+        $groups = Setting::GROUP_SELECT;
+
+        return view('admin.settings.create', compact('types', 'groups'));
     }
 
     public function store(StoreSettingRequest $request)
     {
-        $setting = Setting::create($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image_value') && $request->input('type') === 'image') {
+            $path = $request->file('image_value')->store('settings', 'public');
+            $data['value'] = $path;
+        }
+
+        Setting::create($data);
 
         return redirect()->route('admin.settings.index');
     }
@@ -76,12 +86,22 @@ class SettingController extends Controller
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('admin.settings.edit', compact('setting'));
+        $types = Setting::TYPE_SELECT;
+        $groups = Setting::GROUP_SELECT;
+
+        return view('admin.settings.edit', compact('setting', 'types', 'groups'));
     }
 
     public function update(UpdateSettingRequest $request, Setting $setting)
     {
-        $setting->update($request->all());
+        $data = $request->all();
+
+        if ($request->hasFile('image_value') && $request->input('type') === 'image') {
+            $path = $request->file('image_value')->store('settings', 'public');
+            $data['value'] = $path;
+        }
+
+        $setting->update($data);
 
         return redirect()->route('admin.settings.index');
     }

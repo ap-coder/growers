@@ -28,7 +28,10 @@ class ContentPage extends Model implements HasMedia
 
     protected $fillable = [
         'published',
+        'client_id',
         'title',
+        'slug',
+        'page_type',
         'page_text',
         'excerpt',
         'created_at',
@@ -68,4 +71,16 @@ class ContentPage extends Model implements HasMedia
 
         return $file;
     }
+
+    public function client()
+    {
+        return $this->belongsTo(Client::class, 'client_id');
+    }
+
+    public const PAGE_TYPE_SELECT = [
+        'general' => 'General',
+        'how_to_order' => 'How to Order',
+        'allocation_schedule' => 'Allocation Schedule',
+        'delivery_info' => 'Delivery Information',
+    ];
 }

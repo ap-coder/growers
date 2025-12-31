@@ -36,6 +36,11 @@ class Order extends Model
         'client_id',
         'number',
         'status',
+        'delivery_date',
+        'special_request',
+        'delivery_details',
+        'ordered_by_name',
+        'ordered_by_phone',
         'shipping_cost',
         'order_total',
         'total_price',
@@ -58,5 +63,10 @@ class Order extends Model
     public function team()
     {
         return $this->belongsTo(Team::class, 'team_id');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'items_id');
     }
 }
