@@ -32,6 +32,7 @@
                             <a class="nav-link active" id="vert-tabs-gen-tab" data-toggle="pill" href="#vert-tabs-gen" role="tab" aria-controls="vert-tabs-gen" aria-selected="true">General</a>
                             <a class="nav-link" id="vert-tabs-cat-tab" data-toggle="pill" href="#vert-tabs-cat" role="tab" aria-controls="vert-tabs-cat" aria-selected="false">Categories</a>
                             <a class="nav-link" id="vert-tabs-pricing-tab" data-toggle="pill" href="#vert-tabs-pricing" role="tab" aria-controls="vert-tabs-pricing" aria-selected="false">Pricing</a>
+                            <a class="nav-link" id="vert-tabs-bundle-tab" data-toggle="pill" href="#vert-tabs-bundle" role="tab" aria-controls="vert-tabs-bundle" aria-selected="false" style="{{ $product->product_type !== 'set' ? 'display:none;' : '' }}">Bundle Items</a>
                             <a class="nav-link" id="vert-tabs-accessories-tab" data-toggle="pill" href="#vert-tabs-accessories" role="tab" aria-controls="vert-tabs-accessories" aria-selected="false">Accessories</a>
                             <a class="nav-link" id="vert-tabs-settings-tab" data-toggle="pill" href="#vert-tabs-settings" role="tab" aria-controls="vert-tabs-settings" aria-selected="false">Settings</a>
                         </div>
@@ -55,6 +56,16 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="product_type">Product Type</label>
+                                    <select name="product_type" id="product_type" class="form-control">
+                                        @foreach(\App\Models\Product::TYPE_SELECT as $key => $label)
+                                            <option value="{{ $key }}" {{ old('product_type', $product->product_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-md-3 d-flex align-items-center">
                                 <div class="form-group form-check mb-0">
                                     <input type="checkbox" class="form-check-input" id="featured" name="featured" value="1" {{ old('featured', $product->featured) ? 'checked' : '' }}>
@@ -71,6 +82,17 @@
                                 <span class="help-block">{{ trans('cruds.product.fields.quantity_helper') }}</span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="form-group" id="accessory_type_group" style="{{ $product->product_type !== 'accessory' ? 'display:none;' : '' }}">
+                            <label for="accessory_type_id">Accessory Type</label>
+                            <select class="form-control" name="accessory_type_id" id="accessory_type_id">
+                                <option value="">-- Select Type --</option>
+                                @foreach(\App\Models\AccessoryType::orderBy('name')->get() as $type)
+                                    <option value="{{ $type->id }}" {{ old('accessory_type_id', $product->accessory_type_id) == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                @endforeach
+                            </select>
+                            <span class="help-block">Group this accessory by type</span>
                         </div>
 
                         <div class="form-group">
@@ -117,6 +139,11 @@
                                     'product' => $product,
                                     'clients' => $clients
                                 ])
+                    </div>
+
+                    <!-- Bundle Items Tab (for Sets) -->
+                    <div class="tab-pane fade" id="vert-tabs-bundle" role="tabpanel" aria-labelledby="vert-tabs-bundle-tab">
+                        @include('admin.products.partials.bundle_items')
                     </div>
 
                     <!-- Accessories Tab -->
@@ -382,6 +409,115 @@
                     alert("Error adding client: " + error);
                 }
             });
+        });
+
+        // Product type change handler - show/hide tabs and fields
+        $('#product_type').on('change', function() {
+            var type = $(this).val();
+            
+            // Show/hide accessory type field
+            if (type === 'accessory') {
+                $('#accessory_type_group').show();
+            } else {
+                $('#accessory_type_group').hide();
+            }
+            
+            // Show/hide bundle tab
+            if (type === 'set') {
+                $('#vert-tabs-bundle-tab').show();
+            } else {
+                $('#vert-tabs-bundle-tab').hide();
+            }
+        });
+
+        // Bundle items management
+        var groupIndex = {{ $product->bundleItems ? $product->bundleItems->groupBy('group_name')->count() : 1 }};
+        
+        // Add new group
+        $('#addBundleGroupBtn').on('click', function() {
+            var newGroup = `
+                <div class="bundle-group card mb-3">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <input type="text" class="form-control form-control-sm w-50 group-name-input" 
+                               name="bundle_groups[${groupIndex}][name]" 
+                               value="" 
+                               placeholder="Group name (e.g., Choose your basket)">
+                        <button type="button" class="btn btn-sm btn-danger remove-group-btn">
+                            <i class="fas fa-trash"></i> Remove Group
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th width="80">Qty</th>
+                                    <th width="100">Required</th>
+                                    <th width="100">Selectable</th>
+                                    <th width="50"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="bundle-items-body">
+                                <tr class="bundle-item-row">
+                                    <td>
+                                        <select name="bundle_groups[${groupIndex}][items][0][product_id]" class="form-control form-control-sm">
+                                            <option value="">-- Select Product --</option>
+                                            @foreach(\App\Models\Product::where('id', '!=', $product->id)->orderBy('name')->get() as $p)
+                                                <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->product_type) }})</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="bundle_groups[${groupIndex}][items][0][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
+                                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_required]" value="1" checked></td>
+                                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_selectable]" value="1"></td>
+                                    <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-sm btn-outline-primary add-item-btn">
+                            <i class="fas fa-plus"></i> Add Item to Group
+                        </button>
+                    </div>
+                </div>
+            `;
+            $('#bundleItemsContainer').append(newGroup);
+            groupIndex++;
+        });
+
+        // Remove group
+        $(document).on('click', '.remove-group-btn', function() {
+            $(this).closest('.bundle-group').remove();
+        });
+
+        // Add item to group
+        $(document).on('click', '.add-item-btn', function() {
+            var tbody = $(this).siblings('table').find('.bundle-items-body');
+            var groupCard = $(this).closest('.bundle-group');
+            var groupIdx = groupCard.index();
+            var itemIdx = tbody.find('tr').length;
+            
+            var newRow = `
+                <tr class="bundle-item-row">
+                    <td>
+                        <select name="bundle_groups[${groupIdx}][items][${itemIdx}][product_id]" class="form-control form-control-sm">
+                            <option value="">-- Select Product --</option>
+                            @foreach(\App\Models\Product::where('id', '!=', $product->id)->orderBy('name')->get() as $p)
+                                <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->product_type) }})</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td><input type="number" name="bundle_groups[${groupIdx}][items][${itemIdx}][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
+                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIdx}][items][${itemIdx}][is_required]" value="1"></td>
+                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIdx}][items][${itemIdx}][is_selectable]" value="1"></td>
+                    <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>
+                </tr>
+            `;
+            tbody.append(newRow);
+        });
+
+        // Remove item
+        $(document).on('click', '.remove-item-btn', function() {
+            $(this).closest('tr').remove();
         });
     </script>
 @endsection

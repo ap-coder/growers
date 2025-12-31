@@ -41,13 +41,43 @@
                             <span class="help-block">{{ trans('cruds.product.fields.quantity_helper') }}</span>
             </div>
 
-            <div class="form-group">
-                <label class="required" for="name">{{ trans('cruds.product.fields.name') }}</label>
-                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>
-                @if($errors->has('name'))
-                    <span class="text-danger">{{ $errors->first('name') }}</span>
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="form-group">
+                        <label class="required" for="name">{{ trans('cruds.product.fields.name') }}</label>
+                        <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', '') }}" required>
+                        @if($errors->has('name'))
+                            <span class="text-danger">{{ $errors->first('name') }}</span>
+                        @endif
+                        <span class="help-block">{{ trans('cruds.product.fields.name_helper') }}</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="required" for="product_type">Product Type</label>
+                        <select class="form-control {{ $errors->has('product_type') ? 'is-invalid' : '' }}" name="product_type" id="product_type" required>
+                            @foreach(\App\Models\Product::TYPE_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('product_type', 'standard') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @if($errors->has('product_type'))
+                            <span class="text-danger">{{ $errors->first('product_type') }}</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" id="accessory_type_group" style="display: none;">
+                <label for="accessory_type_id">Accessory Type</label>
+                <select class="form-control {{ $errors->has('accessory_type_id') ? 'is-invalid' : '' }}" name="accessory_type_id" id="accessory_type_id">
+                    <option value="">-- Select Type --</option>
+                    @foreach(\App\Models\AccessoryType::orderBy('name')->get() as $type)
+                        <option value="{{ $type->id }}" {{ old('accessory_type_id') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                    @endforeach
+                </select>
+                @if($errors->has('accessory_type_id'))
+                    <span class="text-danger">{{ $errors->first('accessory_type_id') }}</span>
                 @endif
-                <span class="help-block">{{ trans('cruds.product.fields.name_helper') }}</span>
+                <span class="help-block">Group this accessory by type (e.g., Basket, Card Holder)</span>
             </div>
             <div class="form-group">
                 <label for="description">{{ trans('cruds.product.fields.description') }}</label>
@@ -206,6 +236,20 @@
 
 @section('scripts')
 <script>
+    // Show/hide accessory type based on product type selection
+    $(function() {
+        function toggleAccessoryType() {
+            var type = $('#product_type').val();
+            if (type === 'accessory') {
+                $('#accessory_type_group').show();
+            } else {
+                $('#accessory_type_group').hide();
+            }
+        }
+        $('#product_type').on('change', toggleAccessoryType);
+        toggleAccessoryType();
+    });
+
     Dropzone.options.photoDropzone = {
     url: '{{ route('admin.products.storeMedia') }}',
     maxFilesize: 2, // MB
