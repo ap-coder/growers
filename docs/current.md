@@ -54,6 +54,18 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - Helper method: `$product->getPriceForClient($clientId)` returns client price or base price
 - Product admin forms updated with Pricing & Identifiers section
 
+### Product Types (Unified Model)
+- **Product model** now has `product_type` field: `standard`, `accessory`, `set`
+- Accessories are now products with `product_type = 'accessory'`
+- Sets/Bundles are products with `product_type = 'set'`
+- `accessory_type_id` field links to AccessoryType for grouping
+- **ProductBundleItem model** for set contents:
+  - `bundle_product_id` - the set product
+  - `item_product_id` - product included in set
+  - `quantity`, `is_required`, `is_selectable`, `group_name`
+- Helper scopes: `Product::standard()`, `Product::accessories()`, `Product::sets()`
+- See `docs/features.md` for comprehensive documentation
+
 ### Settings System (Enhanced)
 - Added `type`, `group`, `label`, `description` fields to settings table
 - Types: text, textarea, image, boolean, select
@@ -64,6 +76,18 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 
 ### Client Settings
 - Added `logo` field to clients table
+
+### Client Addresses (Multi-Location Support)
+- **ClientAddress model** for managing multiple addresses per client
+- Address types: `corporate`, `shipping`, `billing`
+- Each address can have:
+  - Label (e.g., "Store #123", "Main Warehouse")
+  - Full address fields (line 1, line 2, city, state, postal, country)
+  - Contact info (name, phone, email)
+  - Delivery notes and special instructions
+  - Primary flag for default selection
+- Client admin views updated with addresses section
+- Relationships: `$client->addresses()`, `$client->shippingAddresses()`, `$client->primaryShippingAddress()`
 - Logo upload support in Client admin forms
 - Logos stored in `storage/app/public/clients/`
 
@@ -109,6 +133,9 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - `2024_12_31_000009_add_fields_to_settings_table`
 - `2024_12_31_000010_add_logo_to_clients_table`
 - `2024_12_31_000011_add_pricing_fields_to_products_table`
+- `2024_12_31_000012_add_product_type_to_products_table`
+- `2024_12_31_000013_create_product_bundle_items_table`
+- `2024_12_31_000014_create_client_addresses_table`
 
 ## Key Business Rules (from guidelines/)
 - No pricing visible to public - must be logged in

@@ -12,6 +12,7 @@ use App\Models\Client;
 
 use App\Models\ClientPrice;
 use App\Models\Product;
+use App\Models\ProductBundleItem;
 use App\Models\ProductCategory;
 use App\Models\ProductTag;
 use Gate;
@@ -137,7 +138,7 @@ class ProductController extends Controller
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::select('id', 'name')->get();
 
-        $product->load('categories', 'tags', 'clients', 'clientPrices', 'clientPrices.client', 'team', 'accessories');
+        $product->load('categories', 'tags', 'clients', 'clientPrices', 'clientPrices.client', 'team', 'accessories', 'bundleItems.itemProduct');
 
         $prices = $product->clientPrices;
 
@@ -190,11 +191,50 @@ class ProductController extends Controller
 
         //dd($request->all());
 
+        // Handle bundle items for sets
+        if ($product->product_type === 'set' && $request->has('bundle_groups')) {
+            $this->syncBundleItems($product, $request->input('bundle_groups'));
+        }
+
         $this->handlePhotoUpload($request, $product);
         $this->handleAdditionalPhotos($request, $product);
         $this->handleCKMedia($request, $product);
 
         return redirect()->route('admin.products.index');
+    }
+
+    /**
+     * Sync bundle items for a set/bundle product
+     */
+    private function syncBundleItems(Product $product, array $bundleGroups)
+    {
+        // Delete existing bundle items
+        $product->bundleItems()->delete();
+        
+        $sortOrder = 0;
+        foreach ($bundleGroups as $group) {
+            $groupName = $group['name'] ?? 'Default';
+            
+            if (!isset($group['items'])) {
+                continue;
+            }
+            
+            foreach ($group['items'] as $item) {
+                if (empty($item['product_id'])) {
+                    continue;
+                }
+                
+                ProductBundleItem::create([
+                    'bundle_product_id' => $product->id,
+                    'item_product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'] ?? 1,
+                    'is_required' => isset($item['is_required']),
+                    'is_selectable' => isset($item['is_selectable']),
+                    'group_name' => $groupName,
+                    'sort_order' => $sortOrder++,
+                ]);
+            }
+        }
     }
 
     public function show(Product $product)

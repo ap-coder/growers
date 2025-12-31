@@ -8,6 +8,7 @@ use App\Http\Requests\MassDestroyClientRequest;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
+use App\Models\ClientAddress;
 use App\Models\ClientPrice;
 use Gate;
 use Illuminate\Http\Request;
@@ -82,6 +83,11 @@ class ClientController extends Controller
 
         $client = Client::create($data);
 
+        // Handle addresses
+        if ($request->has('addresses')) {
+            $this->syncAddresses($client, $request->input('addresses'));
+        }
+
         return redirect()->route('admin.clients.index');
     }
 
@@ -102,7 +108,7 @@ class ClientController extends Controller
 
         $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $client->load('prices', 'team');
+        $client->load('prices', 'team', 'addresses');
 
         return view('admin.clients.edit', compact('client', 'prices'));
     }
@@ -118,7 +124,42 @@ class ClientController extends Controller
 
         $client->update($data);
 
+        // Handle addresses
+        if ($request->has('addresses')) {
+            $this->syncAddresses($client, $request->input('addresses'));
+        }
+
         return redirect()->route('admin.clients.index');
+    }
+
+    private function syncAddresses(Client $client, array $addresses)
+    {
+        $existingIds = [];
+        
+        foreach ($addresses as $addressData) {
+            if (empty($addressData['address_line_1'])) {
+                continue;
+            }
+            
+            $addressData['client_id'] = $client->id;
+            $addressData['is_primary'] = isset($addressData['is_primary']) ? 1 : 0;
+            
+            if (!empty($addressData['id'])) {
+                // Update existing
+                $address = ClientAddress::find($addressData['id']);
+                if ($address && $address->client_id == $client->id) {
+                    $address->update($addressData);
+                    $existingIds[] = $address->id;
+                }
+            } else {
+                // Create new
+                $address = ClientAddress::create($addressData);
+                $existingIds[] = $address->id;
+            }
+        }
+        
+        // Delete addresses not in the submitted list
+        $client->addresses()->whereNotIn('id', $existingIds)->delete();
     }
 
     public function show(Client $client)

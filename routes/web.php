@@ -11,6 +11,12 @@ Auth::routes();
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa', 'admin']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
+    
+    // Documentation
+    Route::get('/docs', function() {
+        $content = file_get_contents(base_path('docs/features.md'));
+        return view('admin.docs.index', ['content' => $content]);
+    })->name('docs');
 
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');

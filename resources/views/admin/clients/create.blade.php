@@ -85,20 +85,8 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group">
-                <label for="address">Address</label>
-                <textarea class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" name="address" id="address" rows="2">{{ old('address', '') }}</textarea>
-                @if($errors->has('address'))
-                    <span class="text-danger">{{ $errors->first('address') }}</span>
-                @endif
-            </div>
-            <div class="form-group">
-                <label for="delivery_notes">Delivery Notes</label>
-                <textarea class="form-control {{ $errors->has('delivery_notes') ? 'is-invalid' : '' }}" name="delivery_notes" id="delivery_notes" rows="2">{{ old('delivery_notes', '') }}</textarea>
-                @if($errors->has('delivery_notes'))
-                    <span class="text-danger">{{ $errors->first('delivery_notes') }}</span>
-                @endif
-            </div>
+            @php $client = new \App\Models\Client(); @endphp
+            @include('admin.clients.partials.addresses')
             <div class="form-group">
                 <label for="prices_id">{{ trans('cruds.client.fields.prices') }}</label>
                 <select class="form-control select2 {{ $errors->has('prices') ? 'is-invalid' : '' }}" name="prices_id" id="prices_id">

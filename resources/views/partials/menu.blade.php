@@ -87,6 +87,12 @@
                     @endcan
                 @endif
                 <li class="nav-item">
+                    <a href="{{ route('admin.docs') }}" class="nav-link {{ request()->routeIs('admin.docs') ? 'active' : '' }}">
+                        <i class="fas fa-fw fa-book nav-icon"></i>
+                        <p>Documentation</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                         <a href="#" class="nav-link" onclick="event.preventDefault(); document.getElementById('logoutform').submit();">
                             <p>
                                 <i class="fas fa-fw fa-sign-out-alt nav-icon">

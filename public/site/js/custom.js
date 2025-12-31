@@ -1016,6 +1016,7 @@ var PlantZone = function(){
 		
 		
 		
+		/* Newsletter popup disabled
 		jQuery('body').append(modalBox);
 		setTimeout(function() {
 			if(!getCookie('inquiryModal')){
@@ -1023,6 +1024,7 @@ var PlantZone = function(){
 				setCookie('inquiryModal',true);
 			}
 		}, 5000)
+		*/
 
 	}
 	

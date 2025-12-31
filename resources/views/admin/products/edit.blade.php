@@ -412,8 +412,8 @@
         });
 
         // Product type change handler - show/hide tabs and fields
-        $('#product_type').on('change', function() {
-            var type = $(this).val();
+        function toggleProductTypeSections() {
+            var type = $('#product_type').val();
             
             // Show/hide accessory type field
             if (type === 'accessory') {
@@ -428,7 +428,24 @@
             } else {
                 $('#vert-tabs-bundle-tab').hide();
             }
-        });
+            
+            // Show/hide categories tab (hide for accessories)
+            if (type === 'accessory') {
+                $('#vert-tabs-cat-tab').hide();
+            } else {
+                $('#vert-tabs-cat-tab').show();
+            }
+            
+            // Show/hide accessories tab (hide for accessories themselves)
+            if (type === 'accessory') {
+                $('#vert-tabs-accessories-tab').hide();
+            } else {
+                $('#vert-tabs-accessories-tab').show();
+            }
+        }
+        
+        $('#product_type').on('change', toggleProductTypeSections);
+        toggleProductTypeSections(); // Run on page load
 
         // Bundle items management
         var groupIndex = {{ $product->bundleItems ? $product->bundleItems->groupBy('group_name')->count() : 1 }};

@@ -78,4 +78,43 @@ class Client extends Model
     {
         return $this->belongsTo(Team::class, 'team_id');
     }
+
+    public function addresses()
+    {
+        return $this->hasMany(ClientAddress::class);
+    }
+
+    public function shippingAddresses()
+    {
+        return $this->hasMany(ClientAddress::class)->where('address_type', ClientAddress::TYPE_SHIPPING);
+    }
+
+    public function billingAddresses()
+    {
+        return $this->hasMany(ClientAddress::class)->where('address_type', ClientAddress::TYPE_BILLING);
+    }
+
+    public function corporateAddresses()
+    {
+        return $this->hasMany(ClientAddress::class)->where('address_type', ClientAddress::TYPE_CORPORATE);
+    }
+
+    public function primaryShippingAddress()
+    {
+        return $this->hasOne(ClientAddress::class)
+            ->where('address_type', ClientAddress::TYPE_SHIPPING)
+            ->where('is_primary', true);
+    }
+
+    public function primaryBillingAddress()
+    {
+        return $this->hasOne(ClientAddress::class)
+            ->where('address_type', ClientAddress::TYPE_BILLING)
+            ->where('is_primary', true);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

@@ -20,7 +20,7 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.product.fields.published_helper') }}</span>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="featured_group">
                 <div class="form-check {{ $errors->has('featured') ? 'is-invalid' : '' }}">
                     <input type="hidden" name="featured" value="0">
                     <input class="form-check-input" type="checkbox" name="featured" id="featured" value="1" {{ old('featured', 0) == 1 ? 'checked' : '' }}>
@@ -32,7 +32,7 @@
                 <span class="help-block">{{ trans('cruds.product.fields.featured_helper') }}</span>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="quantity_group">
                 <label for="quantity">{{ trans('cruds.product.fields.quantity') }}</label>
                 <input class="form-control {{ $errors->has('quantity') ? 'is-invalid' : '' }}" type="number" name="quantity" id="quantity" value="{{ old('quantity', '') }}" step="1">
                             @if($errors->has('quantity'))
@@ -155,7 +155,7 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="categories_section">
                 <label for="categories">{{ trans('cruds.product.fields.category') }}</label>
                 <div style="padding-bottom: 4px">
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
@@ -171,7 +171,7 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.product.fields.category_helper') }}</span>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="tags_section">
                 <label for="tags">{{ trans('cruds.product.fields.tag') }}</label>
                 <div style="padding-bottom: 4px">
                     <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
@@ -236,18 +236,43 @@
 
 @section('scripts')
 <script>
-    // Show/hide accessory type based on product type selection
+    // Show/hide sections based on product type selection
     $(function() {
-        function toggleAccessoryType() {
+        function toggleProductTypeSections() {
             var type = $('#product_type').val();
+            
+            // Accessory type field - only for accessories
             if (type === 'accessory') {
                 $('#accessory_type_group').show();
             } else {
                 $('#accessory_type_group').hide();
             }
+            
+            // Categories & Tags - hide for accessories (they use accessory types instead)
+            if (type === 'accessory') {
+                $('#categories_section').hide();
+                $('#tags_section').hide();
+            } else {
+                $('#categories_section').show();
+                $('#tags_section').show();
+            }
+            
+            // Featured checkbox - hide for accessories
+            if (type === 'accessory') {
+                $('#featured_group').hide();
+            } else {
+                $('#featured_group').show();
+            }
+            
+            // Quantity - hide for sets (calculated from bundle items)
+            if (type === 'set') {
+                $('#quantity_group').hide();
+            } else {
+                $('#quantity_group').show();
+            }
         }
-        $('#product_type').on('change', toggleAccessoryType);
-        toggleAccessoryType();
+        $('#product_type').on('change', toggleProductTypeSections);
+        toggleProductTypeSections();
     });
 
     Dropzone.options.photoDropzone = {
