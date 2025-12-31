@@ -35,6 +35,11 @@ class Product extends Model implements HasMedia
         'quantity',
         'name',
         'description',
+        'base_price',
+        'sku',
+        'upc_code',
+        'qb_1',
+        'qb_2',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -128,5 +133,28 @@ class Product extends Model implements HasMedia
             ->with('accessoryType')
             ->get()
             ->groupBy('accessory_type_id');
+    }
+
+    /**
+     * Get the effective price for a specific client
+     * Returns client-specific price if exists, otherwise base_price
+     */
+    public function getPriceForClient($clientId = null)
+    {
+        if ($clientId) {
+            $clientPrice = $this->clientPrices()->where('client_id', $clientId)->first();
+            if ($clientPrice && $clientPrice->price) {
+                return $clientPrice->price;
+            }
+        }
+        return $this->base_price;
+    }
+
+    /**
+     * Check if product has a client-specific price
+     */
+    public function hasClientPrice($clientId)
+    {
+        return $this->clientPrices()->where('client_id', $clientId)->exists();
     }
 }

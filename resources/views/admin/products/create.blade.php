@@ -57,6 +57,74 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.product.fields.description_helper') }}</span>
             </div>
+
+            <div class="card card-secondary mb-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Pricing & Identifiers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="base_price">Base Price</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input class="form-control {{ $errors->has('base_price') ? 'is-invalid' : '' }}" type="number" step="0.01" name="base_price" id="base_price" value="{{ old('base_price', '') }}">
+                                </div>
+                                @if($errors->has('base_price'))
+                                    <span class="text-danger">{{ $errors->first('base_price') }}</span>
+                                @endif
+                                <span class="help-block">Default price (can be overridden per client)</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="sku">SKU</label>
+                                <input class="form-control {{ $errors->has('sku') ? 'is-invalid' : '' }}" type="text" name="sku" id="sku" value="{{ old('sku', '') }}">
+                                @if($errors->has('sku'))
+                                    <span class="text-danger">{{ $errors->first('sku') }}</span>
+                                @endif
+                                <span class="help-block">Internal product code</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="upc_code">UPC Code</label>
+                                <input class="form-control {{ $errors->has('upc_code') ? 'is-invalid' : '' }}" type="text" name="upc_code" id="upc_code" value="{{ old('upc_code', '') }}">
+                                @if($errors->has('upc_code'))
+                                    <span class="text-danger">{{ $errors->first('upc_code') }}</span>
+                                @endif
+                                <span class="help-block">For order tickets (stores that require UPC)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="qb_1">QuickBooks ID 1</label>
+                                <input class="form-control {{ $errors->has('qb_1') ? 'is-invalid' : '' }}" type="text" name="qb_1" id="qb_1" value="{{ old('qb_1', '') }}">
+                                @if($errors->has('qb_1'))
+                                    <span class="text-danger">{{ $errors->first('qb_1') }}</span>
+                                @endif
+                                <span class="help-block">Accounting identifier 1</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="qb_2">QuickBooks ID 2</label>
+                                <input class="form-control {{ $errors->has('qb_2') ? 'is-invalid' : '' }}" type="text" name="qb_2" id="qb_2" value="{{ old('qb_2', '') }}">
+                                @if($errors->has('qb_2'))
+                                    <span class="text-danger">{{ $errors->first('qb_2') }}</span>
+                                @endif
+                                <span class="help-block">Accounting identifier 2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="categories">{{ trans('cruds.product.fields.category') }}</label>
                 <div style="padding-bottom: 4px">
