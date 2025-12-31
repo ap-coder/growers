@@ -315,7 +315,7 @@
                 }
             });
 
-            // Function to add a new row to the client pricing table
+            // Function to add a new row to the client pricing table (simplified - price only)
             function addClientPricingRow(clientId, clientName, isExisting) {
                 const tableBody = document.getElementById('clientPricingTableBody');
 
@@ -326,14 +326,14 @@
 
                 row.innerHTML = `
                     <td>${clientName}</td>
-                    <td><input type="number" name="client_prices[${clientId}][price]" class="form-control" required></td>
-                    <td><input type="text" name="client_prices[${clientId}][sku]" class="form-control"></td>
-                    <td><input type="text" name="client_prices[${clientId}][mpn]" class="form-control"></td>
-                    <td><input type="text" name="client_prices[${clientId}][gtin]" class="form-control"></td>
-                    <td><input type="text" name="client_prices[${clientId}][upc]" class="form-control"></td>
-                    <td><input type="text" name="client_prices[${clientId}][qb_1]" class="form-control"></td>
-                    <td><input type="text" name="client_prices[${clientId}][qb_2]" class="form-control"></td>
-                    <input type="hidden" name="client_prices[${clientId}][published]" value="true">
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="number" step="0.01" name="client_prices[${clientId}][price]" class="form-control" placeholder="Use base price">
+                        </div>
+                    </td>
                 `;
 
                 tableBody.appendChild(row);

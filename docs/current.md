@@ -43,6 +43,17 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - Added `ordered_by_name` and `ordered_by_phone` fields
 - Admin forms updated with all new fields
 
+### Pricing Structure (Refactored)
+- **Product model** now has: `base_price`, `sku`, `upc_code`, `qb_1`, `qb_2`
+  - `base_price` - default price for all clients
+  - `sku` - internal product code
+  - `upc_code` - for order tickets (stores requiring UPC)
+  - `qb_1`, `qb_2` - QuickBooks accounting identifiers
+- **ClientPrice model** simplified to only store price overrides
+  - Only `price` field needed per client (if different from base)
+- Helper method: `$product->getPriceForClient($clientId)` returns client price or base price
+- Product admin forms updated with Pricing & Identifiers section
+
 ### Settings System (Enhanced)
 - Added `type`, `group`, `label`, `description` fields to settings table
 - Types: text, textarea, image, boolean, select
@@ -97,6 +108,7 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - `2024_12_31_000008_add_fields_to_orders_table`
 - `2024_12_31_000009_add_fields_to_settings_table`
 - `2024_12_31_000010_add_logo_to_clients_table`
+- `2024_12_31_000011_add_pricing_fields_to_products_table`
 
 ## Key Business Rules (from guidelines/)
 - No pricing visible to public - must be logged in
