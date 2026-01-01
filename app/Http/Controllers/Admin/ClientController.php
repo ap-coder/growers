@@ -10,8 +10,10 @@ use App\Http\Requests\UpdateClientRequest;
 use App\Models\Client;
 use App\Models\ClientAddress;
 use App\Models\ClientPrice;
+use App\Models\User;
 use Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -108,9 +110,15 @@ class ClientController extends Controller
 
         $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
-        $client->load('prices', 'team', 'addresses');
+        $client->load('prices', 'team', 'addresses', 'users');
 
-        return view('admin.clients.edit', compact('client', 'prices'));
+        // Get users not associated with any client (available to assign)
+        $availableUsers = User::whereNull('client_id')
+            ->orWhere('client_id', '')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.clients.edit', compact('client', 'prices', 'availableUsers'));
     }
 
     public function update(UpdateClientRequest $request, Client $client)
@@ -189,5 +197,65 @@ class ClientController extends Controller
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function associateUser(Request $request, Client $client)
+    {
+        abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::find($request->user_id);
+        $user->update(['client_id' => $client->id]);
+
+        return response()->json(['success' => true, 'message' => 'User associated successfully']);
+    }
+
+    public function createUser(Request $request, Client $client)
+    {
+        abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'client_id' => $client->id,
+            'verified' => true,
+            'approved' => true,
+        ]);
+
+        // Assign Customer role
+        $customerRole = \App\Models\Role::where('title', 'Customer')->first();
+        if ($customerRole) {
+            $user->roles()->sync([$customerRole->id]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'User created and associated successfully']);
+    }
+
+    public function removeUser(Request $request, Client $client)
+    {
+        abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::find($request->user_id);
+        
+        // Only remove if user belongs to this client
+        if ($user->client_id == $client->id) {
+            $user->update(['client_id' => null]);
+        }
+
+        return response()->json(['success' => true, 'message' => 'User removed from client']);
     }
 }

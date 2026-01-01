@@ -1,6 +1,6 @@
 @can('product_management_access')
-    <li class="nav-item has-treeview {{ request()->is("admin/products*") ? "menu-open" : "" }} {{ request()->is("admin/product-categories*") ? "menu-open" : "" }} {{ request()->is("admin/product-tags*") ? "menu-open" : "" }} {{ request()->is("admin/accessor*") ? "menu-open" : "" }}">
-                        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/products*") ? "active" : "" }} {{ request()->is("admin/product-categories*") ? "active" : "" }} {{ request()->is("admin/product-tags*") ? "active" : "" }} {{ request()->is("admin/accessor*") ? "active" : "" }}" href="#">
+    <li class="nav-item has-treeview {{ request()->is("admin/products*") ? "menu-open" : "" }} {{ request()->is("admin/product-categories*") ? "menu-open" : "" }} {{ request()->is("admin/product-tags*") ? "menu-open" : "" }} {{ request()->is("admin/product-collections*") ? "menu-open" : "" }} {{ request()->is("admin/accessor*") ? "menu-open" : "" }}">
+                        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/products*") ? "active" : "" }} {{ request()->is("admin/product-categories*") ? "active" : "" }} {{ request()->is("admin/product-tags*") ? "active" : "" }} {{ request()->is("admin/product-collections*") ? "active" : "" }} {{ request()->is("admin/accessor*") ? "active" : "" }}" href="#">
                             <i class="fa-fw nav-icon fas fa-shopping-cart">
 
                             </i>
@@ -66,6 +66,18 @@
                                         </i>
                                         <p>
                                             Accessories
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('product_access')
+                                <li class="nav-item">
+                                    <a href="{{ route("admin.product-collections.index") }}" class="nav-link {{ request()->is("admin/product-collections") || request()->is("admin/product-collections/*") ? "active" : "" }}">
+                                        <i class="fa-fw nav-icon fas fa-layer-group">
+
+                                        </i>
+                                        <p>
+                                            Collections
                                         </p>
                                     </a>
                                 </li>

@@ -62,3 +62,73 @@ if (!function_exists('testSettingHelper')) {
         return 'Setting helper file is working!';
     }
 }
+
+if (!function_exists('isWclDeveloper')) {
+    /**
+     * Check if current user has WCL-Developer role
+     * Safe to call even when not authenticated - returns false
+     */
+    function isWclDeveloper()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()->isWclDeveloper ?? false;
+    }
+}
+
+if (!function_exists('hasRole')) {
+    /**
+     * Check if current user has a specific role
+     * Safe to call even when not authenticated - returns false
+     */
+    function hasRole($role)
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()->hasRole($role) ?? false;
+    }
+}
+
+if (!function_exists('isClient')) {
+    /**
+     * Check if current user is a client user (Customer role + has client_id)
+     * Safe to call even when not authenticated - returns false
+     */
+    function isClient()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()->isClient ?? false;
+    }
+}
+
+if (!function_exists('isCustomer')) {
+    /**
+     * Check if current user has Customer role
+     * Safe to call even when not authenticated - returns false
+     */
+    function isCustomer()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()->isCustomer ?? false;
+    }
+}
+
+if (!function_exists('isAdmin')) {
+    /**
+     * Check if current user has Admin role
+     * Safe to call even when not authenticated - returns false
+     */
+    function isAdmin()
+    {
+        if (!auth()->check()) {
+            return false;
+        }
+        return auth()->user()->isAdmin ?? false;
+    }
+}

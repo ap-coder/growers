@@ -974,7 +974,9 @@ var PlantZone = function(){
 		});
 	}
 	
-	var handleOpenModal = function(){
+	var handleOpenModal = function(){ return; /* DISABLED */ }
+	
+	var handleOpenModal_DISABLED = function(){
 		
 		var modalBox = `<div class="modal fade inquiry-modal style-1" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
 			<div class="modal-dialog" role="document">

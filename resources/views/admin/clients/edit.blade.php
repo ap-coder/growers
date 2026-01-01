@@ -92,6 +92,7 @@
                 </div>
             </div>
             @include('admin.clients.partials.addresses')
+            @include('admin.clients.partials.users')
             <div class="form-group">
                 <label for="prices_id">{{ trans('cruds.client.fields.prices') }}</label>
                 <select class="form-control select2 {{ $errors->has('prices') ? 'is-invalid' : '' }}" name="prices_id" id="prices_id">

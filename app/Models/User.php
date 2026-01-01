@@ -42,6 +42,7 @@ class User extends Authenticatable
         'phone',
         'client_id',
         'approved',
+        'needs_setup',
         'verified',
         'verified_at',
         'verification_token',
@@ -79,6 +80,29 @@ class User extends Authenticatable
     public function getIsAdminAttribute()
     {
         return $this->roles()->where('id', 1)->exists();
+    }
+
+    public function getIsWclDeveloperAttribute()
+    {
+        return $this->roles()->where('title', 'WCL-Developer')->exists();
+    }
+
+    public function getIsClientAttribute()
+    {
+        return $this->client_id !== null && $this->roles()->where('title', 'Customer')->exists();
+    }
+
+    public function getIsCustomerAttribute()
+    {
+        return $this->roles()->where('title', 'Customer')->exists();
+    }
+
+    public function hasRole($role)
+    {
+        if (is_string($role)) {
+            return $this->roles()->where('title', $role)->exists();
+        }
+        return $this->roles()->where('id', $role)->exists();
     }
 
     public function __construct(array $attributes = [])

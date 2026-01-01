@@ -62,7 +62,7 @@
 <script src="{{ asset('site/vendor/nouislider/nouislider.min.js') }}"></script>
 <script src="{{ asset('site/js/dz.carousel.js') }}"></script>
 <script src="{{ asset('site/js/dz.ajax.js') }}"></script>
-<script src="{{ asset('site/js/custom.js') }}"></script>
+<script src="{{ asset('site/js/custom.js') }}?v={{ time() }}"></script>
 
 @yield('scripts')
 </body>

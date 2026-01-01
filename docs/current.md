@@ -73,6 +73,12 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - Helper methods: `Setting::get($key)`, `Setting::set($key, $value, ...)`
 - Admin forms updated with dynamic value inputs based on type
 - Image upload support for settings
+- **SettingsSeeder** with essential settings:
+  - **Branding**: company_name, company_logo, company_logo_dark, favicon
+  - **Contact**: company_address, company_phone, company_email, company_website
+  - **Login**: login_background_image, login_welcome_text, login_description
+  - **General**: order_number_prefix, order_number_start, default_delivery_days, enable_customer_registration, require_approval_for_orders, packing_slip_footer, order_ticket_footer
+- Settings index view now shows grouped cards instead of DataTable
 
 ### Client Settings
 - Added `logo` field to clients table
@@ -88,6 +94,32 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
   - Primary flag for default selection
 - Client admin views updated with addresses section
 - Relationships: `$client->addresses()`, `$client->shippingAddresses()`, `$client->primaryShippingAddress()`
+
+### Order Fields (per guidelines)
+- **Order model** fields:
+  - `special_request` - Customer notes/instructions (visible on packing slip)
+  - `internal_notes` - Admin-only notes (not visible to customer)
+  - `delivery_details` - Delivery information
+  - `store_location_request` - Store location/department request
+  - `ordered_by_name`, `ordered_by_phone` - Contact info
+  - `delivery_date` - Requested delivery date
+- Order print view includes all fields per guidelines layout
+
+### Product Collections (Showcase System)
+- **ProductCollection model** for grouping products with different display layouts
+- **ProductCollectionItem** pivot with sort_order and is_featured flag
+- Layout types with visual icons:
+  - Grid, Masonry Grid, Carousel Showcase, Tiles
+  - Cobble Style 1 & 2, Collage Style 1 & 2
+  - Film Strip, Split Slider, Thumbs Slider
+- Features:
+  - Visual layout selector with preview icons
+  - Drag-and-drop product ordering
+  - Mark products as featured within collection
+  - Show on homepage option
+  - Custom background/text colors
+  - Column count for grid layouts
+- Admin CRUD at `/admin/product-collections`
 - Logo upload support in Client admin forms
 - Logos stored in `storage/app/public/clients/`
 
@@ -136,6 +168,8 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - `2024_12_31_000012_add_product_type_to_products_table`
 - `2024_12_31_000013_create_product_bundle_items_table`
 - `2024_12_31_000014_create_client_addresses_table`
+- `2024_12_31_000015_add_internal_notes_to_orders_table`
+- `2024_12_31_000016_create_product_collections_table`
 
 ## Key Business Rules (from guidelines/)
 - No pricing visible to public - must be logged in

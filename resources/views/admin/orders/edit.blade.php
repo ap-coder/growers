@@ -71,10 +71,25 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="special_request">Special Request</label>
+                <label for="store_location_request">Store Location Request</label>
+                <input class="form-control {{ $errors->has('store_location_request') ? 'is-invalid' : '' }}" type="text" name="store_location_request" id="store_location_request" value="{{ old('store_location_request', $order->store_location_request) }}">
+                @if($errors->has('store_location_request'))
+                    <span class="text-danger">{{ $errors->first('store_location_request') }}</span>
+                @endif
+                <span class="help-block">Store location or department request (e.g., Floral Dept, Front Display)</span>
+            </div>
+            <div class="form-group">
+                <label for="special_request">Special Request <small class="text-muted">(visible to customer)</small></label>
                 <textarea class="form-control {{ $errors->has('special_request') ? 'is-invalid' : '' }}" name="special_request" id="special_request" rows="3">{{ old('special_request', $order->special_request) }}</textarea>
                 @if($errors->has('special_request'))
                     <span class="text-danger">{{ $errors->first('special_request') }}</span>
+                @endif
+            </div>
+            <div class="form-group">
+                <label for="internal_notes">Internal Notes <small class="text-muted">(admin only - not visible to customer)</small></label>
+                <textarea class="form-control {{ $errors->has('internal_notes') ? 'is-invalid' : '' }}" name="internal_notes" id="internal_notes" rows="2">{{ old('internal_notes', $order->internal_notes) }}</textarea>
+                @if($errors->has('internal_notes'))
+                    <span class="text-danger">{{ $errors->first('internal_notes') }}</span>
                 @endif
             </div>
             <div class="form-group">

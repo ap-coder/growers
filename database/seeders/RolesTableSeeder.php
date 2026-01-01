@@ -18,8 +18,12 @@ class RolesTableSeeder extends Seeder
                 'id'    => 2,
                 'title' => 'Customer',
             ],
+            [
+                'id'    => 3,
+                'title' => 'WCL-Developer',
+            ],
         ];
 
-        Role::insert($roles);
+        Role::upsert($roles, ['id'], ['title']);
     }
 }

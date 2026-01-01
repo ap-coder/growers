@@ -114,6 +114,11 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('clients/process-csv-import', 'ClientController@processCsvImport')->name('clients.processCsvImport');
     Route::resource('clients', 'ClientController');
 
+    // Client User Management
+    Route::post('clients/{client}/associate-user', 'ClientController@associateUser')->name('clients.associateUser');
+    Route::post('clients/{client}/create-user', 'ClientController@createUser')->name('clients.createUser');
+    Route::post('clients/{client}/remove-user', 'ClientController@removeUser')->name('clients.removeUser');
+
     // Client Price
     Route::delete('client-prices/destroy', 'ClientPriceController@massDestroy')->name('client-prices.massDestroy');
     Route::post('client-prices/media', 'ClientPriceController@storeMedia')->name('client-prices.storeMedia');
@@ -122,9 +127,24 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('client-prices/process-csv-import', 'ClientPriceController@processCsvImport')->name('client-prices.processCsvImport');
     Route::resource('client-prices', 'ClientPriceController');
 
+    // Product Collections
+    Route::post('product-collections/{productCollection}/update-order', 'ProductCollectionController@updateOrder')->name('product-collections.updateOrder');
+    Route::post('product-collections/item/{item}/toggle-featured', 'ProductCollectionController@toggleFeatured')->name('product-collections.toggleFeatured');
+    Route::resource('product-collections', 'ProductCollectionController');
+
     // Setting
     Route::delete('settings/destroy', 'SettingController@massDestroy')->name('settings.massDestroy');
+    Route::post('settings/seed-dummy-products', 'SettingController@seedDummyProducts')->name('settings.seedDummyProducts');
+    Route::post('settings/remove-dummy-products', 'SettingController@removeDummyProducts')->name('settings.removeDummyProducts');
+    Route::post('settings/seed-dummy-clients', 'SettingController@seedDummyClients')->name('settings.seedDummyClients');
+    Route::post('settings/remove-dummy-clients', 'SettingController@removeDummyClients')->name('settings.removeDummyClients');
+    Route::post('settings/seed-settings', 'SettingController@seedSettings')->name('settings.seedSettings');
     Route::resource('settings', 'SettingController', ['except' => ['show']]);
+
+    // Setup Wizard
+    Route::post('setup-wizard/save-settings', 'SettingController@saveWizardSettings')->name('setup-wizard.save-settings');
+    Route::post('setup-wizard/create-page', 'SettingController@createWizardPage')->name('setup-wizard.create-page');
+    Route::post('setup-wizard/complete', 'SettingController@completeSetup')->name('setup-wizard.complete');
 
     // Order Item
     Route::delete('order-items/destroy', 'OrderItemController@massDestroy')->name('order-items.massDestroy');

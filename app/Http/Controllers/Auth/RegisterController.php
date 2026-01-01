@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Client;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
@@ -49,39 +50,63 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
+        $rules = [
             'name'     => ['required', 'string', 'max:255'],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+            'client_id' => ['nullable', 'exists:clients,id'],
+            'new_client_name' => ['nullable', 'string', 'max:255'],
+        ];
+
+        // If creating new client, require the name
+        if (!empty($data['create_new_client']) && $data['create_new_client'] == '1') {
+            $rules['new_client_name'] = ['required', 'string', 'max:255', 'unique:clients,name'];
+        }
+
+        return Validator::make($data, $rules);
     }
 
-         /**
-          * Create a new user instance after a valid registration.
-          *
-          * @param  array  $data
-          * @return \App\User
-          */
-         protected function create(array $data)
-         {
-             $user = User::create([
-                 'name'     => $data['name'],
-                 'email'    => $data['email'],
-                 'password' => Hash::make($data['password']),
-                 'team_id'  => request()->input('team', null),
-             ]);
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \App\Models\User
+     */
+    protected function create(array $data)
+    {
+        $clientId = null;
 
-             if (! request()->has('team')) {
-                 $team = \App\Models\Team::create([
-                     'owner_id' => $user->id,
-                     'name'     => $data['email'],
-                 ]);
+        // Handle client - either select existing or create new
+        if (!empty($data['create_new_client']) && $data['create_new_client'] == '1' && !empty($data['new_client_name'])) {
+            // Create new client
+            $client = Client::create([
+                'name' => $data['new_client_name'],
+                'published' => false, // Needs admin approval
+            ]);
+            $clientId = $client->id;
+        } elseif (!empty($data['client_id'])) {
+            $clientId = $data['client_id'];
+        }
 
-                 $user->update(['team_id' => $team->id]);
-             }
+        $user = User::create([
+            'name'      => $data['name'],
+            'email'     => $data['email'],
+            'password'  => Hash::make($data['password']),
+            'client_id' => $clientId,
+            'team_id'   => request()->input('team', null),
+        ]);
 
-             return $user;
-         }
+        if (!request()->has('team')) {
+            $team = \App\Models\Team::create([
+                'owner_id' => $user->id,
+                'name'     => $data['email'],
+            ]);
+
+            $user->update(['team_id' => $team->id]);
+        }
+
+        return $user;
+    }
 
     public function showRegistrationForm()
     {
@@ -89,6 +114,8 @@ class RegisterController extends Controller
             return redirect()->route('register');
         }
 
-        return view('auth.register');
+        $clients = Client::where('published', true)->orderBy('name')->pluck('name', 'id');
+
+        return view('auth.register', compact('clients'));
     }
 }

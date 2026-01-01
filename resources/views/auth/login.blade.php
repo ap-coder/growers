@@ -128,6 +128,6 @@
 <script src="{{ asset('site/vendor/wow/wow.min.js') }}"></script>
 <script src="{{ asset('site/vendor/bootstrap/dist/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('site/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
-<script src="{{ asset('site/js/custom.js') }}"></script>
+<script src="{{ asset('site/js/custom.js') }}?v={{ time() }}"></script>
 </body>
 </html>

@@ -124,8 +124,14 @@
             <div class="header">{{ $order->client->name ?? 'No Client' }} {{ $order->client->store_number ? '#' . $order->client->store_number : '' }}</div>
             <div class="sub-header">
                 <div class="info-row"><span class="info-label">Date of Order:</span> {{ $order->created_at->format('m/d/Y') }}</div>
-                <div class="info-row"><span class="info-label">Order Placed By:</span> {{ $order->ordered_by_name ?? 'N/A' }} {{ $order->ordered_by_phone ? $order->ordered_by_phone : '' }}</div>
+                <div class="info-row"><span class="info-label">Order Placed By:</span> {{ $order->ordered_by_name ?? 'N/A' }} {{ $order->ordered_by_phone ? '- ' . $order->ordered_by_phone : '' }}</div>
                 <div class="info-row"><span class="info-label">Delivery Date:</span> {{ $order->delivery_date ? \Carbon\Carbon::parse($order->delivery_date)->format('l m/d/Y') : 'N/A' }}</div>
+                @if($order->delivery_details)
+                <div class="info-row"><span class="info-label">Delivery Details:</span> {{ $order->delivery_details }}</div>
+                @endif
+                @if($order->store_location_request)
+                <div class="info-row"><span class="info-label">Store Location:</span> {{ $order->store_location_request }}</div>
+                @endif
             </div>
 
             @php
@@ -165,6 +171,13 @@
                 <div class="special-box">
                     <div class="special-title">SPECIAL INSTRUCTIONS</div>
                     <div>{{ $order->special_request }}</div>
+                </div>
+            @endif
+
+            @if($order->internal_notes)
+                <div class="special-box" style="border-color: #666; background: #f9f9f9;">
+                    <div class="special-title">INTERNAL NOTES (Admin Only)</div>
+                    <div>{{ $order->internal_notes }}</div>
                 </div>
             @endif
         </div>
