@@ -21,6 +21,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.css" rel="stylesheet" />
     <link href="{{ asset('css/custom.css') }}" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
     @yield('styles')
 </head>
 
@@ -155,6 +157,48 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.5.1/min/dropzone.min.js"></script>
     <script src="{{ asset('js/main.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Check for active reminders on page load
+        $(document).ready(function() {
+            $.get('{{ route("admin.reminders.active") }}', function(reminders) {
+                if (reminders.length > 0) {
+                    showReminders(reminders);
+                }
+            });
+        });
+        
+        function showReminders(reminders) {
+            var reminder = reminders[0]; // Show first reminder
+            var iconType = reminder.type === 'warning' ? 'warning' : 
+                          reminder.type === 'error' ? 'error' : 
+                          reminder.type === 'success' ? 'success' : 'info';
+            
+            Swal.fire({
+                title: reminder.title,
+                html: reminder.message + (reminder.link ? '<br><br><a href="' + reminder.link + '" class="btn btn-primary btn-sm">' + reminder.link_text + '</a>' : ''),
+                icon: iconType,
+                showCancelButton: true,
+                confirmButtonText: 'Dismiss',
+                cancelButtonText: reminders.length > 1 ? 'Next (' + (reminders.length - 1) + ' more)' : 'Close',
+                confirmButtonColor: '#6c757d',
+                cancelButtonColor: '#007bff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Dismiss this reminder
+                    $.post('{{ url("admin/reminders") }}/' + reminder.id + '/dismiss', {
+                        _token: '{{ csrf_token() }}'
+                    }, function() {
+                        if (reminders.length > 1) {
+                            showReminders(reminders.slice(1));
+                        }
+                    });
+                } else if (result.dismiss === Swal.DismissReason.cancel && reminders.length > 1) {
+                    showReminders(reminders.slice(1));
+                }
+            });
+        }
+    </script>
     <script>
         $(function() {
   let copyButtonTrans = '{{ trans('global.datatables.copy') }}'

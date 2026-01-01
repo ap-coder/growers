@@ -10,9 +10,66 @@ use App\Models\ClientPrice;
 use App\Models\AccessoryType;
 use App\Models\ProductBundleItem;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class DummyProductsSeeder extends Seeder
 {
+    // Plant-related Unsplash image IDs for realistic placeholders
+    private array $plantImageIds = [
+        'vBxL8Kcb4I4', // potted plant
+        'XLm6-fPwK5Q', // succulent
+        'saVMJKBWvRU', // indoor plant
+        '4PG6wLlVag4', // green plant
+        'oPxGRgcJRNA', // houseplant
+        'zFEk1pMKLlY', // fern
+        'feLC4ZCxGqk', // plant pot
+        'FV_PxCqCqOQ', // tropical plant
+        'vGQ49l9I4EE', // cactus
+        'IicyiaPYGGI', // plant arrangement
+    ];
+
+    // Basket/container image IDs
+    private array $basketImageIds = [
+        'brown-wicker-basket', // placeholder
+        'ceramic-pot-white',
+        'wooden-crate',
+        'tin-bucket',
+    ];
+
+    private function getRandomLayout(): string
+    {
+        $layouts = array_keys(Product::LAYOUT_SELECT);
+        return $layouts[array_rand($layouts)];
+    }
+
+    private function downloadPlaceholderImage(string $type = 'plant'): ?string
+    {
+        try {
+            // Use picsum.photos for reliable placeholder images
+            $width = 600;
+            $height = 600;
+            
+            // Different seed for variety
+            $seed = rand(1, 1000);
+            
+            // Use specific categories for more relevant images
+            $url = "https://picsum.photos/seed/{$seed}/{$width}/{$height}";
+            
+            $response = Http::timeout(10)->get($url);
+            
+            if ($response->successful()) {
+                $filename = "products/{$type}_" . uniqid() . '.jpg';
+                Storage::disk('public')->put($filename, $response->body());
+                return $filename;
+            }
+        } catch (\Exception $e) {
+            // Silently fail - product will just have no image
+        }
+        
+        return null;
+    }
+
     public function run(): void
     {
         // Create categories if they don't exist
@@ -245,10 +302,15 @@ class DummyProductsSeeder extends Seeder
 
         // Create standard products
         $createdProducts = [];
+        $this->command->info('Creating standard products with placeholder images...');
+        
         foreach ($standardProducts as $productData) {
             $category = $productData['category'];
             $productTags = $productData['tags'];
             unset($productData['category'], $productData['tags']);
+
+            // Add random layout
+            $productData['layout'] = $this->getRandomLayout();
 
             $product = Product::create($productData);
             $product->categories()->attach($categories[$category]->id);
@@ -256,6 +318,13 @@ class DummyProductsSeeder extends Seeder
             if (!empty($productTags)) {
                 $tagIds = collect($productTags)->map(fn($t) => $tags[$t]->id)->toArray();
                 $product->tags()->attach($tagIds);
+            }
+
+            // Add placeholder image
+            $imagePath = $this->downloadPlaceholderImage('product');
+            if ($imagePath) {
+                $product->addMediaFromDisk($imagePath, 'public')->toMediaCollection('photo');
+                $this->command->info("  Added image for: {$product->name}");
             }
 
             // Add client-specific pricing for first client
@@ -271,13 +340,22 @@ class DummyProductsSeeder extends Seeder
         }
 
         // Create accessory products
+        $this->command->info('Creating accessory products...');
         foreach ($accessoryProducts as $productData) {
             $accessoryTypeName = $productData['accessory_type'];
             unset($productData['accessory_type']);
             
             $productData['accessory_type_id'] = $accessoryTypes[$accessoryTypeName]->id;
+            $productData['layout'] = $this->getRandomLayout();
             
             $product = Product::create($productData);
+            
+            // Add placeholder image for accessories too
+            $imagePath = $this->downloadPlaceholderImage('accessory');
+            if ($imagePath) {
+                $product->addMediaFromDisk($imagePath, 'public')->toMediaCollection('photo');
+            }
+            
             $createdProducts[$product->name] = $product;
         }
 
@@ -287,6 +365,7 @@ class DummyProductsSeeder extends Seeder
             'description' => 'Complete Valentine\'s Day arrangement set. Includes basket, card holder, and ribbon.',
             'product_type' => 'set',
             'base_price' => 25.00,
+            'layout' => $this->getRandomLayout(),
             'sku' => 'SET-VAL-01',
             'upc_code' => '323456789001',
             'qb_1' => 'QB-SET-001',

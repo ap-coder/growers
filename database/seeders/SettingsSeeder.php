@@ -163,6 +163,24 @@ class SettingsSeeder extends Seeder
                 'label' => 'Order Ticket Footer',
                 'description' => 'Footer text on order tickets',
             ],
+
+            // Shop Settings
+            [
+                'key' => 'shop_layout',
+                'value' => 'standard',
+                'type' => 'select',
+                'group' => 'shop',
+                'label' => 'Shop Layout',
+                'description' => 'Default layout for shop/product listing pages',
+            ],
+            [
+                'key' => 'default_product_layout',
+                'value' => 'default',
+                'type' => 'select',
+                'group' => 'shop',
+                'label' => 'Default Product Layout',
+                'description' => 'Default layout for product detail pages',
+            ],
         ];
 
         foreach ($settings as $setting) {

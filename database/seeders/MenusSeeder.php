@@ -33,6 +33,11 @@ class MenusSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'name' => 'Product Categories',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ];
 
         DB::table($menusTable)->upsert(

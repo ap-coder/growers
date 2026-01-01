@@ -44,6 +44,25 @@ class Setting extends Model
         'login' => 'Login Page',
         'branding' => 'Branding',
         'contact' => 'Contact Info',
+        'shop' => 'Shop Settings',
+    ];
+
+    public const SHOP_LAYOUT_SELECT = [
+        'standard' => 'Shop Standard',
+        'list' => 'Shop List',
+        'with-category' => 'Shop With Category',
+        'filters-top-bar' => 'Shop Filters Top Bar',
+        'sidebar' => 'Shop Sidebar',
+        'style-1' => 'Shop Style 1',
+        'style-2' => 'Shop Style 2',
+    ];
+
+    public const PRODUCT_LAYOUT_SELECT = [
+        'default' => 'Default',
+        'thumbnail' => 'Thumbnail',
+        'grid-media' => 'Grid Media',
+        'carousel' => 'Carousel',
+        'full-width' => 'Full Width',
     ];
 
     public static function get($key, $default = null)

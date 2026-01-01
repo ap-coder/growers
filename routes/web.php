@@ -170,6 +170,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Accessories
     Route::delete('accessories/destroy', 'AccessoryController@massDestroy')->name('accessories.massDestroy');
     Route::resource('accessories', 'AccessoryController');
+
+    // Reminders
+    Route::get('reminders', 'ReminderController@index')->name('reminders.index');
+    Route::get('reminders/active', 'ReminderController@getActive')->name('reminders.active');
+    Route::post('reminders/{reminder}/dismiss', 'ReminderController@dismiss')->name('reminders.dismiss');
+    Route::post('reminders/dismiss-all', 'ReminderController@dismissAll')->name('reminders.dismissAll');
 });
 
 Route::group(['prefix' => 'profile', 'as' => 'profile.', 'namespace' => 'Auth', 'middleware' => ['auth', '2fa']], function () {

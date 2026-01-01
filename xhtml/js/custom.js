@@ -1325,7 +1325,7 @@ var PlantZone = function(){
 			handleMultipleImageSize();
 			handleIsotope();
 			onePageLayout();
-			handleOpenModal();
+			//handleOpenModal(); // Disabled newsletter popup
 			//handleSplitSlider();
 			jQuery('.modal').on('show.bs.modal', reposition);
 		},

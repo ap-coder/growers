@@ -89,6 +89,20 @@
                     <label class="form-check-label" for="value_boolean">Enabled</label>
                 </div>
             </div>
+            <div class="form-group" id="value-select-group" style="display: none;">
+                <label for="value_select">Value</label>
+                <select class="form-control" name="value" id="value_select">
+                    @if($setting->key === 'shop_layout')
+                        @foreach(\App\Models\Setting::SHOP_LAYOUT_SELECT as $key => $label)
+                            <option value="{{ $key }}" {{ old('value', $setting->value) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    @elseif($setting->key === 'default_product_layout')
+                        @foreach(\App\Models\Setting::PRODUCT_LAYOUT_SELECT as $key => $label)
+                            <option value="{{ $key }}" {{ old('value', $setting->value) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
             <div class="form-group">
                 <label for="description">Description</label>
                 <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description" rows="2">{{ old('description', $setting->description) }}</textarea>
@@ -111,12 +125,18 @@
 @parent
 <script>
 $(function() {
+    var settingKey = '{{ $setting->key }}';
+    var selectSettings = ['shop_layout', 'default_product_layout'];
+    
     function toggleValueFields() {
         var type = $('#type').val();
-        $('#value-text-group, #value-textarea-group, #value-image-group, #value-boolean-group').hide();
-        $('#value, #value_textarea').prop('disabled', true);
+        $('#value-text-group, #value-textarea-group, #value-image-group, #value-boolean-group, #value-select-group').hide();
+        $('#value, #value_textarea, #value_select').prop('disabled', true);
         
-        if (type === 'text' || type === 'select') {
+        if (type === 'select' && selectSettings.includes(settingKey)) {
+            $('#value-select-group').show();
+            $('#value_select').prop('disabled', false);
+        } else if (type === 'text') {
             $('#value-text-group').show();
             $('#value').prop('disabled', false);
         } else if (type === 'textarea') {

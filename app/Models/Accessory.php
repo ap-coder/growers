@@ -54,6 +54,30 @@ class Accessory extends Model
         return $this->hasMany(AccessoryClientPrice::class, 'accessory_id');
     }
 
+    public function variants()
+    {
+        return $this->hasMany(AccessoryVariant::class, 'accessory_id')->orderBy('sort_order');
+    }
+
+    public function publishedVariants()
+    {
+        return $this->variants()->where('published', true);
+    }
+
+    public function defaultVariant()
+    {
+        return $this->variants()->where('is_default', true)->first() 
+            ?? $this->variants()->first();
+    }
+
+    /**
+     * Check if this accessory has variants
+     */
+    public function hasVariants()
+    {
+        return $this->variants()->exists();
+    }
+
     /**
      * Get the price for a specific client, or fall back to base_price
      */

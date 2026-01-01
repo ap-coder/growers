@@ -270,6 +270,13 @@ class SettingController extends Controller
                 'excerpt' => '',
             ]);
 
+            // Create a reminder to add content to this page
+            \App\Models\Reminder::createForPage(
+                $page,
+                "Add content to '{$title}' page",
+                "The '{$title}' page was created during site setup and needs content to be added."
+            );
+
             return response()->json([
                 'success' => true,
                 'message' => 'Page created successfully',

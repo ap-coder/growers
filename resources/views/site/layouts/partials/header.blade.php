@@ -22,19 +22,28 @@
                     <div class="logo-header logo-dark">
                         <a href="{{ route('frontend.home') }}"><img src="{{ asset('site/images/logo.svg') }}" alt=""></a>
                     </div>
+                    @php
+                        $mainNavMenu = \App\Menu\Models\Menus::where('name', 'Main Navigation')->first();
+                    @endphp
                     <ul class="nav navbar-nav">
                         <li>
                             <a href="{{ route('frontend.home') }}"><span>Home</span></a>
                         </li>
                         <li>
-                            <a href="{{ route('frontend.products.index') }}"><span>Products</span></a>
+                            <a href="{{ route('site.shop.index') }}"><span>Products</span></a>
                         </li>
-                        <li>
-                            <a href="{{ route('site.account.orders') }}"><span>My Orders</span></a>
-                        </li>
-                        <li>
-                            <a href="{{ route('site.how-to-order') }}"><span>How to Order</span></a>
-                        </li>
+                        @if($mainNavMenu && $mainNavMenu->items->count() > 0)
+                            @foreach($mainNavMenu->items->where('parent', 0)->sortBy('sort') as $item)
+                                <li>
+                                    <a href="{{ $item->link }}"><span>{{ $item->label }}</span></a>
+                                </li>
+                            @endforeach
+                        @endif
+                        @auth
+                            <li>
+                                <a href="{{ route('site.account.orders') }}"><span>My Orders</span></a>
+                            </li>
+                        @endauth
                     </ul>
                 </div>
                 

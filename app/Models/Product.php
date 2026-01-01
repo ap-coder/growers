@@ -39,9 +39,18 @@ class Product extends Model implements HasMedia
         'set' => 'Set/Bundle',
     ];
 
+    public const LAYOUT_SELECT = [
+        'default' => 'Default',
+        'thumbnail' => 'Thumbnail',
+        'grid-media' => 'Grid Media',
+        'carousel' => 'Carousel',
+        'full-width' => 'Full Width',
+    ];
+
     protected $fillable = [
         'published',
         'featured',
+        'layout',
         'quantity',
         'name',
         'product_type',
@@ -49,6 +58,9 @@ class Product extends Model implements HasMedia
         'sort_order',
         'description',
         'base_price',
+        'bundle_price_type',
+        'bundle_price_override',
+        'bundle_discount',
         'sku',
         'upc_code',
         'qb_1',
@@ -57,6 +69,18 @@ class Product extends Model implements HasMedia
         'updated_at',
         'deleted_at',
         'team_id',
+    ];
+
+    public const BUNDLE_PRICE_CALCULATED = 'calculated';
+    public const BUNDLE_PRICE_FIXED = 'fixed';
+    public const BUNDLE_PRICE_DISCOUNT_PERCENT = 'discount_percent';
+    public const BUNDLE_PRICE_DISCOUNT_AMOUNT = 'discount_amount';
+
+    public const BUNDLE_PRICE_TYPES = [
+        self::BUNDLE_PRICE_CALCULATED => 'Sum of Items (Calculated)',
+        self::BUNDLE_PRICE_FIXED => 'Fixed Bundle Price',
+        self::BUNDLE_PRICE_DISCOUNT_PERCENT => 'Discount % off Calculated',
+        self::BUNDLE_PRICE_DISCOUNT_AMOUNT => 'Discount $ off Calculated',
     ];
 
     protected $with = ['categories', 'clients', 'clientPrices'];
@@ -245,5 +269,61 @@ class Product extends Model implements HasMedia
     public function isSet()
     {
         return $this->product_type === self::TYPE_SET;
+    }
+
+    /**
+     * Calculate the total bundle price for a client
+     * Takes into account per-item pricing and overall bundle pricing rules
+     */
+    public function calculateBundlePrice($clientId = null)
+    {
+        if (!$this->isSet()) {
+            return $this->getPriceForClient($clientId);
+        }
+
+        // Calculate sum of all bundle items with their individual pricing
+        $calculatedTotal = 0;
+        foreach ($this->bundleItems as $item) {
+            $calculatedTotal += $item->getEffectivePrice($clientId) * $item->quantity;
+        }
+
+        // Apply overall bundle pricing rules
+        switch ($this->bundle_price_type) {
+            case self::BUNDLE_PRICE_FIXED:
+                return $this->bundle_price_override ?? $calculatedTotal;
+            
+            case self::BUNDLE_PRICE_DISCOUNT_PERCENT:
+                $discount = ($this->bundle_discount ?? 0) / 100;
+                return $calculatedTotal * (1 - $discount);
+            
+            case self::BUNDLE_PRICE_DISCOUNT_AMOUNT:
+                return max(0, $calculatedTotal - ($this->bundle_discount ?? 0));
+            
+            case self::BUNDLE_PRICE_CALCULATED:
+            default:
+                return $calculatedTotal;
+        }
+    }
+
+    /**
+     * Get bundle savings amount for display
+     */
+    public function getBundleSavings($clientId = null)
+    {
+        if (!$this->isSet()) {
+            return 0;
+        }
+
+        // Calculate what items would cost individually at full price
+        $fullPrice = 0;
+        foreach ($this->bundleItems as $item) {
+            $itemProduct = $item->itemProduct;
+            if ($itemProduct) {
+                $fullPrice += ($itemProduct->getPriceForClient($clientId) ?? $itemProduct->base_price ?? 0) * $item->quantity;
+            }
+        }
+
+        $bundlePrice = $this->calculateBundlePrice($clientId);
+        return max(0, $fullPrice - $bundlePrice);
     }
 }

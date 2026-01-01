@@ -19,6 +19,7 @@
         'contact' => 'fa-address-card',
         'login' => 'fa-sign-in-alt',
         'general' => 'fa-cog',
+        'shop' => 'fa-store',
     ];
 @endphp
 

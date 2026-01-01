@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Accessory;
 use App\Models\AccessoryType;
+use App\Models\AccessoryVariant;
 use App\Models\Client;
 use App\Models\AccessoryClientPrice;
 use Gate;
@@ -50,7 +51,7 @@ class AccessoryController extends Controller
 
         $accessoryTypes = AccessoryType::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
         $clients = Client::select('id', 'name')->get();
-        $accessory->load('accessoryType', 'clientPrices', 'clientPrices.client');
+        $accessory->load('accessoryType', 'clientPrices', 'clientPrices.client', 'variants');
 
         return view('admin.accessories.edit', compact('accessory', 'accessoryTypes', 'clients'));
     }
@@ -87,7 +88,59 @@ class AccessoryController extends Controller
             }
         }
 
+        // Handle variants
+        if ($request->has('save_variants') && $request->has('variants')) {
+            $this->syncVariants($accessory, $request->input('variants'), $request->input('default_variant'));
+        }
+
         return redirect()->route('admin.accessories.index');
+    }
+
+    /**
+     * Sync accessory variants
+     */
+    private function syncVariants(Accessory $accessory, array $variants, $defaultVariantIndex = null)
+    {
+        $existingIds = [];
+        $sortOrder = 0;
+
+        foreach ($variants as $index => $variantData) {
+            if (empty($variantData['name']) && empty($variantData['color']) && empty($variantData['size'])) {
+                continue;
+            }
+
+            $isDefault = ($defaultVariantIndex !== null && $index == $defaultVariantIndex);
+            
+            $variantAttributes = [
+                'accessory_id' => $accessory->id,
+                'name' => $variantData['name'] ?? '',
+                'color' => $variantData['color'] ?? null,
+                'size' => $variantData['size'] ?? null,
+                'material' => $variantData['material'] ?? null,
+                'sku' => $variantData['sku'] ?? null,
+                'price_adjustment' => !empty($variantData['price_adjustment']) ? $variantData['price_adjustment'] : 0,
+                'price_override' => !empty($variantData['price_override']) ? $variantData['price_override'] : null,
+                'is_default' => $isDefault,
+                'published' => isset($variantData['published']),
+                'sort_order' => $sortOrder++,
+            ];
+
+            if (!empty($variantData['id'])) {
+                // Update existing variant
+                $variant = AccessoryVariant::find($variantData['id']);
+                if ($variant) {
+                    $variant->update($variantAttributes);
+                    $existingIds[] = $variant->id;
+                }
+            } else {
+                // Create new variant
+                $variant = AccessoryVariant::create($variantAttributes);
+                $existingIds[] = $variant->id;
+            }
+        }
+
+        // Delete variants that were removed
+        $accessory->variants()->whereNotIn('id', $existingIds)->delete();
     }
 
     public function show(Accessory $accessory)

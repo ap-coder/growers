@@ -31,6 +31,10 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/account/messages/{topic}', 'MessageController@show')->name('account.messages.show');
     Route::post('/account/messages/{topic}/reply', 'MessageController@reply')->name('account.messages.reply');
     
+    // Shop
+    Route::get('/shop', 'ShopController@index')->name('shop.index');
+    Route::get('/shop/product/{product}', 'ShopController@show')->name('shop.product');
+    
     // Pages
     Route::get('/how-to-order', 'AccountController@howToOrder')->name('how-to-order');
     

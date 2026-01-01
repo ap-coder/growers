@@ -14,161 +14,175 @@
 
 @section('content')
 
-    <div class="card">
-        <div class="card-header">
-            {{ trans('global.edit') }} {{ trans('cruds.product.title_singular') }}
+<form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data" id="product-form">
+    @csrf
+    @method('PUT')
+    
+    <div class="card card-primary card-outline card-outline-tabs">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="product-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab">
+                        <i class="fas fa-info-circle mr-1"></i> General
+                    </a>
+                </li>
+                <li class="nav-item" id="categories-tab-li">
+                    <a class="nav-link" id="categories-tab" data-toggle="tab" href="#categories" role="tab">
+                        <i class="fas fa-tags mr-1"></i> Categories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pricing-tab" data-toggle="tab" href="#pricing" role="tab">
+                        <i class="fas fa-dollar-sign mr-1"></i> Pricing
+                    </a>
+                </li>
+                <li class="nav-item" id="bundle-tab-li" style="{{ $product->product_type !== 'set' ? 'display:none;' : '' }}">
+                    <a class="nav-link" id="bundle-tab" data-toggle="tab" href="#bundle" role="tab">
+                        <i class="fas fa-box-open mr-1"></i> Bundle Items
+                    </a>
+                </li>
+                <li class="nav-item" id="accessories-tab-li">
+                    <a class="nav-link" id="accessories-tab" data-toggle="tab" href="#accessories" role="tab">
+                        <i class="fas fa-puzzle-piece mr-1"></i> Accessories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="media-tab" data-toggle="tab" href="#media" role="tab">
+                        <i class="fas fa-images mr-1"></i> Media
+                    </a>
+                </li>
+            </ul>
         </div>
-
         <div class="card-body">
-        <form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-            <div class="row">
-
-            {{-- @include('admin.products.partials.tab-headers') --}}
-
-                <div class="col-5 col-sm-3">
-                    <div class="nav flex-column nav-tabs h-100" id="vert-tabs-tab" role="tablist" aria-orientation="vertical">
-                            <a class="nav-link active" id="vert-tabs-gen-tab" data-toggle="pill" href="#vert-tabs-gen" role="tab" aria-controls="vert-tabs-gen" aria-selected="true">General</a>
-                            <a class="nav-link" id="vert-tabs-cat-tab" data-toggle="pill" href="#vert-tabs-cat" role="tab" aria-controls="vert-tabs-cat" aria-selected="false">Categories</a>
-                            <a class="nav-link" id="vert-tabs-pricing-tab" data-toggle="pill" href="#vert-tabs-pricing" role="tab" aria-controls="vert-tabs-pricing" aria-selected="false">Pricing</a>
-                            <a class="nav-link" id="vert-tabs-bundle-tab" data-toggle="pill" href="#vert-tabs-bundle" role="tab" aria-controls="vert-tabs-bundle" aria-selected="false" style="{{ $product->product_type !== 'set' ? 'display:none;' : '' }}">Bundle Items</a>
-                            <a class="nav-link" id="vert-tabs-accessories-tab" data-toggle="pill" href="#vert-tabs-accessories" role="tab" aria-controls="vert-tabs-accessories" aria-selected="false">Accessories</a>
-                            <a class="nav-link" id="vert-tabs-settings-tab" data-toggle="pill" href="#vert-tabs-settings" role="tab" aria-controls="vert-tabs-settings" aria-selected="false">Settings</a>
-                        </div>
+            {{-- Top Row: Checkboxes --}}
+            <div class="row mb-2">
+                <div class="col-12">
+                    <div class="icheck-primary d-inline mr-3">
+                        <input type="hidden" name="published" value="0">
+                        <input type="checkbox" name="published" id="published" value="1" {{ old('published', $product->published) == 1 ? 'checked' : '' }}>
+                        <label for="published">Published</label>
+                    </div>
+                    <div class="icheck-success d-inline" id="featured_group">
+                        <input type="hidden" name="featured" value="0">
+                        <input type="checkbox" name="featured" id="featured" value="1" {{ old('featured', $product->featured) ? 'checked' : '' }}>
+                        <label for="featured">Featured</label>
+                    </div>
                 </div>
-
-
-                <!-- Tab Content -->
-                <div class="col-7 col-sm-9">
-                <div class="tab-content" id="vert-tabs-tabContent">
-                    <!-- General Tab -->
-                    <div class="tab-pane text-left fade show active" id="vert-tabs-gen" role="tabpanel" aria-labelledby="vert-tabs-gen-tab">
-                        {{-- @include('admin.products.partials.general') --}}
-
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="published">Published</label>
-                                    <select name="published" class="form-control">
-                                        <option value="1" {{ $product->published == 1 ? 'selected' : '' }}>Active</option>
-                                        <option value="0" {{ $product->published == 0 ? 'selected' : '' }}>Inactive</option>
-                                    </select>
-                                </div>
+            </div>
+            {{-- Second Row: Selects --}}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="form-group mb-0">
+                        <label for="product_type" class="col-form-label-sm mb-0">Product Type</label>
+                        <select class="form-control form-control-sm" name="product_type" id="product_type">
+                            @foreach(\App\Models\Product::TYPE_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('product_type', $product->product_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-0">
+                        <label for="layout" class="col-form-label-sm mb-0">Layout</label>
+                        <select class="form-control form-control-sm" name="layout" id="layout">
+                            @foreach(\App\Models\Product::LAYOUT_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('layout', $product->layout) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2" id="quantity_group">
+                    <div class="form-group mb-0">
+                        <label for="quantity" class="col-form-label-sm mb-0">Quantity</label>
+                        <input class="form-control form-control-sm" type="number" name="quantity" id="quantity" value="{{ old('quantity', $product->quantity) }}" step="1">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="product-tabs-content">
+                {{-- General Tab --}}
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <div class="form-group">
+                        <label class="required" for="name">Product Name</label>
+                        <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $product->name) }}" required>
+                        @if($errors->has('name'))
+                            <span class="text-danger">{{ $errors->first('name') }}</span>
+                        @endif
+                    </div>
+                    
+                    <div class="form-group" id="accessory_type_group" style="{{ $product->product_type !== 'accessory' ? 'display:none;' : '' }}">
+                        <label for="accessory_type_id">Accessory Type</label>
+                        <select class="form-control" name="accessory_type_id" id="accessory_type_id">
+                            <option value="">-- Select Type --</option>
+                            @foreach(\App\Models\AccessoryType::orderBy('name')->get() as $type)
+                                <option value="{{ $type->id }}" {{ old('accessory_type_id', $product->accessory_type_id) == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description" rows="5">{{ old('description', $product->description) }}</textarea>
+                    </div>
+                </div>
+                
+                {{-- Categories Tab --}}
+                <div class="tab-pane fade" id="categories" role="tabpanel">
+                    @include('admin.products.partials.product_category')
+                </div>
+                
+                {{-- Pricing Tab --}}
+                <div class="tab-pane fade" id="pricing" role="tabpanel">
+                    @include('admin.products.partials.client_prices', [
+                        'product' => $product,
+                        'clients' => $clients
+                    ])
+                </div>
+                
+                {{-- Bundle Items Tab --}}
+                <div class="tab-pane fade" id="bundle" role="tabpanel">
+                    @include('admin.products.partials.bundle_items')
+                </div>
+                
+                {{-- Accessories Tab --}}
+                <div class="tab-pane fade" id="accessories" role="tabpanel">
+                    @include('admin.products.partials.accessories')
+                </div>
+                
+                {{-- Media Tab --}}
+                <div class="tab-pane fade" id="media" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="photo">Product Photo</label>
+                                <div class="needsclick dropzone" id="photo-dropzone"></div>
+                                <small class="text-muted">Main product image</small>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="product_type">Product Type</label>
-                                    <select name="product_type" id="product_type" class="form-control">
-                                        @foreach(\App\Models\Product::TYPE_SELECT as $key => $label)
-                                            <option value="{{ $key }}" {{ old('product_type', $product->product_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-3 d-flex align-items-center">
-                                <div class="form-group form-check mb-0">
-                                    <input type="checkbox" class="form-check-input" id="featured" name="featured" value="1" {{ old('featured', $product->featured) ? 'checked' : '' }}>
-                                    <label class="form-check-label" for="featured">Featured</label>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                <label for="quantity">{{ trans('cruds.product.fields.quantity') }}</label>
-                                <input class="form-control {{ $errors->has('quantity') ? 'is-invalid' : '' }}" type="number" name="quantity" id="quantity" value="{{ old('quantity', $product->quantity) }}" step="1">
-                                @if($errors->has('quantity'))
-                                <span class="text-danger">{{ $errors->first('quantity') }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="additional_photos">{{ trans('cruds.product.fields.additional_photos') }}</label>
+                                <div class="needsclick dropzone {{ $errors->has('additional_photos') ? 'is-invalid' : '' }}" id="additional_photos-dropzone"></div>
+                                @if($errors->has('additional_photos'))
+                                    <span class="text-danger">{{ $errors->first('additional_photos') }}</span>
                                 @endif
-                                <span class="help-block">{{ trans('cruds.product.fields.quantity_helper') }}</span>
-                                </div>
+                                <small class="text-muted">Additional gallery images</small>
                             </div>
                         </div>
-
-                        <div class="form-group" id="accessory_type_group" style="{{ $product->product_type !== 'accessory' ? 'display:none;' : '' }}">
-                            <label for="accessory_type_id">Accessory Type</label>
-                            <select class="form-control" name="accessory_type_id" id="accessory_type_id">
-                                <option value="">-- Select Type --</option>
-                                @foreach(\App\Models\AccessoryType::orderBy('name')->get() as $type)
-                                    <option value="{{ $type->id }}" {{ old('accessory_type_id', $product->accessory_type_id) == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
-                                @endforeach
-                            </select>
-                            <span class="help-block">Group this accessory by type</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="name">Product Name</label>
-                            <input type="text" name="name" id="name" class="form-control" value="{{ old('name', $product->name) }}" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="description">Description</label>
-                            <textarea name="description" id="description" class="form-control" rows="4">{{ old('description', $product->description) }}</textarea>
-                        </div>
-
-
-                        <!-- Photo Upload using Dropzone -->
-                        <div class="form-group mt-4">
-                            <label for="photo">Product Photo</label>
-                            <div class="needsclick dropzone" id="photo-dropzone"></div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="additional_photos">{{ trans('cruds.product.fields.additional_photos') }}</label>
-                            <div class="needsclick dropzone {{ $errors->has('additional_photos') ? 'is-invalid' : '' }}" id="additional_photos-dropzone">
-                            </div>
-                            @if($errors->has('additional_photos'))
-                                <div class="invalid-feedback">
-                                    {{ $errors->first('additional_photos') }}
-                                    </div>
-                            @endif
-                            <span class="help-block">{{ trans('cruds.product.fields.additional_photos_helper') }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Categories Tab -->
-                    <div class="tab-pane fade" id="vert-tabs-cat" role="tabpanel" aria-labelledby="vert-tabs-cat-tab">
-                        @include('admin.products.partials.product_category')
-
-                    </div>
-
-
-                    <!-- Pricing Tab -->
-                    <div class="tab-pane fade" id="vert-tabs-pricing" role="tabpanel" aria-labelledby="vert-tabs-pricing-tab">
-                        {{-- @include('admin.products.partials.client_prices')--}}
-                        @include('admin.products.partials.client_prices', [
-                                    'product' => $product,
-                                    'clients' => $clients
-                                ])
-                    </div>
-
-                    <!-- Bundle Items Tab (for Sets) -->
-                    <div class="tab-pane fade" id="vert-tabs-bundle" role="tabpanel" aria-labelledby="vert-tabs-bundle-tab">
-                        @include('admin.products.partials.bundle_items')
-                    </div>
-
-                    <!-- Accessories Tab -->
-                    <div class="tab-pane fade" id="vert-tabs-accessories" role="tabpanel" aria-labelledby="vert-tabs-accessories-tab">
-                        @include('admin.products.partials.accessories')
-                    </div>
-
-                    <!-- Settings Tab -->
-                    <div class="tab-pane fade" id="vert-tabs-settings" role="tabpanel" aria-labelledby="vert-tabs-settings-tab">
-                        {{--  @include('admin.products.partials.settings') --}}
-
-
                     </div>
                 </div>
             </div>
-
-                <!-- Submit Button -->
-            <div class="form-group mt-4">
-                <button class="btn btn-danger" type="submit">
-                    Save
-                </button>
-            </div>
-        </form>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-save mr-1"></i> Save
+            </button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                <i class="fas fa-times mr-1"></i> Cancel
+            </a>
+        </div>
     </div>
-    </div>
+</form>
 
 @endsection
 
@@ -424,23 +438,37 @@
             
             // Show/hide bundle tab
             if (type === 'set') {
-                $('#vert-tabs-bundle-tab').show();
+                $('#bundle-tab-li').show();
             } else {
-                $('#vert-tabs-bundle-tab').hide();
+                $('#bundle-tab-li').hide();
             }
             
             // Show/hide categories tab (hide for accessories)
             if (type === 'accessory') {
-                $('#vert-tabs-cat-tab').hide();
+                $('#categories-tab-li').hide();
             } else {
-                $('#vert-tabs-cat-tab').show();
+                $('#categories-tab-li').show();
             }
             
             // Show/hide accessories tab (hide for accessories themselves)
             if (type === 'accessory') {
-                $('#vert-tabs-accessories-tab').hide();
+                $('#accessories-tab-li').hide();
             } else {
-                $('#vert-tabs-accessories-tab').show();
+                $('#accessories-tab-li').show();
+            }
+            
+            // Show/hide featured checkbox (hide for accessories)
+            if (type === 'accessory') {
+                $('#featured_group').hide();
+            } else {
+                $('#featured_group').show();
+            }
+            
+            // Show/hide quantity (hide for sets)
+            if (type === 'set') {
+                $('#quantity_group').hide();
+            } else {
+                $('#quantity_group').show();
             }
         }
         
@@ -449,6 +477,46 @@
 
         // Bundle items management
         var groupIndex = {{ $product->bundleItems ? $product->bundleItems->groupBy('group_name')->count() : 1 }};
+        var productOptions = `@foreach(\App\Models\Product::where('id', '!=', $product->id)->orderBy('name')->get() as $p)<option value="{{ $p->id }}" data-price="{{ $p->base_price }}">{{ $p->name }} (${{ number_format($p->base_price ?? 0, 2) }})</option>@endforeach`;
+        var priceTypeOptions = `@foreach(\App\Models\ProductBundleItem::PRICE_TYPES as $key => $label)<option value="{{ $key }}">{{ $label }}</option>@endforeach`;
+        
+        // Price type change handler for individual bundle items
+        $(document).on('change', '.price-type-select', function() {
+            var row = $(this).closest('tr');
+            var priceType = $(this).val();
+            
+            row.find('.price-override-group').hide();
+            row.find('.price-adjustment-group').hide();
+            row.find('.price-default-text').hide();
+            
+            if (priceType === 'override') {
+                row.find('.price-override-group').show();
+            } else if (priceType === 'adjustment') {
+                row.find('.price-adjustment-group').show();
+            } else {
+                row.find('.price-default-text').show().text(priceType === 'free' ? 'Free' : 'Base');
+            }
+        });
+
+        // Overall bundle price type change handler
+        $('#bundle_price_type').on('change', function() {
+            var priceType = $(this).val();
+            
+            $('#bundle_price_override_group').hide();
+            $('#bundle_discount_group').hide();
+            
+            if (priceType === 'fixed') {
+                $('#bundle_price_override_group').show();
+            } else if (priceType === 'discount_percent') {
+                $('#bundle_discount_group').show();
+                $('#bundle_discount_symbol').text('%');
+                $('#bundle_discount_label').text('Discount Percentage');
+            } else if (priceType === 'discount_amount') {
+                $('#bundle_discount_group').show();
+                $('#bundle_discount_symbol').text('$');
+                $('#bundle_discount_label').text('Discount Amount');
+            }
+        });
         
         // Add new group
         $('#addBundleGroupBtn').on('click', function() {
@@ -463,36 +531,56 @@
                             <i class="fas fa-trash"></i> Remove Group
                         </button>
                     </div>
-                    <div class="card-body">
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th width="80">Qty</th>
-                                    <th width="100">Required</th>
-                                    <th width="100">Selectable</th>
-                                    <th width="50"></th>
-                                </tr>
-                            </thead>
-                            <tbody class="bundle-items-body">
-                                <tr class="bundle-item-row">
-                                    <td>
-                                        <select name="bundle_groups[${groupIndex}][items][0][product_id]" class="form-control form-control-sm">
-                                            <option value="">-- Select Product --</option>
-                                            @foreach(\App\Models\Product::where('id', '!=', $product->id)->orderBy('name')->get() as $p)
-                                                <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->product_type) }})</option>
-                                            @endforeach
-                                        </select>
-                                    </td>
-                                    <td><input type="number" name="bundle_groups[${groupIndex}][items][0][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
-                                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_required]" value="1" checked></td>
-                                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_selectable]" value="1"></td>
-                                    <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered mb-2">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="min-width: 200px;">Product</th>
+                                        <th width="60">Qty</th>
+                                        <th width="120">Pricing</th>
+                                        <th width="100">Price</th>
+                                        <th width="70">Req.</th>
+                                        <th width="70">Select</th>
+                                        <th width="40"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bundle-items-body">
+                                    <tr class="bundle-item-row">
+                                        <td>
+                                            <select name="bundle_groups[${groupIndex}][items][0][product_id]" class="form-control form-control-sm bundle-product-select">
+                                                <option value="">-- Select Product --</option>
+                                                ${productOptions}
+                                            </select>
+                                        </td>
+                                        <td><input type="number" name="bundle_groups[${groupIndex}][items][0][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
+                                        <td>
+                                            <select name="bundle_groups[${groupIndex}][items][0][price_type]" class="form-control form-control-sm price-type-select">
+                                                ${priceTypeOptions}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="price-input-wrapper">
+                                                <div class="input-group input-group-sm price-override-group" style="display:none;">
+                                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                                    <input type="number" step="0.01" name="bundle_groups[${groupIndex}][items][0][price_override]" class="form-control" placeholder="0.00">
+                                                </div>
+                                                <div class="input-group input-group-sm price-adjustment-group" style="display:none;">
+                                                    <div class="input-group-prepend"><span class="input-group-text">+/-</span></div>
+                                                    <input type="number" step="0.01" name="bundle_groups[${groupIndex}][items][0][price_adjustment]" class="form-control" placeholder="0.00">
+                                                </div>
+                                                <span class="price-default-text text-muted small">Base</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_required]" value="1" checked></td>
+                                        <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_selectable]" value="1"></td>
+                                        <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <button type="button" class="btn btn-sm btn-outline-primary add-item-btn">
-                            <i class="fas fa-plus"></i> Add Item to Group
+                            <i class="fas fa-plus"></i> Add Item
                         </button>
                     </div>
                 </div>
@@ -508,7 +596,7 @@
 
         // Add item to group
         $(document).on('click', '.add-item-btn', function() {
-            var tbody = $(this).siblings('table').find('.bundle-items-body');
+            var tbody = $(this).closest('.card-body').find('.bundle-items-body');
             var groupCard = $(this).closest('.bundle-group');
             var groupIdx = groupCard.index();
             var itemIdx = tbody.find('tr').length;
@@ -516,14 +604,30 @@
             var newRow = `
                 <tr class="bundle-item-row">
                     <td>
-                        <select name="bundle_groups[${groupIdx}][items][${itemIdx}][product_id]" class="form-control form-control-sm">
+                        <select name="bundle_groups[${groupIdx}][items][${itemIdx}][product_id]" class="form-control form-control-sm bundle-product-select">
                             <option value="">-- Select Product --</option>
-                            @foreach(\App\Models\Product::where('id', '!=', $product->id)->orderBy('name')->get() as $p)
-                                <option value="{{ $p->id }}">{{ $p->name }} ({{ ucfirst($p->product_type) }})</option>
-                            @endforeach
+                            ${productOptions}
                         </select>
                     </td>
                     <td><input type="number" name="bundle_groups[${groupIdx}][items][${itemIdx}][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
+                    <td>
+                        <select name="bundle_groups[${groupIdx}][items][${itemIdx}][price_type]" class="form-control form-control-sm price-type-select">
+                            ${priceTypeOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <div class="price-input-wrapper">
+                            <div class="input-group input-group-sm price-override-group" style="display:none;">
+                                <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                <input type="number" step="0.01" name="bundle_groups[${groupIdx}][items][${itemIdx}][price_override]" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="input-group input-group-sm price-adjustment-group" style="display:none;">
+                                <div class="input-group-prepend"><span class="input-group-text">+/-</span></div>
+                                <input type="number" step="0.01" name="bundle_groups[${groupIdx}][items][${itemIdx}][price_adjustment]" class="form-control" placeholder="0.00">
+                            </div>
+                            <span class="price-default-text text-muted small">Base</span>
+                        </div>
+                    </td>
                     <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIdx}][items][${itemIdx}][is_required]" value="1"></td>
                     <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIdx}][items][${itemIdx}][is_selectable]" value="1"></td>
                     <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>

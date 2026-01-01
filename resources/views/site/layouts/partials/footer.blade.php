@@ -34,14 +34,29 @@
                         </ul>
                     </div>
                 </div>
+                @php
+                    $quickLinksMenu = \App\Menu\Models\Menus::where('name', 'Quick Links')->first();
+                    $categoriesMenu = \App\Menu\Models\Menus::where('name', 'Categories')->first();
+                    $seasonalMenu = \App\Menu\Models\Menus::where('name', 'Seasonal')->first();
+                @endphp
+                
                 <div class="col-xl-3 col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.2s">
                     <div class="widget widget_services">
                         <h2 class="footer-title">Quick Links</h2>
                         <ul>
-                            <li><a href="{{ route('frontend.home') }}">Home</a></li>
-                            <li><a href="{{ route('frontend.products.index') }}">Products</a></li>
-                            <li><a href="{{ route('site.how-to-order') }}">How to Order</a></li>
-                            <li><a href="{{ route('site.account.orders') }}">My Orders</a></li>
+                            @if($quickLinksMenu && $quickLinksMenu->items->count() > 0)
+                                @foreach($quickLinksMenu->items->where('parent', 0)->sortBy('sort') as $item)
+                                    <li><a href="{{ $item->link }}">{{ $item->label }}</a></li>
+                                @endforeach
+                            @else
+                                <li><a href="{{ route('frontend.home') }}">Home</a></li>
+                                <li><a href="{{ route('site.shop.index') }}">Shop</a></li>
+                                @auth
+                                    <li><a href="{{ route('site.account.orders') }}">My Orders</a></li>
+                                @else
+                                    <li><a href="{{ route('login') }}">Login</a></li>
+                                @endauth
+                            @endif
                         </ul>
                     </div>
                 </div>
@@ -49,11 +64,15 @@
                     <div class="widget widget_services">
                         <h2 class="footer-title">Categories</h2>
                         <ul>
-                            <li><a href="#">Baskets</a></li>
-                            <li><a href="#">Ceramics</a></li>
-                            <li><a href="#">Tins</a></li>
-                            <li><a href="#">Wood</a></li>
-                            <li><a href="#">Novelty</a></li>
+                            @if($categoriesMenu && $categoriesMenu->items->count() > 0)
+                                @foreach($categoriesMenu->items->where('parent', 0)->sortBy('sort') as $item)
+                                    <li><a href="{{ $item->link }}">{{ $item->label }}</a></li>
+                                @endforeach
+                            @else
+                                @foreach(\App\Models\ProductCategory::orderBy('name')->take(6)->get() as $category)
+                                    <li><a href="{{ route('site.shop.index', ['category' => $category->id]) }}">{{ $category->name }}</a></li>
+                                @endforeach
+                            @endif
                         </ul>
                     </div>
                 </div>
@@ -61,12 +80,13 @@
                     <div class="widget widget_services">
                         <h2 class="footer-title">Seasonal</h2>
                         <ul>
-                            <li><a href="#">Valentines</a></li>
-                            <li><a href="#">Spring</a></li>
-                            <li><a href="#">Mother's Day</a></li>
-                            <li><a href="#">Summer</a></li>
-                            <li><a href="#">Fall</a></li>
-                            <li><a href="#">Christmas</a></li>
+                            @if($seasonalMenu && $seasonalMenu->items->count() > 0)
+                                @foreach($seasonalMenu->items->where('parent', 0)->sortBy('sort') as $item)
+                                    <li><a href="{{ $item->link }}">{{ $item->label }}</a></li>
+                                @endforeach
+                            @else
+                                <li class="text-muted"><small>Coming soon...</small></li>
+                            @endif
                         </ul>
                     </div>
                 </div>

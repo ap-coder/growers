@@ -67,6 +67,101 @@
     </div>
 </div>
 
+{{-- Variants Section --}}
+<div class="card">
+    <div class="card-header bg-info">
+        <h5 class="mb-0"><i class="fas fa-palette mr-2"></i>Color & Size Variants</h5>
+    </div>
+    <div class="card-body">
+        <p class="text-muted">Add variants if this accessory comes in different colors or sizes with price differences.</p>
+        
+        <form method="POST" action="{{ route('admin.accessories.update', [$accessory->id]) }}" id="variants-form">
+            @method('PUT')
+            @csrf
+            <input type="hidden" name="accessory_type_id" value="{{ $accessory->accessory_type_id }}">
+            <input type="hidden" name="name" value="{{ $accessory->name }}">
+            <input type="hidden" name="base_price" value="{{ $accessory->base_price }}">
+            <input type="hidden" name="save_variants" value="1">
+            
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered" id="variantsTable">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 140px;">Name</th>
+                            <th style="width: 90px;">Color</th>
+                            <th style="width: 70px;">Size</th>
+                            <th style="width: 100px;">Material</th>
+                            <th style="width: 80px;">SKU</th>
+                            <th style="width: 100px;">Price +/-</th>
+                            <th style="width: 100px;">Fixed Price</th>
+                            <th style="width: 40px;">Def</th>
+                            <th style="width: 40px;">On</th>
+                            <th style="width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="variantsBody">
+                        @forelse($accessory->variants as $index => $variant)
+                            <tr class="variant-row">
+                                <td>
+                                    <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
+                                    <input type="text" class="form-control form-control-sm" name="variants[{{ $index }}][name]" value="{{ $variant->name }}" placeholder="e.g., Red Large">
+                                </td>
+                                <td><input type="text" class="form-control form-control-sm" name="variants[{{ $index }}][color]" value="{{ $variant->color }}" placeholder="Red"></td>
+                                <td><input type="text" class="form-control form-control-sm" name="variants[{{ $index }}][size]" value="{{ $variant->size }}" placeholder="Large"></td>
+                                <td>
+                                    <select class="form-control form-control-sm" name="variants[{{ $index }}][material]">
+                                        <option value="">--</option>
+                                        @foreach(\App\Models\AccessoryVariant::MATERIALS as $key => $label)
+                                            <option value="{{ $key }}" {{ $variant->material == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td><input type="text" class="form-control form-control-sm" name="variants[{{ $index }}][sku]" value="{{ $variant->sku }}"></td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                        <input type="number" step="0.01" class="form-control" name="variants[{{ $index }}][price_adjustment]" value="{{ $variant->price_adjustment }}" placeholder="0.00">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                        <input type="number" step="0.01" class="form-control" name="variants[{{ $index }}][price_override]" value="{{ $variant->price_override }}" placeholder="Override">
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <input type="radio" name="default_variant" value="{{ $index }}" {{ $variant->is_default ? 'checked' : '' }}>
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" name="variants[{{ $index }}][published]" value="1" {{ $variant->published ? 'checked' : '' }}>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-sm btn-outline-danger remove-variant-btn"><i class="fas fa-times"></i></button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr class="no-variants-row">
+                                <td colspan="10" class="text-center text-muted py-3">
+                                    No variants yet. Click "Add Variant" to create color/size options.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="d-flex justify-content-between align-items-center mt-2">
+                <button type="button" class="btn btn-outline-primary btn-sm" id="addVariantBtn">
+                    <i class="fas fa-plus mr-1"></i> Add Variant
+                </button>
+                <button type="submit" class="btn btn-success btn-sm">
+                    <i class="fas fa-save mr-1"></i> Save Variants
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @if($clients->count() > 0)
 <div class="card">
     <div class="card-header">
@@ -116,4 +211,62 @@
 </div>
 @endif
 
+@endsection
+
+@section('scripts')
+<script>
+$(function() {
+    var variantIndex = {{ $accessory->variants->count() }};
+    
+    // Add new variant row
+    $('#addVariantBtn').on('click', function() {
+        $('.no-variants-row').remove();
+        
+        var materialOptions = `<option value="">--</option>@foreach(\App\Models\AccessoryVariant::MATERIALS as $key => $label)<option value="{{ $key }}">{{ $label }}</option>@endforeach`;
+        
+        var newRow = `
+            <tr class="variant-row">
+                <td><input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][name]" placeholder="e.g., Red Large"></td>
+                <td><input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][color]" placeholder="Red"></td>
+                <td><input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][size]" placeholder="Large"></td>
+                <td><select class="form-control form-control-sm" name="variants[${variantIndex}][material]">${materialOptions}</select></td>
+                <td><input type="text" class="form-control form-control-sm" name="variants[${variantIndex}][sku]"></td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                        <input type="number" step="0.01" class="form-control" name="variants[${variantIndex}][price_adjustment]" placeholder="0.00">
+                    </div>
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                        <input type="number" step="0.01" class="form-control" name="variants[${variantIndex}][price_override]" placeholder="Override">
+                    </div>
+                </td>
+                <td class="text-center"><input type="radio" name="default_variant" value="${variantIndex}"></td>
+                <td class="text-center"><input type="checkbox" name="variants[${variantIndex}][published]" value="1" checked></td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger remove-variant-btn"><i class="fas fa-times"></i></button></td>
+            </tr>
+        `;
+        
+        $('#variantsBody').append(newRow);
+        variantIndex++;
+    });
+    
+    // Remove variant row
+    $(document).on('click', '.remove-variant-btn', function() {
+        $(this).closest('tr').remove();
+        
+        if ($('#variantsBody .variant-row').length === 0) {
+            $('#variantsBody').append(`
+                <tr class="no-variants-row">
+                    <td colspan="10" class="text-center text-muted py-3">
+                        No variants yet. Click "Add Variant" to create color/size options.
+                    </td>
+                </tr>
+            `);
+        }
+    });
+});
+</script>
 @endsection
