@@ -1,8 +1,8 @@
 @php
     $price = $product->getPriceForClient($clientId ?? null);
 @endphp
-<div class="col-lg-{{ $colSize ?? 3 }} col-md-4 col-sm-6 m-b30">
-    <div class="dz-product-box style-2">
+<div class="col-6 col-xl-{{ $colSize ?? 3 }} col-lg-4 col-md-6 col-sm-6 m-b30">
+    <div class="shop-card">
         <div class="dz-media">
             <a href="{{ route('site.shop.product', $product) }}">
                 @if($product->photo)
@@ -11,26 +11,27 @@
                     <img src="{{ asset('site/images/shop/product/1.png') }}" alt="{{ $product->name }}">
                 @endif
             </a>
-            <div class="dz-hover-content">
-                <ul class="dz-info">
-                    <li><a href="{{ route('site.shop.product', $product) }}" class="btn btn-secondary btn-sm">
-                        <i class="fas fa-eye me-1"></i> View
-                    </a></li>
-                </ul>
-            </div>
             @if($product->featured)
-                <span class="badge badge-secondary product-tag">Featured</span>
+                <div class="product-tag">
+                    <span class="badge badge-secondary">Featured</span>
+                </div>
             @endif
+            <div class="shop-meta">
+                <div class="btn btn-primary meta-icon dz-wishicon">
+                    <i class="icon feather icon-heart dz-heart"></i>
+                    <i class="icon feather icon-heart-on dz-heart-fill"></i>
+                </div>
+                <a href="{{ route('site.shop.product', $product) }}" class="btn btn-primary meta-icon">
+                    <i class="flaticon flaticon-eye"></i>
+                </a>
+                <div class="btn btn-primary meta-icon dz-carticon">
+                    <i class="flaticon flaticon-basket"></i>
+                    <i class="flaticon flaticon-basket-on dz-heart-fill"></i>
+                </div>
+            </div>
         </div>
         <div class="dz-content">
-            <h5 class="title">
-                <a href="{{ route('site.shop.product', $product) }}">{{ $product->name }}</a>
-            </h5>
-            @if($product->categories->count() > 0)
-                <span class="product-category text-muted small">
-                    {{ $product->categories->first()->name }}
-                </span>
-            @endif
+            <h2 class="title"><a href="{{ route('site.shop.product', $product) }}">{{ $product->name }}</a></h2>
             <span class="price">
                 @if($price)
                     ${{ number_format($price, 2) }}
