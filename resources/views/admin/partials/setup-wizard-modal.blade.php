@@ -28,31 +28,6 @@
                     <div class="tab-pane fade show active" id="settings-panel" role="tabpanel">
                         <form id="wizardSettingsForm">
                             @csrf
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label><i class="fas fa-image mr-1"></i> Header Logo</label>
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="header_logo" name="header_logo" accept="image/*">
-                                            <label class="custom-file-label" for="header_logo">Choose file...</label>
-                                        </div>
-                                        <small class="text-muted">Recommended: PNG with transparent background</small>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label><i class="fas fa-image mr-1"></i> Login Page Background</label>
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input" id="login_image" name="login_image" accept="image/*">
-                                            <label class="custom-file-label" for="login_image">Choose file...</label>
-                                        </div>
-                                        <small class="text-muted">Recommended size: 1920x1080px</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <hr>
-                            <h6 class="text-muted mb-3"><i class="fas fa-map-marker-alt mr-1"></i> Footer Information</h6>
 
                             @php
                                 $user = auth()->user();
@@ -60,11 +35,16 @@
                                 $defaultEmail = \App\Models\Setting::get('footer_email') ?: \App\Models\Setting::get('company_email') ?: 'orders@pacificplantgrowers.com';
                                 $defaultPhone = \App\Models\Setting::get('footer_phone') ?: \App\Models\Setting::get('company_phone') ?: '801-768-2809';
                                 $defaultAddress = \App\Models\Setting::get('footer_address') ?: \App\Models\Setting::get('company_address') ?: "Pacific Plant Growers\n1697 W 2100 N.\nLehi, UT 84043";
-                                $defaultDisclaimer = \App\Models\Setting::get('footer_disclaimer') ?: "© " . date('Y') . " {$companyName}. All rights reserved. | pacificplantgrowers.com";
+                                $defaultDisclaimer = \App\Models\Setting::get('footer_disclaimer') ?: "© " . date('Y') . " {$companyName}. All rights reserved.";
                             @endphp
 
                             <div class="form-group">
-                                <label>Company Address</label>
+                                <label><i class="fas fa-building mr-1"></i> Company Name</label>
+                                <input type="text" class="form-control" id="company_name" name="company_name" placeholder="Your Company Name" value="{{ $companyName }}">
+                            </div>
+
+                            <div class="form-group">
+                                <label><i class="fas fa-map-marker-alt mr-1"></i> Company Address</label>
                                 <textarea class="form-control" id="footer_address" name="footer_address" rows="2" placeholder="123 Main Street&#10;City, State 12345">{{ $defaultAddress }}</textarea>
                             </div>
 
@@ -83,9 +63,37 @@
                                 </div>
                             </div>
 
+                            <hr>
+                            <h6 class="text-muted mb-3"><i class="fas fa-image mr-1"></i> Branding Images</h6>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Header Logo</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="header_logo" name="header_logo" accept="image/*">
+                                            <label class="custom-file-label" for="header_logo">Choose file...</label>
+                                        </div>
+                                        <small class="text-muted">Recommended: PNG with transparent background</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Login Page Background</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="login_image" name="login_image" accept="image/*">
+                                            <label class="custom-file-label" for="login_image">Choose file...</label>
+                                        </div>
+                                        <small class="text-muted">Recommended size: 1920x1080px</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
                             <div class="form-group">
                                 <label><i class="fas fa-gavel mr-1"></i> Footer Disclaimer Text</label>
-                                <textarea class="form-control" id="footer_disclaimer" name="footer_disclaimer" rows="3" placeholder="Optional disclaimer text for the footer...">{{ $defaultDisclaimer }}</textarea>
+                                <textarea class="form-control" id="footer_disclaimer" name="footer_disclaimer" rows="2" placeholder="Optional disclaimer text for the footer...">{{ $defaultDisclaimer }}</textarea>
                             </div>
 
                             <button type="submit" class="btn btn-success">

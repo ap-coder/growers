@@ -34,8 +34,8 @@
                 @include('partials.inc.faqs-section')
 
                 @include('partials.inc.users-section')
-                @include('partials.inc.settings-section')
                 @include('partials.inc.developers-section')
+                @include('partials.inc.settings-section')
                 {{-- @include('partials.inc.tasks-section')--}}
 
                 @can('user_alert_access')

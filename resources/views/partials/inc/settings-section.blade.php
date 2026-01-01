@@ -1,6 +1,6 @@
 @can('setting_access')
-    <li class="nav-item has-treeview {{ request()->is("admin/settings*") ? "menu-open" : "" }} {{ request()->is("admin/menu-builder*") ? "menu-open" : "" }}">
-        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/settings*") ? "active" : "" }} {{ request()->is("admin/menu-builder*") ? "active" : "" }}" href="#">
+    <li class="nav-item has-treeview {{ request()->is("admin/settings*") ? "menu-open" : "" }}">
+        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/settings*") ? "active" : "" }}" href="#">
             <i class="fa-fw nav-icon fas fa-cogs"></i>
             <p>
                 {{ trans('cruds.setting.title') }}
@@ -20,12 +20,12 @@
                     <p>Site Settings</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ url('/admin/menu-builder') }}" class="nav-link {{ request()->is("admin/menu-builder*") ? "active" : "" }}">
-                    <i class="fa-fw nav-icon fas fa-bars"></i>
-                    <p>Menu Builder</p>
-                </a>
-            </li>
         </ul>
+    </li>
+    <li class="nav-item">
+        <a href="{{ url('/admin/menu-builder') }}" class="nav-link {{ request()->is("admin/menu-builder*") ? "active" : "" }}">
+            <i class="fa-fw nav-icon fas fa-bars"></i>
+            <p>Menu Builder</p>
+        </a>
     </li>
 @endcan

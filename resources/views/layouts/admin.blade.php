@@ -50,6 +50,19 @@
                 </ul>
             @endif
             <ul class="navbar-nav ml-auto">
+                {{-- Messages Notification --}}
+                @php($unreadMessages = \App\Models\QaTopic::unreadCount())
+                <li class="nav-item dropdown messages-menu">
+                    <a href="{{ route('admin.messenger.index') }}" class="nav-link" title="Messages">
+                        <i class="far fa-envelope"></i>
+                        @if($unreadMessages > 0)
+                            <span class="badge badge-danger navbar-badge">
+                                {{ $unreadMessages }}
+                            </span>
+                        @endif
+                    </a>
+                </li>
+                {{-- Alerts Notification --}}
                 <li class="nav-item dropdown notifications-menu">
                     <a href="#" class="nav-link" data-toggle="dropdown">
                         <i class="far fa-bell"></i>

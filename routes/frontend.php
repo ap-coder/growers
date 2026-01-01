@@ -24,6 +24,13 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/account/orders', 'AccountController@orders')->name('account.orders');
     Route::get('/account/orders/{id}', 'AccountController@orderShow')->name('account.orders.show');
     
+    // Messages
+    Route::get('/account/messages', 'MessageController@index')->name('account.messages.index');
+    Route::get('/account/messages/create', 'MessageController@create')->name('account.messages.create');
+    Route::post('/account/messages', 'MessageController@store')->name('account.messages.store');
+    Route::get('/account/messages/{topic}', 'MessageController@show')->name('account.messages.show');
+    Route::post('/account/messages/{topic}/reply', 'MessageController@reply')->name('account.messages.reply');
+    
     // Pages
     Route::get('/how-to-order', 'AccountController@howToOrder')->name('how-to-order');
     

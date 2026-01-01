@@ -196,6 +196,11 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            // Save company name
+            if ($request->filled('company_name')) {
+                Setting::set('company_name', $request->input('company_name'), 'text', 'branding', 'Company Name', 'Company name displayed throughout the site');
+            }
+
             // Handle header logo upload
             if ($request->hasFile('header_logo')) {
                 $path = $request->file('header_logo')->store('settings', 'public');
