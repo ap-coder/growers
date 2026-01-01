@@ -1,4 +1,12 @@
 <!-- Footer -->
+@php
+    $footerAddress = \App\Models\Setting::get('footer_address') ?: \App\Models\Setting::get('company_address') ?: "Pacific Plant Growers\n1697 W 2100 N.\nLehi, UT 84043";
+    $footerEmail = \App\Models\Setting::get('footer_email') ?: \App\Models\Setting::get('company_email') ?: 'orders@pacificplantgrowers.com';
+    $footerPhone = \App\Models\Setting::get('footer_phone') ?: \App\Models\Setting::get('company_phone') ?: '801-768-2809';
+    $footerDisclaimer = \App\Models\Setting::get('footer_disclaimer');
+    $companyName = \App\Models\Setting::get('company_name', 'Pacific Plant Growers');
+    $companyLogo = \App\Models\Setting::get('company_logo');
+@endphp
 <footer class="site-footer style-2">
     <!-- Footer Top -->
     <div class="footer-top">
@@ -7,17 +15,21 @@
                 <div class="col-xl-3 col-md-4 col-sm-6 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="widget widget_about me-2">
                         <div class="footer-logo logo-white">
-                            <a href="{{ route('frontend.home') }}"><img src="{{ asset('site/images/logo.svg') }}" alt=""></a> 
+                            @if($companyLogo)
+                                <a href="{{ route('frontend.home') }}"><img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}"></a>
+                            @else
+                                <a href="{{ route('frontend.home') }}"><img src="{{ asset('site/images/logo.svg') }}" alt="{{ $companyName }}"></a>
+                            @endif
                         </div>
                         <ul class="widget-address">
                             <li>
-                                <p><span>Address</span> : Layton, Utah</p>
+                                <p><span>Address</span> : {!! nl2br(e($footerAddress)) !!}</p>
                             </li>
                             <li>
-                                <p><span>E-mail</span> : <a href="mailto:info@pacificplantgrowers.com">info@pacificplantgrowers.com</a></p>
+                                <p><span>E-mail</span> : <a href="mailto:{{ $footerEmail }}">{{ $footerEmail }}</a></p>
                             </li>
                             <li>
-                                <p><span>Phone</span> : <a href="tel:8017908100">801.790.8100</a></p>
+                                <p><span>Phone</span> : <a href="tel:{{ preg_replace('/[^0-9]/', '', $footerPhone) }}">{{ $footerPhone }}</a></p>
                             </li>
                         </ul>
                     </div>
@@ -68,7 +80,13 @@
         <div class="container">
             <div class="row fb-inner wow fadeInUp" data-wow-delay="0.1s">
                 <div class="col-lg-12 text-center"> 
-                    <p class="copyright-text">© {{ date('Y') }} Pacific Plant Growers. All Rights Reserved.</p>
+                    <p class="copyright-text">
+                        @if($footerDisclaimer)
+                            {!! e($footerDisclaimer) !!}
+                        @else
+                            © {{ date('Y') }} {{ $companyName }}. All Rights Reserved.
+                        @endif
+                    </p>
                 </div>
             </div>
         </div>

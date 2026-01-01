@@ -28,45 +28,71 @@
                     <div class="tab-pane fade show active" id="settings-panel" role="tabpanel">
                         <form id="wizardSettingsForm">
                             @csrf
-                            <div class="form-group">
-                                <label><i class="fas fa-image mr-1"></i> Login Page Background Image</label>
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input" id="login_image" name="login_image" accept="image/*">
-                                    <label class="custom-file-label" for="login_image">Choose file...</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-image mr-1"></i> Header Logo</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="header_logo" name="header_logo" accept="image/*">
+                                            <label class="custom-file-label" for="header_logo">Choose file...</label>
+                                        </div>
+                                        <small class="text-muted">Recommended: PNG with transparent background</small>
+                                    </div>
                                 </div>
-                                <small class="text-muted">Recommended size: 1920x1080px</small>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label><i class="fas fa-image mr-1"></i> Login Page Background</label>
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="login_image" name="login_image" accept="image/*">
+                                            <label class="custom-file-label" for="login_image">Choose file...</label>
+                                        </div>
+                                        <small class="text-muted">Recommended size: 1920x1080px</small>
+                                    </div>
+                                </div>
                             </div>
 
                             <hr>
                             <h6 class="text-muted mb-3"><i class="fas fa-map-marker-alt mr-1"></i> Footer Information</h6>
 
+                            @php
+                                $user = auth()->user();
+                                $companyName = \App\Models\Setting::get('company_name', 'Pacific Plant Growers');
+                                $defaultEmail = \App\Models\Setting::get('footer_email') ?: \App\Models\Setting::get('company_email') ?: 'orders@pacificplantgrowers.com';
+                                $defaultPhone = \App\Models\Setting::get('footer_phone') ?: \App\Models\Setting::get('company_phone') ?: '801-768-2809';
+                                $defaultAddress = \App\Models\Setting::get('footer_address') ?: \App\Models\Setting::get('company_address') ?: "Pacific Plant Growers\n1697 W 2100 N.\nLehi, UT 84043";
+                                $defaultDisclaimer = \App\Models\Setting::get('footer_disclaimer') ?: "© " . date('Y') . " {$companyName}. All rights reserved. | pacificplantgrowers.com";
+                            @endphp
+
                             <div class="form-group">
                                 <label>Company Address</label>
-                                <textarea class="form-control" id="footer_address" name="footer_address" rows="2" placeholder="123 Main Street&#10;City, State 12345">{{ \App\Models\Setting::get('footer_address') }}</textarea>
+                                <textarea class="form-control" id="footer_address" name="footer_address" rows="2" placeholder="123 Main Street&#10;City, State 12345">{{ $defaultAddress }}</textarea>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label><i class="fas fa-envelope mr-1"></i> Contact Email</label>
-                                        <input type="email" class="form-control" id="footer_email" name="footer_email" placeholder="contact@company.com" value="{{ \App\Models\Setting::get('footer_email') }}">
+                                        <input type="email" class="form-control" id="footer_email" name="footer_email" placeholder="contact@company.com" value="{{ $defaultEmail }}">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label><i class="fas fa-phone mr-1"></i> Phone Number</label>
-                                        <input type="text" class="form-control" id="footer_phone" name="footer_phone" placeholder="(555) 123-4567" value="{{ \App\Models\Setting::get('footer_phone') }}">
+                                        <input type="text" class="form-control" id="footer_phone" name="footer_phone" placeholder="(555) 123-4567" value="{{ $defaultPhone }}">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group">
                                 <label><i class="fas fa-gavel mr-1"></i> Footer Disclaimer Text</label>
-                                <textarea class="form-control" id="footer_disclaimer" name="footer_disclaimer" rows="3" placeholder="Optional disclaimer text for the footer...">{{ \App\Models\Setting::get('footer_disclaimer') }}</textarea>
+                                <textarea class="form-control" id="footer_disclaimer" name="footer_disclaimer" rows="3" placeholder="Optional disclaimer text for the footer...">{{ $defaultDisclaimer }}</textarea>
                             </div>
 
                             <button type="submit" class="btn btn-success">
                                 <i class="fas fa-save mr-1"></i> Save Settings
+                            </button>
+                            <button type="button" class="btn btn-primary ml-2" id="nextToPagesBtn">
+                                Next: Default Pages <i class="fas fa-arrow-right ml-1"></i>
                             </button>
                         </form>
                     </div>
@@ -140,7 +166,7 @@
             </div>
             <div class="modal-footer">
                 @if(auth()->user()->needs_setup)
-                    <button type="button" class="btn btn-success" id="completeSetupBtn">
+                    <button type="button" class="btn btn-success" id="completeSetupBtn" style="display: none;">
                         <i class="fas fa-check-circle mr-1"></i> Complete Setup & Don't Show Again
                     </button>
                 @endif
@@ -184,6 +210,20 @@ $(function() {
                 $btn.prop('disabled', false).html('<i class="fas fa-check-circle mr-1"></i> Complete Setup & Don\'t Show Again');
             }
         });
+    });
+
+    // Next button to Pages tab
+    $('#nextToPagesBtn').on('click', function() {
+        $('#pages-tab').tab('show');
+    });
+
+    // Show/hide Complete Setup button based on active tab
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function(e) {
+        if ($(e.target).attr('href') === '#pages-panel') {
+            $('#completeSetupBtn').fadeIn();
+        } else {
+            $('#completeSetupBtn').fadeOut();
+        }
     });
 
     // Custom file input label update

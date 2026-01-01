@@ -196,6 +196,12 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            // Handle header logo upload
+            if ($request->hasFile('header_logo')) {
+                $path = $request->file('header_logo')->store('settings', 'public');
+                Setting::set('company_logo', $path, 'image', 'branding', 'Company Logo', 'Main company logo for header and documents');
+            }
+
             // Handle login image upload
             if ($request->hasFile('login_image')) {
                 $path = $request->file('login_image')->store('settings', 'public');
