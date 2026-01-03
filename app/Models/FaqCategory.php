@@ -21,6 +21,7 @@ class FaqCategory extends Model
 
     protected $fillable = [
         'category',
+        'slug',
         'published',
         'is_fake',
         'created_at',
@@ -31,5 +32,15 @@ class FaqCategory extends Model
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+    
+    public function questions()
+    {
+        return $this->hasMany(FaqQuestion::class);
+    }
+    
+    public function getSlugAttribute($value)
+    {
+        return $value ?: \Str::slug($this->category);
     }
 }

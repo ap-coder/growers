@@ -73,6 +73,16 @@ function updateRunningTotal() {
         }
     }
     
+    // Add tier/bulk pricing quantities (qty = number of packs, multiply by pack price)
+    var tierInputs = document.querySelectorAll('.tier-qty-input');
+    tierInputs.forEach(function(input) {
+        var qty = parseInt(input.value) || 0;
+        var packPrice = parseFloat(input.dataset.packPrice) || 0;
+        if (qty > 0) {
+            total += qty * packPrice;
+        }
+    });
+    
     // Add accessory prices
     var accessoryInputs = document.querySelectorAll('.accessory-qty-input');
     accessoryInputs.forEach(function(input) {
@@ -103,27 +113,48 @@ function addAllToCart(productId) {
                 });
             }
         });
-        
-        if (items.length === 0) {
-            Swal.fire({
-                title: 'No Items Selected',
-                text: 'Please select at least one option with a quantity greater than 0.',
-                icon: 'warning'
-            });
-            return;
-        }
     } else {
         // Base product only
         var baseInput = document.getElementById('base-product-qty');
-        var qty = parseInt(baseInput.value) || 1;
-        if (qty > 0) {
+        if (baseInput) {
+            var qty = parseInt(baseInput.value) || 1;
+            if (qty > 0) {
+                items.push({
+                    product_id: productId,
+                    variation_id: null,
+                    quantity: qty,
+                    price: parseFloat(baseInput.dataset.price) || 0
+                });
+            }
+        }
+    }
+    
+    // Add tier/bulk pricing items (qty = number of packs)
+    var tierInputs = document.querySelectorAll('.tier-qty-input');
+    tierInputs.forEach(function(input) {
+        var numPacks = parseInt(input.value) || 0;
+        if (numPacks > 0) {
+            var packSize = parseInt(input.dataset.packSize) || 1;
+            var totalUnits = numPacks * packSize;
             items.push({
                 product_id: productId,
-                variation_id: null,
-                quantity: qty,
-                price: parseFloat(baseInput.dataset.price) || 0
+                tier_id: input.dataset.tierId,
+                quantity: totalUnits,
+                num_packs: numPacks,
+                pack_size: packSize,
+                unit_price: parseFloat(input.dataset.unitPrice) || 0,
+                pack_price: parseFloat(input.dataset.packPrice) || 0
             });
         }
+    });
+    
+    if (items.length === 0) {
+        Swal.fire({
+            title: 'No Items Selected',
+            text: 'Please enter a quantity for at least one item.',
+            icon: 'warning'
+        });
+        return;
     }
     
     // TODO: Implement actual cart functionality
@@ -141,6 +172,12 @@ function addAllToCart(productId) {
 document.addEventListener('DOMContentLoaded', function() {
     // Variation inputs
     document.querySelectorAll('.variation-qty-input').forEach(function(input) {
+        input.addEventListener('input', updateRunningTotal);
+        input.addEventListener('change', updateRunningTotal);
+    });
+    
+    // Tier/bulk pricing inputs
+    document.querySelectorAll('.tier-qty-input').forEach(function(input) {
         input.addEventListener('input', updateRunningTotal);
         input.addEventListener('change', updateRunningTotal);
     });

@@ -305,6 +305,48 @@ $currentUrl = url()->current();
                                                             </div>
                                                         </li>
                                                         
+                                                        <!-- FAQ Questions -->
+                                                        <li class="control-section accordion-section add-page" id="add-faq-questions">
+                                                            <h3 class="accordion-section-title hndle" tabindex="0">FAQ Questions</h3>
+                                                            <div class="accordion-section-content">
+                                                                <div class="inside">
+                                                                    <div class="faqquestiondiv">
+                                                                        <div class="form-group">
+                                                                            <label for="faq-question-select">Select FAQ Question</label>
+                                                                            <select id="faq-question-select" class="form-control">
+                                                                                <option value="">-- Select --</option>
+                                                                                @foreach($faqQuestions as $question)
+                                                                                <option value="/faq#question-{{ $question->id }}" data-label="{{ Str::limit($question->question, 50) }}">{{ Str::limit($question->question, 60) }} ({{ $question->category->category ?? 'No Category' }})</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="faq-question-label">Label</label>
+                                                                            <input id="faq-question-label" type="text" class="form-control">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="faq-question-icon">Icon (optional)</label>
+                                                                            <input id="faq-question-icon" type="text" class="form-control" placeholder="fas fa-question">
+                                                                        </div>
+                                                                        @if(!empty($roles))
+                                                                        <div class="form-group">
+                                                                            <label for="faq-question-role">Restrict to Role (optional)</label>
+                                                                            <select id="faq-question-role" class="form-control">
+                                                                                <option value="0">-- All Users --</option>
+                                                                                @foreach($roles as $role)
+                                                                                    <option value="{{ $role->$role_pk }}">{{ ucfirst($role->$role_title_field) }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        @endif
+                                                                        <div class="form-group">
+                                                                            <button type="button" onclick="addFromSelect('faq-question-select', 'faq-question-label', 'faq-question-icon', 'faq-question-role')" class="btn btn-primary btn-sm">Add to Menu</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        
                                                         <!-- Product Collections -->
                                                         <li class="control-section accordion-section add-page" id="add-collections">
                                                             <h3 class="accordion-section-title hndle" tabindex="0">Product Collections</h3>

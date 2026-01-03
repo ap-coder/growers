@@ -144,6 +144,22 @@ class Product extends Model implements HasMedia
             ->fit('contain', 1200, 1200)
             ->format('webp')
             ->nonQueued();
+
+        // Collection/Portfolio sizes
+        $this->addMediaConversion('large')
+            ->fit('contain', 800, 600)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('portfolio')
+            ->fit('crop', 600, 400)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('portfolio-square')
+            ->fit('crop', 500, 500)
+            ->format('webp')
+            ->nonQueued();
     }
 
     public function categories()

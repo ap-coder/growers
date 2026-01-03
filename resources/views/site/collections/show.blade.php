@@ -22,13 +22,16 @@
 @section('content')
 <section class="content-inner-3 pt-3">
     <div class="container">
-        @if($collection->description)
-            <div class="row mb-4">
-                <div class="col-12">
-                    <p class="text-muted">{{ $collection->description }}</p>
-                </div>
-            </div>
-        @endif
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            @if($collection->description)
+                <p class="text-muted mb-0">{{ $collection->description }}</p>
+            @else
+                <div></div>
+            @endif
+            <a href="{{ route('site.collections.catalog', $collection->slug) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                <i class="fas fa-file-pdf me-1"></i> Download Catalog
+            </a>
+        </div>
         
         <div class="row">
             @forelse($products as $product)

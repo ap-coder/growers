@@ -70,18 +70,6 @@
                                     </a>
                                 </li>
                             @endcan
-                            @can('product_access')
-                                <li class="nav-item">
-                                    <a href="{{ route("admin.product-collections.index") }}" class="nav-link {{ request()->is("admin/product-collections") || request()->is("admin/product-collections/*") ? "active" : "" }}">
-                                        <i class="fa-fw nav-icon fas fa-layer-group">
-
-                                        </i>
-                                        <p>
-                                            Collections
-                                        </p>
-                                    </a>
-                                </li>
-                            @endcan
                         </ul>
                     </li>
 @endcan

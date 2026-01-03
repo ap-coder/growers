@@ -108,7 +108,52 @@ Should include:
 
 ---
 
-## Recent Changes (January 2, 2026 - Late Night Session #3)
+## Recent Changes (January 2, 2026 - Late Night Session #4)
+
+### Collection Showcase Layouts (11 Layout Types)
+All layouts match xhtml template pages exactly and use existing products:
+- **grid** - Simple responsive grid layout
+- **masonry** - Masonry grid with category filtering
+- **carousel** - Swiper carousel showcase with prev/next navigation
+- **tiles** - Portfolio tiles with category filtering
+- **cobble-1** - Cobble pattern (small, small, large repeating)
+- **cobble-2** - Cobble pattern (large, small, small repeating)
+- **collage-1** - Collage with alternating large/small
+- **collage-2** - Collage with different alternating pattern
+- **film-strip** - Horizontal film strip slider
+- **split-slider** - Split view with image and content side by side
+- **thumbs-slider** - Main slider with thumbnail navigation
+
+### Collection Catalog/Advertisement Export
+- **Print-friendly view** - `/collections/{slug}/catalog` route
+- **PDF export** - Browser print dialog allows Save as PDF
+- **Catalog layout** - Clean, professional layout for catalogs and advertisements
+- **Download button** - Added to collection show pages
+
+### Menu Builder Fixes
+- **Save fix** - Removed role_id update causing "Column 'role_id' cannot be null" error
+- **Accordion persistence** - Sections stay open after adding items (localStorage)
+
+### Frontend Styling
+- **Accordion headers** - margin-bottom: 0.5rem, aligned with accordion header (1.25rem padding)
+- **Variation items** - Indented more (1.5rem padding-left)
+- **Price tiers units** - Darker text color (#555) for readability
+- **Shop hover icons** - Removed cart icon, kept eye and heart only
+
+### Routes Added
+- `GET /collections` - Collections index
+- `GET /collections/{slug}` - Collection show (layout-specific)
+- `GET /collections/{slug}/catalog` - Print-friendly catalog view
+
+### Files Created
+- `app/Http/Controllers/Site/CollectionController.php` - Updated with catalog method
+- `resources/views/site/collections/index.blade.php` - Collections listing
+- `resources/views/site/collections/catalog.blade.php` - Print-friendly catalog
+- `resources/views/site/collections/layouts/*.blade.php` - 11 layout files
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #3)
 
 ### Product Collections System
 - **DummyProductCollectionsSeeder** - Creates one collection per layout type (11 total) with 4-8 random products
@@ -570,3 +615,6 @@ Routes in `routes/frontend.php`, controller methods in `AccountController`.
 - Frontend views (not integrated): `resources/views/site/`
 - xhtml template source: `xhtml/`
 - Guidelines/requirements: `guidelines/`
+
+## Reference Links
+- **Original Template**: [xhtml/index.html](../xhtml/index.html) - Open to view all template pages and components

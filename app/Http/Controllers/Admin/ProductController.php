@@ -254,11 +254,18 @@ class ProductController extends Controller
         $this->handleAdditionalPhotos($request, $product);
         $this->handleCKMedia($request, $product);
 
+        // Save active tab to session for persistence
+        if ($request->has('active_tab')) {
+            session(['product_active_tab' => $request->input('active_tab')]);
+        }
+
         // Check if we should redirect back to edit page or to index
         if ($request->input('redirect_back') == '1') {
             return redirect()->route('admin.products.edit', $product->id)->with('message', 'Product saved successfully.');
         }
         
+        // Clear tab session when going back to index
+        session()->forget('product_active_tab');
         return redirect()->route('admin.products.index');
     }
 

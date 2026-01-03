@@ -21,6 +21,7 @@
 <form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data" id="product-form">
     @csrf
     @method('PUT')
+    <input type="hidden" name="active_tab" id="active_tab" value="{{ session('product_active_tab', 'general') }}">
     
     <div class="card card-primary card-outline card-outline-tabs">
         <div class="card-header p-0 border-bottom-0">
@@ -888,6 +889,19 @@
     var groupIndex = {{ $product->bundleItems ? $product->bundleItems->groupBy('group_name')->count() : 1 }};
     var productOptions = '@foreach(\App\Models\Product::where("id", "!=", $product->id)->orderBy("name")->get() as $p)<option value="{{ $p->id }}">{{ addslashes($p->name) }} (\${{ number_format($p->base_price ?? 0, 2) }})</option>@endforeach';
     @endif
+    
+    // ========== TAB PERSISTENCE ==========
+    // Restore active tab from session
+    var savedTab = '{{ session('product_active_tab', 'general') }}';
+    if (savedTab && savedTab !== 'general') {
+        $('#product-tabs a[href="#' + savedTab + '"]').tab('show');
+    }
+    
+    // Track tab changes
+    $('#product-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var tabId = $(e.target).attr('href').replace('#', '');
+        $('#active_tab').val(tabId);
+    });
     
     // ========== CKEDITOR INITIALIZATION ==========
     var descriptionEditor = null;
