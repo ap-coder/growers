@@ -13,6 +13,10 @@ use Database\Seeders\DummyProductsSeeder;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 use Yajra\DataTables\Facades\DataTables;
@@ -105,8 +109,7 @@ class SettingController extends Controller
             $path = $request->file('image_value')->store('settings', 'public');
             $data['value'] = $path;
         }
-        
-        // Handle boolean type - get value from separate field
+
         if ($request->input('type') === 'boolean') {
             $data['value'] = $request->has('value_bool') ? '1' : '0';
         }
@@ -241,7 +244,6 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
-            // Run iseed to generate seeders from current settings and media tables
             Artisan::call('iseed', ['tables' => 'settings,media', '--force' => true]);
             $output = Artisan::output();
             return redirect()->route('admin.settings.index')->with('message', 'Settings seeder generated successfully! ' . $output);
@@ -255,7 +257,6 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
-            // Run iseed to generate seeders from current menus and menu_items tables
             Artisan::call('iseed', ['tables' => 'menus,menu_items', '--force' => true]);
             $output = Artisan::output();
             return redirect()->route('admin.settings.index')->with('message', 'Menu seeders generated successfully! ' . $output);
@@ -310,8 +311,7 @@ class SettingController extends Controller
 
         try {
             $counts = DummyProductsSeeder::seedDummyFaqs();
-            
-            // Check if dummy FAQs already exist
+
             if ($counts['existing_fake'] > 0) {
                 $message = "Dummy FAQs already exist ({$counts['existing_fake']} categories). Remove them first before adding new ones.";
                 if ($request->ajax()) {
@@ -319,7 +319,7 @@ class SettingController extends Controller
                 }
                 return redirect()->route('admin.settings.index')->with('error', $message);
             }
-            
+
             $message = "Created: {$counts['faq_categories']} FAQ categories, {$counts['faq_questions']} FAQ questions";
             if ($counts['skipped'] > 0) {
                 $message .= " (skipped {$counts['skipped']} existing categories)";
@@ -363,8 +363,7 @@ class SettingController extends Controller
 
         try {
             $counts = DummyProductsSeeder::seedDummyPages();
-            
-            // Check if dummy pages already exist
+
             if ($counts['existing_fake'] > 0) {
                 $message = "Dummy pages already exist ({$counts['existing_fake']} pages). Remove them first before adding new ones.";
                 if ($request->ajax()) {
@@ -372,7 +371,7 @@ class SettingController extends Controller
                 }
                 return redirect()->route('admin.settings.index')->with('error', $message);
             }
-            
+
             $message = "Created {$counts['created']} dummy pages";
             if ($counts['skipped'] > 0) {
                 $message .= " (skipped {$counts['skipped']} existing pages)";
@@ -410,47 +409,55 @@ class SettingController extends Controller
         }
     }
 
-    /**
-     * Clear Telescope logs (WCL Developer only)
-     */
     public function clearTelescope()
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
-            // Check if telescope:clear command exists
-            if (!array_key_exists('telescope:clear', Artisan::all())) {
-                return redirect()->route('admin.settings.index')->with('error', 'Telescope is not available in this environment.');
-            }
-            
-            Artisan::call('telescope:clear');
-            $output = Artisan::output();
-            return redirect()->route('admin.settings.index')->with('message', 'Telescope logs cleared successfully! ' . $output);
+            // Use shell_exec to run artisan command directly
+            $output = shell_exec('cd ' . base_path() . ' && php artisan telescope:clear 2>&1');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Telescope data has been cleared. ' . $output,
+            ]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.settings.index')->with('error', 'Error clearing Telescope logs: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ]);
         }
     }
 
-    /**
-     * Squash all migrations into a single file (WCL Developer only)
-     */
     public function squashMigrations()
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         abort_if(!auth()->user()->isWclDeveloper, Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
-            Artisan::call('migrate:generate', ['--squash' => true]);
-            $output = Artisan::output();
-            return redirect()->route('admin.settings.index')->with('message', 'Migration squashed successfully! ' . $output);
+            $migrationsPath = database_path('migrations');
+            
+            // Remove existing squashed migration files
+            $existingFiles = glob($migrationsPath . '/*_squashed_*.php');
+            foreach ($existingFiles as $file) {
+                File::delete($file);
+            }
+
+            // Use shell_exec to run artisan command directly
+            $output = shell_exec('cd ' . base_path() . ' && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename="[datetime]_squashed_growers_schema.php" 2>&1');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Migration squashed successfully! ' . $output,
+            ]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.settings.index')->with('error', 'Error squashing migrations: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ]);
         }
     }
 
-    /**
-     * Regenerate media library conversions (WCL Developer only)
-     */
     public function regenerateMedia(Request $request)
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -458,24 +465,29 @@ class SettingController extends Controller
 
         try {
             $mode = $request->input('mode', 'all');
-            
-            if ($mode === 'missing') {
-                Artisan::call('media-library:regenerate', ['--only-missing' => true, '--with-responsive-images' => true]);
-            } else {
-                Artisan::call('media-library:regenerate', ['--with-responsive-images' => true]);
-            }
-            
-            $output = Artisan::output();
             $modeText = $mode === 'missing' ? 'missing' : 'all';
-            return redirect()->route('admin.settings.index')->with('message', "Media regenerated ({$modeText}) successfully! " . $output);
+
+            if ($mode === 'missing') {
+                $exitCode = Artisan::call('media-library:regenerate', ['--only-missing' => true, '--with-responsive-images' => true]);
+            } else {
+                $exitCode = Artisan::call('media-library:regenerate', ['--with-responsive-images' => true]);
+            }
+            $output = Artisan::output();
+
+            return response()->json([
+                'success' => $exitCode === 0,
+                'message' => $exitCode === 0 
+                    ? "Media regenerated ({$modeText}) successfully!"
+                    : 'Failed to regenerate media: ' . $output,
+            ]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.settings.index')->with('error', 'Error regenerating media: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ]);
         }
     }
 
-    /**
-     * Regenerate media for a specific model (WCL Developer only)
-     */
     public function regenerateModelMedia(Request $request)
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -489,20 +501,28 @@ class SettingController extends Controller
                 'Client' => 'App\\Models\\Client',
                 'Setting' => 'App\\Models\\Setting',
             ];
-            
+
             if (!isset($modelMap[$model])) {
-                return redirect()->route('admin.settings.index')->with('error', 'Invalid model specified');
+                return response()->json(['success' => false, 'message' => 'Invalid model specified']);
             }
-            
-            Artisan::call('media-library:regenerate', [
+
+            $exitCode = Artisan::call('media-library:regenerate', [
                 '--model-type' => $modelMap[$model],
                 '--with-responsive-images' => true
             ]);
-            
             $output = Artisan::output();
-            return redirect()->route('admin.settings.index')->with('message', "Media regenerated for {$model} successfully! " . $output);
+
+            return response()->json([
+                'success' => $exitCode === 0,
+                'message' => $exitCode === 0 
+                    ? "Media regenerated for {$model} successfully!"
+                    : 'Failed to regenerate media: ' . $output,
+            ]);
         } catch (\Exception $e) {
-            return redirect()->route('admin.settings.index')->with('error', 'Error regenerating media: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ]);
         }
     }
 
@@ -511,24 +531,20 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
-            // Save company name
             if ($request->filled('company_name')) {
                 Setting::set('company_name', $request->input('company_name'), 'text', 'branding', 'Company Name', 'Company name displayed throughout the site');
             }
 
-            // Handle header logo upload
             if ($request->hasFile('header_logo')) {
                 $path = $request->file('header_logo')->store('settings', 'public');
                 Setting::set('company_logo', $path, 'image', 'branding', 'Company Logo', 'Main company logo for header and documents');
             }
 
-            // Handle login image upload
             if ($request->hasFile('login_image')) {
                 $path = $request->file('login_image')->store('settings', 'public');
                 Setting::set('login_image', $path, 'image', 'login', 'Login Background Image', 'Background image for the login page');
             }
 
-            // Save footer settings
             if ($request->filled('footer_address')) {
                 Setting::set('footer_address', $request->input('footer_address'), 'textarea', 'contact', 'Footer Address', 'Company address displayed in footer');
             }
@@ -545,7 +561,6 @@ class SettingController extends Controller
                 Setting::set('footer_disclaimer', $request->input('footer_disclaimer'), 'textarea', 'contact', 'Footer Disclaimer', 'Disclaimer text displayed in footer');
             }
 
-            // Clear settings cache
             \Cache::forget('settings');
 
             return response()->json(['success' => true, 'message' => 'Settings saved successfully']);
@@ -566,7 +581,6 @@ class SettingController extends Controller
             $title = $request->input('title');
             $slug = Str::slug($title);
 
-            // Check if page with this slug already exists
             $existing = ContentPage::where('slug', $slug)->first();
             if ($existing) {
                 return response()->json([
@@ -585,7 +599,6 @@ class SettingController extends Controller
                 'excerpt' => '',
             ]);
 
-            // Create a reminder to add content to this page
             \App\Models\Reminder::createForPage(
                 $page,
                 "Add content to '{$title}' page",

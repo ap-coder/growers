@@ -60,7 +60,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('content-pages/media', 'ContentPageController@storeMedia')->name('content-pages.storeMedia');
     Route::post('content-pages/ckmedia', 'ContentPageController@storeCKEditorImages')->name('content-pages.storeCKEditorImages');
     Route::resource('content-pages', 'ContentPageController');
-    
+
     // Page Sections (Page Builder)
     Route::post('page-sections', 'PageSectionController@store')->name('page-sections.store');
     Route::put('page-sections/{pageSection}', 'PageSectionController@update')->name('page-sections.update');
@@ -158,7 +158,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('settings/remove-dummy-pages', 'SettingController@removeDummyPages')->name('settings.removeDummyPages');
     Route::post('settings/seed-settings', 'SettingController@seedSettings')->name('settings.seedSettings');
     Route::post('settings/seed-menus', 'SettingController@seedMenus')->name('settings.seedMenus');
+
     Route::post('settings/squash-migrations', 'SettingController@squashMigrations')->name('settings.squashMigrations');
+
     Route::post('settings/regenerate-media', 'SettingController@regenerateMedia')->name('settings.regenerateMedia');
     Route::post('settings/regenerate-model-media', 'SettingController@regenerateModelMedia')->name('settings.regenerateModelMedia');
     Route::post('settings/clear-telescope', 'SettingController@clearTelescope')->name('settings.clearTelescope');
