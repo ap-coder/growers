@@ -434,10 +434,12 @@
             var categoryId = $(this).val();
             var $variationSelect = $('#quickAddVariation');
             var $addBtn = $('#quickAddBtn');
+            var $addAllBtn = $('#quickAddAllBtn');
             
             if (!categoryId) {
                 $variationSelect.html('<option value="">-- Select a category first --</option>').prop('disabled', true);
                 $addBtn.prop('disabled', true);
+                $addAllBtn.prop('disabled', true);
                 return;
             }
             
@@ -455,6 +457,7 @@
             
             $variationSelect.html(options).prop('disabled', variations.length === 0);
             $addBtn.prop('disabled', true);
+            $addAllBtn.prop('disabled', variations.length === 0);
         });
         
         $('#quickAddVariation').on('change', function() {
@@ -517,6 +520,67 @@
             // Reset quick add
             $('#quickAddVariation').val('');
             $('#quickAddBtn').prop('disabled', true);
+        });
+        
+        // ========== QUICK ADD ALL FROM CATEGORY ==========
+        $('#quickAddAllBtn').on('click', function() {
+            var categoryId = $('#quickAddCategory').val();
+            if (!categoryId) return;
+            
+            var variations = window.existingVariationsByCategory[categoryId] || [];
+            if (variations.length === 0) return;
+            
+            var addedCount = 0;
+            variations.forEach(function(v) {
+                // Build category options
+                var categoryOptions = '<option value="">-- Select --</option>';
+                @foreach(\App\Models\VariationCategory::where('published', true)->orderBy('sort_order')->get() as $cat)
+                if (categoryId == '{{ $cat->id }}') {
+                    categoryOptions += '<option value="{{ $cat->id }}" selected>{{ $cat->name }}</option>';
+                } else {
+                    categoryOptions += '<option value="{{ $cat->id }}">{{ $cat->name }}</option>';
+                }
+                @endforeach
+                
+                var newRow = `
+                    <tr class="variation-row" data-index="${variationIndex}">
+                        <td class="text-center">
+                            <input type="hidden" name="variations[${variationIndex}][active]" value="0">
+                            <input type="checkbox" name="variations[${variationIndex}][active]" value="1" checked>
+                        </td>
+                        <td>
+                            <select name="variations[${variationIndex}][variation_category_id]" class="form-control form-control-sm">
+                                ${categoryOptions}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="variations[${variationIndex}][name]" class="form-control form-control-sm" value="${v.name}" required>
+                        </td>
+                        <td>
+                            <input type="text" name="variations[${variationIndex}][description]" class="form-control form-control-sm" value="${v.description || ''}">
+                        </td>
+                        <td>
+                            <input type="number" name="variations[${variationIndex}][quantity]" class="form-control form-control-sm" value="0" min="0">
+                        </td>
+                        <td class="text-center">
+                            <input type="hidden" name="variations[${variationIndex}][show_quantity]" value="0">
+                            <input type="checkbox" name="variations[${variationIndex}][show_quantity]" value="1">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-variation-btn">&times;</button>
+                        </td>
+                    </tr>
+                `;
+                $('#variationsBody').append(newRow);
+                $('#variationsBody tr:last select[name$="[variation_category_id]"]').val(categoryId);
+                variationIndex++;
+                addedCount++;
+            });
+            
+            // Show confirmation
+            if (addedCount > 0) {
+                toastr.success('Added ' + addedCount + ' variation(s) from category');
+            }
         });
         
         // ========== PRICING MANAGEMENT ==========

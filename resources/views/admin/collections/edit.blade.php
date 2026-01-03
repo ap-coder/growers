@@ -10,122 +10,153 @@
             @csrf
             @method('PUT')
 
-            <div class="row">
-                <div class="col-md-8">
+            {{-- Display Options - Checkboxes at top --}}
+            <div class="card card-outline card-secondary mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-eye mr-1"></i> Display Options</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="icheck-success">
+                                <input type="hidden" name="published" value="0">
+                                <input type="checkbox" name="published" id="published" value="1" {{ old('published', $productCollection->published) ? 'checked' : '' }}>
+                                <label for="published">Published</label>
+                            </div>
+                            <small class="text-muted">Visible on site</small>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="icheck-warning">
+                                <input type="hidden" name="show_on_homepage" value="0">
+                                <input type="checkbox" name="show_on_homepage" id="show_on_homepage" value="1" {{ old('show_on_homepage', $productCollection->show_on_homepage) ? 'checked' : '' }}>
+                                <label for="show_on_homepage">Show on Homepage</label>
+                            </div>
+                            <small class="text-muted">Featured collection</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Settings - Selects and options --}}
+            <div class="card card-outline card-info mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-cog mr-1"></i> Settings</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="columns">Columns (for grid layouts)</label>
+                                <select class="form-control" name="columns" id="columns">
+                                    @for($i = 2; $i <= 6; $i++)
+                                        <option value="{{ $i }}" {{ old('columns', $productCollection->columns) == $i ? 'selected' : '' }}>{{ $i }} columns</option>
+                                    @endfor
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="sort_order">Sort Order</label>
+                                <input class="form-control" type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', $productCollection->sort_order) }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="background_color">Background Color</label>
+                                <input class="form-control" type="color" name="background_color" id="background_color" value="{{ old('background_color', $productCollection->background_color ?? '#ffffff') }}">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="text_color">Text Color</label>
+                                <input class="form-control" type="color" name="text_color" id="text_color" value="{{ old('text_color', $productCollection->text_color ?? '#333333') }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Layout Style Selector --}}
+            <div class="card card-outline card-primary mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-th-large mr-1"></i> Layout Style</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row layout-selector">
+                        @foreach($layouts as $key => $label)
+                            <div class="col-md-3 col-sm-4 col-6 mb-3">
+                                <label class="layout-option {{ old('layout_type', $productCollection->layout_type) == $key ? 'selected' : '' }}">
+                                    <input type="radio" name="layout_type" value="{{ $key }}" {{ old('layout_type', $productCollection->layout_type) == $key ? 'checked' : '' }} class="d-none">
+                                    <div class="layout-card">
+                                        <img src="{{ asset('site/images/portfolio/icons/' . $layoutIcons[$key]) }}" alt="{{ $label }}">
+                                        <span>{{ $label }}</span>
+                                    </div>
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            {{-- Collection Details - Name, Slug, Description --}}
+            <div class="card card-outline card-success mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-info-circle mr-1"></i> Collection Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="required" for="name">Collection Name</label>
+                                <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $productCollection->name) }}" required>
+                                @if($errors->has('name'))
+                                    <span class="text-danger">{{ $errors->first('name') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="slug">Slug (URL)</label>
+                                <input class="form-control {{ $errors->has('slug') ? 'is-invalid' : '' }}" type="text" name="slug" id="slug" value="{{ old('slug', $productCollection->slug) }}">
+                                @if($errors->has('slug'))
+                                    <span class="text-danger">{{ $errors->first('slug') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
-                        <label class="required" for="name">Collection Name</label>
-                        <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $productCollection->name) }}" required>
-                        @if($errors->has('name'))
-                            <span class="text-danger">{{ $errors->first('name') }}</span>
+                        <label for="description">Description</label>
+                        <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description" rows="3">{{ old('description', $productCollection->description) }}</textarea>
+                        @if($errors->has('description'))
+                            <span class="text-danger">{{ $errors->first('description') }}</span>
                         @endif
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="slug">Slug (URL)</label>
-                        <input class="form-control {{ $errors->has('slug') ? 'is-invalid' : '' }}" type="text" name="slug" id="slug" value="{{ old('slug', $productCollection->slug) }}">
-                        @if($errors->has('slug'))
-                            <span class="text-danger">{{ $errors->first('slug') }}</span>
-                        @endif
-                    </div>
-                </div>
             </div>
 
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description" rows="2">{{ old('description', $productCollection->description) }}</textarea>
-                @if($errors->has('description'))
-                    <span class="text-danger">{{ $errors->first('description') }}</span>
-                @endif
-            </div>
-
-            <div class="form-group">
-                <label class="required">Layout Style</label>
-                <div class="row layout-selector">
-                    @foreach($layouts as $key => $label)
-                        <div class="col-md-3 col-sm-4 col-6 mb-3">
-                            <label class="layout-option {{ old('layout_type', $productCollection->layout_type) == $key ? 'selected' : '' }}">
-                                <input type="radio" name="layout_type" value="{{ $key }}" {{ old('layout_type', $productCollection->layout_type) == $key ? 'checked' : '' }} class="d-none">
-                                <div class="layout-card">
-                                    <img src="{{ asset('site/images/portfolio/icons/' . $layoutIcons[$key]) }}" alt="{{ $label }}">
-                                    <span>{{ $label }}</span>
-                                </div>
-                            </label>
-                        </div>
-                    @endforeach
+            {{-- Products Selection --}}
+            <div class="card card-outline card-warning mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-shopping-cart mr-1"></i> Products in Collection</h6>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="columns">Columns (for grid layouts)</label>
-                        <select class="form-control" name="columns" id="columns">
-                            @for($i = 2; $i <= 6; $i++)
-                                <option value="{{ $i }}" {{ old('columns', $productCollection->columns) == $i ? 'selected' : '' }}>{{ $i }} columns</option>
-                            @endfor
-                        </select>
-                    </div>
+                <div class="card-body">
+                    <small class="text-muted d-block mb-2">Select products to include in this collection.</small>
+                    <select class="form-control select2" name="products[]" id="products" multiple style="width: 100%;">
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}" {{ $productCollection->products->contains($product->id) ? 'selected' : '' }}>
+                                {{ $product->name }} ({{ $product->sku ?? 'No SKU' }})
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="sort_order">Sort Order</label>
-                        <input class="form-control" type="number" name="sort_order" id="sort_order" value="{{ old('sort_order', $productCollection->sort_order) }}">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="background_color">Background Color</label>
-                        <input class="form-control" type="color" name="background_color" id="background_color" value="{{ old('background_color', $productCollection->background_color ?? '#ffffff') }}">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-group">
-                        <label for="text_color">Text Color</label>
-                        <input class="form-control" type="color" name="text_color" id="text_color" value="{{ old('text_color', $productCollection->text_color ?? '#333333') }}">
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input type="hidden" name="published" value="0">
-                            <input class="form-check-input" type="checkbox" name="published" id="published" value="1" {{ old('published', $productCollection->published) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="published">Published</label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="form-check">
-                            <input type="hidden" name="show_on_homepage" value="0">
-                            <input class="form-check-input" type="checkbox" name="show_on_homepage" id="show_on_homepage" value="1" {{ old('show_on_homepage', $productCollection->show_on_homepage) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="show_on_homepage">Show on Homepage</label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <hr>
-
-            <div class="form-group">
-                <label>Products in Collection</label>
-                <select class="form-control select2" name="products[]" id="products" multiple>
-                    @foreach($products as $product)
-                        <option value="{{ $product->id }}" {{ $productCollection->products->contains($product->id) ? 'selected' : '' }}>
-                            {{ $product->name }} ({{ $product->sku ?? 'No SKU' }})
-                        </option>
-                    @endforeach
-                </select>
-                <small class="text-muted">Select products to include in this collection.</small>
             </div>
 
             @if($productCollection->items->count() > 0)
-            <div class="card card-outline card-info mt-4">
-                <div class="card-header">
-                    <h6 class="mb-0"><i class="fas fa-sort mr-2"></i> Product Order & Featured Status</h6>
+            {{-- Product Order & Featured --}}
+            <div class="card card-outline card-info mb-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0"><i class="fas fa-sort mr-1"></i> Product Order & Featured Status</h6>
                 </div>
                 <div class="card-body p-0">
                     <table class="table table-sm mb-0">
@@ -156,7 +187,7 @@
             </div>
             @endif
 
-            <div class="form-group mt-4">
+            <div class="form-group">
                 <button class="btn btn-success" type="submit">
                     <i class="fas fa-save mr-1"></i> Save Changes
                 </button>
@@ -182,7 +213,7 @@
     background: #fff;
 }
 .layout-selector .layout-card img {
-    height: 60px;
+    height: 100px;
     margin-bottom: 8px;
     opacity: 0.7;
 }
@@ -221,6 +252,12 @@ $(function() {
     $('.layout-option input[type="radio"]').on('change', function() {
         $('.layout-option').removeClass('selected');
         $(this).closest('.layout-option').addClass('selected');
+    });
+    
+    $('#products').select2({
+        placeholder: 'Select products...',
+        allowClear: true,
+        width: '100%'
     });
 
     // Sortable for product order

@@ -48,7 +48,7 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     
     // FAQs
     Route::get('/faqs', 'FaqController@index')->name('faqs.index')->withoutMiddleware('auth');
-    Route::get('/faqs/{slug}', 'FaqController@show')->name('faqs.show')->withoutMiddleware('auth');
+    Route::get('/faqs/{id}', 'FaqController@show')->name('faqs.show')->withoutMiddleware('auth');
     
     // Favorites
     Route::post('/favorites/{product}/toggle', 'FavoriteController@toggle')->name('favorites.toggle');

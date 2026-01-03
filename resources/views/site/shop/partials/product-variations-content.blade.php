@@ -11,18 +11,18 @@
         $categoryName = $categoryModel->name ?? 'Options';
     @endphp
     <div class="variation-group" style="{{ !$loop->first ? 'margin-top: 0.5rem;' : '' }}">
-        <div class="bg-secondary text-white py-1" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 1.25rem; margin-bottom: 0.5rem;">{{ $categoryName }}</div>
+        <div class="bg-secondary text-white py-1" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 1.75rem; margin-bottom: 0.5rem;">{{ $categoryName }}</div>
         <div class="variation-options">
             @foreach($categoryVariations as $variation)
                 @php
                     $varPrice = $variation->getPriceForClient($clientId) ?? $variation->base_price;
                     $isOutOfStock = $variation->quantity !== null && $variation->quantity <= 0;
                 @endphp
-                <div class="variation-item d-flex align-items-center justify-content-between {{ $isOutOfStock ? 'bg-light text-muted' : '' }}" style="font-size: 0.8rem; padding: 0.1rem 0.5rem 0.1rem 1.5rem; border-bottom: 1px solid #eee;">
+                <div class="variation-item d-flex align-items-center justify-content-between {{ $isOutOfStock ? 'bg-light text-muted' : '' }}" style="font-size: 0.8rem; padding: 0.1rem 0 0.1rem 2.25rem; border-bottom: 1px solid #eee;{{ $loop->first ? ' margin-top: 0.5rem;' : '' }}">
                     <div class="variation-info flex-grow-1">
                         <span class="variation-name" style="font-weight: 600; color: #000;">{{ $variation->name }}</span>
                         @if($variation->sku)
-                            <small class="text-muted ms-1" style="font-size: 0.75rem;">{{ $variation->sku }}</small>
+                            <small class="ms-1" style="font-size: 0.75rem; color: #555;">{{ $variation->sku }}</small>
                         @endif
                         @if($variation->show_quantity && $variation->quantity !== null)
                             <span class="stock-badge ms-1">
@@ -41,7 +41,7 @@
                             <span style="font-weight: 600; color: var(--primary); font-size: 0.875rem;">${{ number_format($varPrice, 2) }}</span>
                         @endif
                     </div>
-                    <div class="variation-qty">
+                    <div class="variation-qty" style="margin-right: 15px;">
                         <input type="number" 
                                class="form-control form-control-sm variation-qty-input" 
                                id="variation-qty-{{ $variation->id }}"

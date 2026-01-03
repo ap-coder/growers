@@ -53,7 +53,13 @@
                                 <input type="checkbox" disabled="disabled" {{ $contentPage->published ? 'checked' : '' }}>
                             </td>
                             <td>
-                                {{ $contentPage->title ?? '' }}
+                                @can('content_page_edit')
+                                    <a href="{{ route('admin.content-pages.edit', $contentPage->id) }}">
+                                        {{ $contentPage->title ?? '' }}
+                                    </a>
+                                @else
+                                    {{ $contentPage->title ?? '' }}
+                                @endcan
                             </td>
                             <td>
                                 @if($contentPage->featured_image)

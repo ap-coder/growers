@@ -21,7 +21,6 @@ class FaqCategory extends Model
 
     protected $fillable = [
         'category',
-        'slug',
         'published',
         'is_fake',
         'created_at',
@@ -36,11 +35,6 @@ class FaqCategory extends Model
     
     public function questions()
     {
-        return $this->hasMany(FaqQuestion::class);
-    }
-    
-    public function getSlugAttribute($value)
-    {
-        return $value ?: \Str::slug($this->category);
+        return $this->hasMany(FaqQuestion::class, 'category_id')->orderBy('id');
     }
 }

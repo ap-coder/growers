@@ -14,7 +14,7 @@ class FaqController extends Controller
     public function index()
     {
         $categories = FaqCategory::with(['questions' => function($query) {
-            $query->orderBy('sort_order');
+            $query->orderBy('id');
         }])->orderBy('category')->get();
         
         return view('site.faqs.index', compact('categories'));
@@ -23,12 +23,12 @@ class FaqController extends Controller
     /**
      * FAQ Category Detail - shows all questions in accordion (faqs-2.html style)
      */
-    public function show($slug)
+    public function show($id)
     {
-        $category = FaqCategory::where('slug', $slug)->firstOrFail();
+        $category = FaqCategory::findOrFail($id);
         
-        $questions = FaqQuestion::where('faq_category_id', $category->id)
-            ->orderBy('sort_order')
+        $questions = FaqQuestion::where('category_id', $category->id)
+            ->orderBy('id')
             ->get();
         
         $categories = FaqCategory::orderBy('category')->get();

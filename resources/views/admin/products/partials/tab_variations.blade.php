@@ -33,18 +33,23 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <select id="quickAddVariation" class="form-control form-control-sm" disabled>
                             <option value="">-- Select a category first --</option>
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <button type="button" class="btn btn-info btn-sm btn-block" id="quickAddBtn" disabled>
-                            <i class="fas fa-plus mr-1"></i> Add Selected
+                            <i class="fas fa-plus mr-1"></i> Add
+                        </button>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-success btn-sm btn-block" id="quickAddAllBtn" disabled title="Add all variations from selected category">
+                            <i class="fas fa-plus-circle mr-1"></i> Add All
                         </button>
                     </div>
                 </div>
-                <small class="text-muted mt-1 d-block">Select from variations already used on other products to maintain consistency.</small>
+                <small class="text-muted mt-1 d-block">Select from variations already used on other products. Use "Add All" to add all variations from a category at once.</small>
             </div>
         </div>
 

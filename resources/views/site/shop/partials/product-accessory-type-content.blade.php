@@ -9,7 +9,7 @@
         $isDefault = $accessory->pivot->is_default ?? false;
         $accPrice = $accessory->getPriceForClient($clientId);
     @endphp
-    <div class="variation-item d-flex align-items-center justify-content-between {{ $includedInPrice ? 'bg-light' : '' }}" style="font-size: 0.8rem; padding: 0.1rem 0.5rem 0.1rem 1.5rem; border-bottom: 1px solid #eee;">
+    <div class="variation-item d-flex align-items-center justify-content-between {{ $includedInPrice ? 'bg-light' : '' }}" style="font-size: 0.8rem; padding: 0.1rem 0 0.1rem 2.25rem; border-bottom: 1px solid #eee;{{ $loop->first ? ' margin-top: 0.5rem;' : '' }}">
         <div class="variation-info flex-grow-1">
             <span class="variation-name" style="font-weight: 600; color: #000;">{{ $accessory->name }}</span>
             @if($includedInPrice)
@@ -24,7 +24,7 @@
                 <span style="font-weight: 600; color: var(--primary); font-size: 0.875rem;">${{ number_format($accPrice, 2) }}</span>
             @endif
         </div>
-        <div class="variation-qty">
+        <div class="variation-qty" style="margin-right: 15px;">
             <input type="number" 
                    class="form-control form-control-sm accessory-qty-input" 
                    data-accessory-id="{{ $accessory->id }}"

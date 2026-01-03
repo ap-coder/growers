@@ -36,7 +36,7 @@
                 <ul class="list-check style-1 m-b30 wow fadeInUp d-none d-xl-flex" data-wow-delay="0.2s">
                     @foreach($categories as $cat)
                     <li>
-                        <a href="{{ route('site.faqs.show', $cat->slug) }}" class="{{ $cat->id == $category->id ? 'fw-bold' : '' }}">
+                        <a href="{{ route('site.faqs.show', $cat->id) }}" class="{{ $cat->id == $category->id ? 'fw-bold' : '' }}">
                             {{ $cat->category }}
                         </a>
                     </li>
@@ -44,7 +44,7 @@
                 </ul>
             </div>
             
-            <div class="col-xl-6 col-lg-6 col-md-12 faq-end-content">
+            <div class="col-xl-6 col-lg-6 col-md-12 faq-end-content px-lg-5 px-md-4 px-3">
                 <div class="accordion dz-accordion accordion-sm" id="accordionFaq1">
                     @foreach($questions as $index => $question)
                     <div class="accordion-item" id="question-{{ $question->id }}">

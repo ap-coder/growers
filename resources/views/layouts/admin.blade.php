@@ -10,6 +10,14 @@
     <title>{{ trans('panel.site_title') }}</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /* Fix select2 width globally */
+        .select2-container { width: 100% !important; }
+        .select2-container .select2-selection--single,
+        .select2-container .select2-selection--multiple { min-height: 38px; }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: 36px; }
+        .select2-container--default .select2-selection--multiple .select2-selection__choice { margin-top: 5px; }
+    </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
     <link href="{{ asset('css/adminltev3.css') }}" rel="stylesheet" />
     <link href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" rel="stylesheet" />
@@ -353,6 +361,11 @@
     </script>
     <script>
         $(document).ready(function() {
+    // Initialize all select2 elements with proper width
+    $('.select2').select2({
+        width: '100%'
+    });
+    
     $('.searchable-field').select2({
         minimumInputLength: 3,
         ajax: {
