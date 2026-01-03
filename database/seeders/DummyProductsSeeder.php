@@ -97,10 +97,10 @@ class DummyProductsSeeder extends Seeder
     private static function ensureAccessoryItems(): array
     {
         $accessoryTypes = [
-            'Card Holders' => AccessoryType::firstOrCreate(['name' => 'Card Holders'], ['published' => true, 'sort_order' => 1]),
-            'Ribbons' => AccessoryType::firstOrCreate(['name' => 'Ribbons'], ['published' => true, 'sort_order' => 2]),
-            'Picks' => AccessoryType::firstOrCreate(['name' => 'Picks'], ['published' => true, 'sort_order' => 3]),
-            'Bows' => AccessoryType::firstOrCreate(['name' => 'Bows'], ['published' => true, 'sort_order' => 4]),
+            'Card Holders' => AccessoryType::firstOrCreate(['name' => 'Card Holders'], ['published' => true, 'sort_order' => 1, 'is_fake' => true]),
+            'Ribbons' => AccessoryType::firstOrCreate(['name' => 'Ribbons'], ['published' => true, 'sort_order' => 2, 'is_fake' => true]),
+            'Picks' => AccessoryType::firstOrCreate(['name' => 'Picks'], ['published' => true, 'sort_order' => 3, 'is_fake' => true]),
+            'Bows' => AccessoryType::firstOrCreate(['name' => 'Bows'], ['published' => true, 'sort_order' => 4, 'is_fake' => true]),
         ];
         
         $accessoryItems = [];
@@ -119,6 +119,7 @@ class DummyProductsSeeder extends Seeder
                         'base_price' => rand(199, 999) / 100,
                         'sku' => 'ACC-' . strtoupper(substr(md5($name), 0, 6)),
                         'published' => true,
+                        'is_fake' => true,
                     ]
                 );
             }
@@ -168,37 +169,40 @@ class DummyProductsSeeder extends Seeder
                 $product->tags()->attach($tagIds);
             }
             
-            // Add 2-4 variations to ~60% of products with variation categories
-            if (rand(1, 100) <= 60) {
-                // Define variation category sets with their variations and descriptions
-                $variationSets = [
-                    'Size' => [
-                        'Small' => 'Compact size, perfect for small spaces',
-                        'Medium' => 'Standard size for most applications',
-                        'Large' => 'Generous size for maximum impact',
-                        'Extra Large' => 'Our largest option for statement pieces',
-                    ],
-                    'Pot Size' => [
-                        '4"' => '4 inch pot, ideal for windowsills',
-                        '6"' => '6 inch pot, great for desks and tables',
-                        '8"' => '8 inch pot, perfect floor accent',
-                        '10"' => '10 inch pot, impressive floor display',
-                    ],
-                    'Color' => [
-                        'Red' => 'Vibrant red variety',
-                        'Pink' => 'Soft pink coloring',
-                        'White' => 'Classic white variety',
-                        'Mixed' => 'Assorted color mix',
-                    ],
-                    'Grade' => [
-                        'Standard' => 'Quality standard grade',
-                        'Premium' => 'Hand-selected premium quality',
-                        'Select' => 'Top-tier select grade',
-                    ],
-                ];
-                
-                // Pick a random variation category
-                $categoryName = array_rand($variationSets);
+            // ALWAYS add 3 variation categories with 2-4 variations each
+            $variationSets = [
+                'Size' => [
+                    'Small' => 'Compact size, perfect for small spaces',
+                    'Medium' => 'Standard size for most applications',
+                    'Large' => 'Generous size for maximum impact',
+                    'Extra Large' => 'Our largest option for statement pieces',
+                ],
+                'Pot Size' => [
+                    '4"' => '4 inch pot, ideal for windowsills',
+                    '6"' => '6 inch pot, great for desks and tables',
+                    '8"' => '8 inch pot, perfect floor accent',
+                    '10"' => '10 inch pot, impressive floor display',
+                ],
+                'Color' => [
+                    'Red' => 'Vibrant red variety',
+                    'Pink' => 'Soft pink coloring',
+                    'White' => 'Classic white variety',
+                    'Mixed' => 'Assorted color mix',
+                ],
+                'Grade' => [
+                    'Standard' => 'Quality standard grade',
+                    'Premium' => 'Hand-selected premium quality',
+                    'Select' => 'Top-tier select grade',
+                ],
+            ];
+            
+            // Pick 3 random variation categories
+            $categoryNames = array_keys($variationSets);
+            shuffle($categoryNames);
+            $selectedCategories = array_slice($categoryNames, 0, 3);
+            
+            $sortOrder = 1;
+            foreach ($selectedCategories as $categoryName) {
                 $variationsForCategory = $variationSets[$categoryName];
                 
                 // Get or create the variation category
@@ -212,7 +216,6 @@ class DummyProductsSeeder extends Seeder
                 $selectedKeys = array_rand($variationsForCategory, $numVariations);
                 if (!is_array($selectedKeys)) $selectedKeys = [$selectedKeys];
                 
-                $sortOrder = 1;
                 foreach ($selectedKeys as $varName) {
                     $varDescription = $variationsForCategory[$varName];
                     $varBasePrice = $product->base_price + (rand(-200, 500) / 100);
@@ -222,7 +225,7 @@ class DummyProductsSeeder extends Seeder
                         'variation_category_id' => $variationCategory->id,
                         'name' => $varName,
                         'description' => $varDescription,
-                        'sku' => $product->sku . '-' . strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $varName), 0, 2)),
+                        'sku' => $product->sku . '-' . strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $varName), 0, 2)) . $sortOrder,
                         'base_price' => $varBasePrice,
                         'full_price' => $varFullPrice,
                         'quantity' => rand(0, 100),
@@ -247,65 +250,98 @@ class DummyProductsSeeder extends Seeder
                 }
             }
             
-            // Add quantity price tiers to ~30% of products
-            if (rand(1, 100) <= 30) {
-                $basePrice = $product->base_price;
-                $tierLabels = ['', 'Bulk', 'Wholesale', 'Volume Discount'];
-                
-                // Tier 1: 1-24 at base price
+            // ALWAYS add quantity price tiers with at least 3 options
+            $basePrice = $product->base_price;
+            $tierGroups = ['Standard Pricing', 'Volume Discounts', 'Wholesale Tiers', 'Bulk Pricing'];
+            $tierGroup = $tierGroups[array_rand($tierGroups)];
+            
+            // Tier 1: 1-24 at base price
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'tier_group' => $tierGroup,
+                'min_quantity' => 1,
+                'max_quantity' => 24,
+                'price' => $basePrice,
+                'discount_percent' => null,
+                'label' => 'Regular',
+                'sort_order' => 1,
+                'is_fake' => true,
+            ]);
+            
+            // Tier 2: 25-49 at 5-10% off
+            $discount2 = rand(5, 10);
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'tier_group' => $tierGroup,
+                'min_quantity' => 25,
+                'max_quantity' => 49,
+                'price' => round($basePrice * (1 - $discount2 / 100), 2),
+                'discount_percent' => $discount2,
+                'label' => 'Bulk',
+                'sort_order' => 2,
+                'is_fake' => true,
+            ]);
+            
+            // Tier 3: 50-99 at 10-15% off
+            $discount3 = rand(10, 15);
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'tier_group' => $tierGroup,
+                'min_quantity' => 50,
+                'max_quantity' => 99,
+                'price' => round($basePrice * (1 - $discount3 / 100), 2),
+                'discount_percent' => $discount3,
+                'label' => 'Volume',
+                'sort_order' => 3,
+                'is_fake' => true,
+            ]);
+            
+            // Tier 4: 100+ at 15-25% off (randomly add this tier)
+            if (rand(1, 100) <= 70) {
+                $discount4 = rand(15, 25);
                 ProductPriceTier::create([
                     'product_id' => $product->id,
-                    'min_quantity' => 1,
-                    'max_quantity' => 24,
-                    'price' => $basePrice,
-                    'label' => '',
-                    'sort_order' => 1,
-                ]);
-                
-                // Tier 2: 25-49 at 5-10% off
-                ProductPriceTier::create([
-                    'product_id' => $product->id,
-                    'min_quantity' => 25,
-                    'max_quantity' => 49,
-                    'price' => round($basePrice * (rand(90, 95) / 100), 2),
-                    'label' => $tierLabels[array_rand($tierLabels)],
-                    'sort_order' => 2,
-                ]);
-                
-                // Tier 3: 50-99 at 10-15% off
-                ProductPriceTier::create([
-                    'product_id' => $product->id,
-                    'min_quantity' => 50,
-                    'max_quantity' => 99,
-                    'price' => round($basePrice * (rand(85, 90) / 100), 2),
-                    'label' => 'Bulk',
-                    'sort_order' => 3,
-                ]);
-                
-                // Tier 4: 100+ at 15-25% off
-                ProductPriceTier::create([
-                    'product_id' => $product->id,
+                    'tier_group' => $tierGroup,
                     'min_quantity' => 100,
                     'max_quantity' => null,
-                    'price' => round($basePrice * (rand(75, 85) / 100), 2),
+                    'price' => round($basePrice * (1 - $discount4 / 100), 2),
+                    'discount_percent' => $discount4,
                     'label' => 'Wholesale',
                     'sort_order' => 4,
+                    'is_fake' => true,
                 ]);
             }
             
-            // Attach 1-4 random accessories to ~50% of products
-            if (count($accessoryItems) > 0 && rand(1, 100) <= 50) {
-                $numAccessories = rand(1, min(4, count($accessoryItems)));
-                $randomAccessories = array_rand($accessoryItems, $numAccessories);
-                if (!is_array($randomAccessories)) $randomAccessories = [$randomAccessories];
+            // ALWAYS attach accessories: 1-3 accessory types with 2-6 options each
+            if (count($accessoryItems) > 0) {
+                $product->update(['show_accessories' => true]);
                 
-                foreach ($randomAccessories as $idx) {
-                    $product->accessories()->syncWithoutDetaching([
-                        $accessoryItems[$idx]->id => [
-                            'is_default' => rand(1, 100) <= 20,
-                            'is_required' => rand(1, 100) <= 10,
-                        ]
-                    ]);
+                // Group accessories by type
+                $accessoriesByType = collect($accessoryItems)->groupBy('accessory_type_id');
+                $typeIds = $accessoriesByType->keys()->toArray();
+                shuffle($typeIds);
+                
+                // Pick 1-3 random accessory types
+                $numTypes = rand(1, min(3, count($typeIds)));
+                $selectedTypeIds = array_slice($typeIds, 0, $numTypes);
+                
+                foreach ($selectedTypeIds as $typeId) {
+                    $typeAccessories = $accessoriesByType[$typeId]->toArray();
+                    
+                    // Pick 2-6 accessories from this type
+                    $numToAdd = rand(2, min(6, count($typeAccessories)));
+                    shuffle($typeAccessories);
+                    $selectedAccessories = array_slice($typeAccessories, 0, $numToAdd);
+                    
+                    foreach ($selectedAccessories as $accessory) {
+                        $product->accessories()->syncWithoutDetaching([
+                            $accessory['id'] => [
+                                'is_default' => rand(1, 100) <= 20,
+                                'is_required' => rand(1, 100) <= 10,
+                                'included_in_price' => rand(1, 100) <= 25, // 25% chance of being included
+                            ]
+                        ]);
+                    }
                 }
             }
             
@@ -534,6 +570,10 @@ class DummyProductsSeeder extends Seeder
             'categories' => 0,
             'tags' => 0,
             'variations' => 0,
+            'price_tiers' => 0,
+            'accessories' => 0,
+            'accessory_types' => 0,
+            'variation_categories' => 0,
         ];
         
         // Remove fake products and their relationships
@@ -559,6 +599,18 @@ class DummyProductsSeeder extends Seeder
         
         // Remove fake tags
         $counts['tags'] = ProductTag::where('is_fake', true)->delete();
+        
+        // Remove fake price tiers (orphaned ones not attached to fake products)
+        $counts['price_tiers'] = ProductPriceTier::where('is_fake', true)->delete();
+        
+        // Remove fake accessories
+        $counts['accessories'] = Accessory::where('is_fake', true)->forceDelete();
+        
+        // Remove fake accessory types
+        $counts['accessory_types'] = AccessoryType::where('is_fake', true)->forceDelete();
+        
+        // Remove fake variation categories
+        $counts['variation_categories'] = VariationCategory::where('is_fake', true)->forceDelete();
         
         return $counts;
     }

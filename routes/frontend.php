@@ -41,6 +41,15 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/shop', 'ShopController@index')->name('shop.index')->withoutMiddleware('auth');
     Route::get('/shop/product/{product}', 'ShopController@show')->name('shop.product')->withoutMiddleware('auth');
     
+    // Collections
+    Route::get('/collections', 'CollectionController@index')->name('collections.index')->withoutMiddleware('auth');
+    Route::get('/collections/{collection}', 'CollectionController@show')->name('collections.show')->withoutMiddleware('auth');
+    Route::get('/collections/{collection}/catalog', 'CollectionController@catalog')->name('collections.catalog')->withoutMiddleware('auth');
+    
+    // FAQs
+    Route::get('/faqs', 'FaqController@index')->name('faqs.index')->withoutMiddleware('auth');
+    Route::get('/faqs/{id}', 'FaqController@show')->name('faqs.show')->withoutMiddleware('auth');
+    
     // Favorites
     Route::post('/favorites/{product}/toggle', 'FavoriteController@toggle')->name('favorites.toggle');
     Route::get('/account/favorites', 'FavoriteController@index')->name('account.favorites');

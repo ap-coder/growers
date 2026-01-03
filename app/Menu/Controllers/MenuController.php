@@ -111,9 +111,6 @@ class MenuController extends Controller
                 $menuitem->parent = $value["parent"];
                 $menuitem->sort = $value["sort"];
                 $menuitem->depth = $value["depth"];
-                if (config('menu.use_roles')) {
-                    $menuitem->role_id = request()->input("role_id");
-                }
                 $menuitem->save();
             }
         }

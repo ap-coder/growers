@@ -15,27 +15,27 @@ class ProductCollectionController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $collections = ProductCollection::with('products')->orderBy('sort_order')->get();
 
-        return view('admin.product-collections.index', compact('collections'));
+        return view('admin.collections.index', compact('collections'));
     }
 
     public function create()
     {
-        abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $layouts = ProductCollection::LAYOUT_SELECT;
         $layoutIcons = ProductCollection::LAYOUT_ICONS;
         $products = Product::where('published', true)->orderBy('name')->get();
 
-        return view('admin.product-collections.create', compact('layouts', 'layoutIcons', 'products'));
+        return view('admin.collections.create', compact('layouts', 'layoutIcons', 'products'));
     }
 
     public function store(Request $request)
     {
-        abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -70,19 +70,19 @@ class ProductCollectionController extends Controller
 
     public function edit(ProductCollection $productCollection)
     {
-        abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $layouts = ProductCollection::LAYOUT_SELECT;
         $layoutIcons = ProductCollection::LAYOUT_ICONS;
         $products = Product::where('published', true)->orderBy('name')->get();
         $productCollection->load('items.product');
 
-        return view('admin.product-collections.edit', compact('productCollection', 'layouts', 'layoutIcons', 'products'));
+        return view('admin.collections.edit', compact('productCollection', 'layouts', 'layoutIcons', 'products'));
     }
 
     public function update(Request $request, ProductCollection $productCollection)
     {
-        abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -119,7 +119,7 @@ class ProductCollectionController extends Controller
 
     public function destroy(ProductCollection $productCollection)
     {
-        abort_if(Gate::denies('product_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productCollection->items()->delete();
         $productCollection->delete();
@@ -148,7 +148,7 @@ class ProductCollectionController extends Controller
 
     public function updateOrder(Request $request, ProductCollection $productCollection)
     {
-        abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $items = $request->input('items', []);
         
@@ -163,7 +163,7 @@ class ProductCollectionController extends Controller
 
     public function toggleFeatured(Request $request, ProductCollectionItem $item)
     {
-        abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('collection_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $item->update(['is_featured' => !$item->is_featured]);
 

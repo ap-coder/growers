@@ -144,6 +144,22 @@ class Product extends Model implements HasMedia
             ->fit('contain', 1200, 1200)
             ->format('webp')
             ->nonQueued();
+
+        // Collection/Portfolio sizes
+        $this->addMediaConversion('large')
+            ->fit('contain', 800, 600)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('portfolio')
+            ->fit('crop', 600, 400)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('portfolio-square')
+            ->fit('crop', 500, 500)
+            ->format('webp')
+            ->nonQueued();
     }
 
     public function categories()
@@ -236,7 +252,7 @@ class Product extends Model implements HasMedia
     public function accessories()
     {
         return $this->belongsToMany(Accessory::class, 'product_accessory')
-            ->withPivot(['is_default', 'is_required'])
+            ->withPivot(['is_default', 'is_required', 'included_in_price'])
             ->withTimestamps();
     }
 
@@ -245,7 +261,9 @@ class Product extends Model implements HasMedia
         return $this->accessories()
             ->with('accessoryType')
             ->get()
-            ->groupBy('accessory_type_id');
+            ->groupBy(function ($accessory) {
+                return $accessory->accessoryType->name ?? 'Other';
+            });
     }
 
     public function getPriceForClient($clientId = null)

@@ -54,7 +54,7 @@ class ContentPageController extends Controller
             Media::whereIn('id', $media)->update(['model_id' => $contentPage->id]);
         }
 
-        return redirect()->route('admin.content-pages.index');
+        return redirect()->route('admin.content-pages.edit', $contentPage->id);
     }
 
     public function edit(ContentPage $contentPage)

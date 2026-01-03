@@ -21,6 +21,7 @@
 <form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data" id="product-form">
     @csrf
     @method('PUT')
+    <input type="hidden" name="active_tab" id="active_tab" value="{{ session('product_active_tab', 'general') }}">
     
     <div class="card card-primary card-outline card-outline-tabs">
         <div class="card-header p-0 border-bottom-0">
@@ -400,6 +401,13 @@
                     <td>
                         <input type="text" name="variations[${variationIndex}][description]" class="form-control form-control-sm" placeholder="Optional description">
                     </td>
+                    <td>
+                        <input type="number" name="variations[${variationIndex}][quantity]" class="form-control form-control-sm" value="0" min="0">
+                    </td>
+                    <td class="text-center">
+                        <input type="hidden" name="variations[${variationIndex}][show_quantity]" value="0">
+                        <input type="checkbox" name="variations[${variationIndex}][show_quantity]" value="1">
+                    </td>
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-danger btn-sm remove-variation-btn">&times;</button>
                     </td>
@@ -411,6 +419,160 @@
         
         $(document).on('click', '.remove-variation-btn', function() {
             $(this).closest('tr').remove();
+        });
+        
+        // ========== QUICK ADD EXISTING VARIATION ==========
+        $('#quickAddCategory').on('change', function() {
+            var categoryId = $(this).val();
+            var $variationSelect = $('#quickAddVariation');
+            var $addBtn = $('#quickAddBtn');
+            var $addAllBtn = $('#quickAddAllBtn');
+            
+            if (!categoryId) {
+                $variationSelect.html('<option value="">-- Select a category first --</option>').prop('disabled', true);
+                $addBtn.prop('disabled', true);
+                $addAllBtn.prop('disabled', true);
+                return;
+            }
+            
+            var variations = window.existingVariationsByCategory[categoryId] || [];
+            var options = '<option value="">-- Select Variation --</option>';
+            
+            variations.forEach(function(v) {
+                var desc = v.description ? ' - ' + v.description : '';
+                options += '<option value="' + v.name + '" data-description="' + (v.description || '') + '">' + v.name + desc + '</option>';
+            });
+            
+            if (variations.length === 0) {
+                options = '<option value="">-- No existing variations --</option>';
+            }
+            
+            $variationSelect.html(options).prop('disabled', variations.length === 0);
+            $addBtn.prop('disabled', true);
+            $addAllBtn.prop('disabled', variations.length === 0);
+        });
+        
+        $('#quickAddVariation').on('change', function() {
+            $('#quickAddBtn').prop('disabled', !$(this).val());
+        });
+        
+        $('#quickAddBtn').on('click', function() {
+            var categoryId = $('#quickAddCategory').val();
+            var categoryName = $('#quickAddCategory option:selected').text();
+            var variationName = $('#quickAddVariation').val();
+            var description = $('#quickAddVariation option:selected').data('description') || '';
+            
+            if (!categoryId || !variationName) return;
+            
+            var categoryOptions = `<option value="">-- Select --</option>@foreach(\App\Models\VariationCategory::where('published', true)->orderBy('sort_order')->get() as $cat)<option value="{{ $cat->id }}"${categoryId == '{{ $cat->id }}' ? ' selected' : ''}>{{ $cat->name }}</option>@endforeach`;
+            // Build options with correct selection
+            categoryOptions = '<option value="">-- Select --</option>';
+            @foreach(\App\Models\VariationCategory::where('published', true)->orderBy('sort_order')->get() as $cat)
+            if (categoryId == '{{ $cat->id }}') {
+                categoryOptions += '<option value="{{ $cat->id }}" selected>{{ $cat->name }}</option>';
+            } else {
+                categoryOptions += '<option value="{{ $cat->id }}">{{ $cat->name }}</option>';
+            }
+            @endforeach
+            
+            var newRow = `
+                <tr class="variation-row" data-index="${variationIndex}">
+                    <td class="text-center">
+                        <input type="hidden" name="variations[${variationIndex}][active]" value="0">
+                        <input type="checkbox" name="variations[${variationIndex}][active]" value="1" checked>
+                    </td>
+                    <td>
+                        <select name="variations[${variationIndex}][variation_category_id]" class="form-control form-control-sm">
+                            ${categoryOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <input type="text" name="variations[${variationIndex}][name]" class="form-control form-control-sm" value="${variationName}" required>
+                    </td>
+                    <td>
+                        <input type="text" name="variations[${variationIndex}][description]" class="form-control form-control-sm" value="${description}">
+                    </td>
+                    <td>
+                        <input type="number" name="variations[${variationIndex}][quantity]" class="form-control form-control-sm" value="0" min="0">
+                    </td>
+                    <td class="text-center">
+                        <input type="hidden" name="variations[${variationIndex}][show_quantity]" value="0">
+                        <input type="checkbox" name="variations[${variationIndex}][show_quantity]" value="1">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-variation-btn">&times;</button>
+                    </td>
+                </tr>
+            `;
+            $('#variationsBody').append(newRow);
+            // Set the category dropdown value after appending
+            $('#variationsBody tr:last select[name$="[variation_category_id]"]').val(categoryId);
+            variationIndex++;
+            
+            // Reset quick add
+            $('#quickAddVariation').val('');
+            $('#quickAddBtn').prop('disabled', true);
+        });
+        
+        // ========== QUICK ADD ALL FROM CATEGORY ==========
+        $('#quickAddAllBtn').on('click', function() {
+            var categoryId = $('#quickAddCategory').val();
+            if (!categoryId) return;
+            
+            var variations = window.existingVariationsByCategory[categoryId] || [];
+            if (variations.length === 0) return;
+            
+            var addedCount = 0;
+            variations.forEach(function(v) {
+                // Build category options
+                var categoryOptions = '<option value="">-- Select --</option>';
+                @foreach(\App\Models\VariationCategory::where('published', true)->orderBy('sort_order')->get() as $cat)
+                if (categoryId == '{{ $cat->id }}') {
+                    categoryOptions += '<option value="{{ $cat->id }}" selected>{{ $cat->name }}</option>';
+                } else {
+                    categoryOptions += '<option value="{{ $cat->id }}">{{ $cat->name }}</option>';
+                }
+                @endforeach
+                
+                var newRow = `
+                    <tr class="variation-row" data-index="${variationIndex}">
+                        <td class="text-center">
+                            <input type="hidden" name="variations[${variationIndex}][active]" value="0">
+                            <input type="checkbox" name="variations[${variationIndex}][active]" value="1" checked>
+                        </td>
+                        <td>
+                            <select name="variations[${variationIndex}][variation_category_id]" class="form-control form-control-sm">
+                                ${categoryOptions}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="variations[${variationIndex}][name]" class="form-control form-control-sm" value="${v.name}" required>
+                        </td>
+                        <td>
+                            <input type="text" name="variations[${variationIndex}][description]" class="form-control form-control-sm" value="${v.description || ''}">
+                        </td>
+                        <td>
+                            <input type="number" name="variations[${variationIndex}][quantity]" class="form-control form-control-sm" value="0" min="0">
+                        </td>
+                        <td class="text-center">
+                            <input type="hidden" name="variations[${variationIndex}][show_quantity]" value="0">
+                            <input type="checkbox" name="variations[${variationIndex}][show_quantity]" value="1">
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-outline-danger btn-sm remove-variation-btn">&times;</button>
+                        </td>
+                    </tr>
+                `;
+                $('#variationsBody').append(newRow);
+                $('#variationsBody tr:last select[name$="[variation_category_id]"]').val(categoryId);
+                variationIndex++;
+                addedCount++;
+            });
+            
+            // Show confirmation
+            if (addedCount > 0) {
+                toastr.success('Added ' + addedCount + ' variation(s) from category');
+            }
         });
         
         // ========== PRICING MANAGEMENT ==========
@@ -475,6 +637,7 @@
         $('#addPriceTierBtn').on('click', function() {
             var newRow = `
                 <tr class="price-tier-row" data-index="${priceTierIndex}">
+                    <td><input type="text" name="price_tiers[${priceTierIndex}][tier_group]" class="form-control form-control-sm" placeholder="Group name"></td>
                     <td><input type="number" name="price_tiers[${priceTierIndex}][min_quantity]" class="form-control form-control-sm" min="1"></td>
                     <td><input type="number" name="price_tiers[${priceTierIndex}][max_quantity]" class="form-control form-control-sm" placeholder="No limit"></td>
                     <td>
@@ -483,7 +646,13 @@
                             <input type="number" step="0.01" name="price_tiers[${priceTierIndex}][price]" class="form-control">
                         </div>
                     </td>
-                    <td><input type="text" name="price_tiers[${priceTierIndex}][label]" class="form-control form-control-sm" placeholder="e.g., Bulk"></td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input type="number" step="0.01" name="price_tiers[${priceTierIndex}][discount_percent]" class="form-control" placeholder="0">
+                            <div class="input-group-append"><span class="input-group-text">%</span></div>
+                        </div>
+                    </td>
+                    <td><input type="text" name="price_tiers[${priceTierIndex}][label]" class="form-control form-control-sm" placeholder="Label"></td>
                     <td class="text-center">
                         <button type="button" class="btn btn-outline-danger btn-sm remove-tier-btn">&times;</button>
                     </td>
@@ -495,6 +664,68 @@
         
         $(document).on('click', '.remove-tier-btn', function() {
             $(this).closest('tr').remove();
+        });
+        
+        // ========== QUICK ADD PRICE TIER ==========
+        function checkQuickAddTierEnabled() {
+            var hasSelection = $('#quickAddTier').val() !== '';
+            var hasPrice = $('#quickAddTierPrice').val() !== '';
+            $('#quickAddTierBtn').prop('disabled', !(hasSelection && hasPrice));
+        }
+        
+        $('#quickAddTier').on('change', function() {
+            // Auto-fill tier group from selected option
+            var $selected = $(this).find('option:selected');
+            var group = $selected.data('group');
+            if (group) {
+                $('#quickAddTierGroup').val(group);
+            }
+            checkQuickAddTierEnabled();
+        });
+        
+        $('#quickAddTierPrice').on('input', checkQuickAddTierEnabled);
+        $('#quickAddTierGroup').on('change', checkQuickAddTierEnabled);
+        
+        $('#quickAddTierBtn').on('click', function() {
+            var $selected = $('#quickAddTier option:selected');
+            var minQty = $selected.data('min');
+            var maxQty = $selected.data('max') || '';
+            var label = $selected.data('label') || '';
+            var tierGroup = $('#quickAddTierGroup').val() || $selected.data('group') || '';
+            var price = $('#quickAddTierPrice').val();
+            
+            if (!minQty || !price) return;
+            
+            var newRow = `
+                <tr class="price-tier-row" data-index="${priceTierIndex}">
+                    <td><input type="text" name="price_tiers[${priceTierIndex}][tier_group]" class="form-control form-control-sm" value="${tierGroup}" placeholder="Group name"></td>
+                    <td><input type="number" name="price_tiers[${priceTierIndex}][min_quantity]" class="form-control form-control-sm" min="1" value="${minQty}"></td>
+                    <td><input type="number" name="price_tiers[${priceTierIndex}][max_quantity]" class="form-control form-control-sm" placeholder="No limit" value="${maxQty}"></td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                            <input type="number" step="0.01" name="price_tiers[${priceTierIndex}][price]" class="form-control" value="${price}">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input type="number" step="0.01" name="price_tiers[${priceTierIndex}][discount_percent]" class="form-control" placeholder="0">
+                            <div class="input-group-append"><span class="input-group-text">%</span></div>
+                        </div>
+                    </td>
+                    <td><input type="text" name="price_tiers[${priceTierIndex}][label]" class="form-control form-control-sm" value="${label}" placeholder="Label"></td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-outline-danger btn-sm remove-tier-btn">&times;</button>
+                    </td>
+                </tr>
+            `;
+            $('#priceTiersBody').append(newRow);
+            priceTierIndex++;
+            
+            // Reset quick add
+            $('#quickAddTier').val('');
+            $('#quickAddTierPrice').val('');
+            $('#quickAddTierBtn').prop('disabled', true);
         });
         
         // ========== CLIENT ACCESS MANAGEMENT ==========
@@ -714,6 +945,19 @@
     var groupIndex = {{ $product->bundleItems ? $product->bundleItems->groupBy('group_name')->count() : 1 }};
     var productOptions = '@foreach(\App\Models\Product::where("id", "!=", $product->id)->orderBy("name")->get() as $p)<option value="{{ $p->id }}">{{ addslashes($p->name) }} (\${{ number_format($p->base_price ?? 0, 2) }})</option>@endforeach';
     @endif
+    
+    // ========== TAB PERSISTENCE ==========
+    // Restore active tab from session
+    var savedTab = '{{ session('product_active_tab', 'general') }}';
+    if (savedTab && savedTab !== 'general') {
+        $('#product-tabs a[href="#' + savedTab + '"]').tab('show');
+    }
+    
+    // Track tab changes
+    $('#product-tabs a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var tabId = $(e.target).attr('href').replace('#', '');
+        $('#active_tab').val(tabId);
+    });
     
     // ========== CKEDITOR INITIALIZATION ==========
     var descriptionEditor = null;

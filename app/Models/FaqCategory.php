@@ -32,4 +32,9 @@ class FaqCategory extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
+    
+    public function questions()
+    {
+        return $this->hasMany(FaqQuestion::class, 'category_id')->orderBy('id');
+    }
 }

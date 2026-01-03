@@ -19,146 +19,187 @@
     <div class="card-body">
         <div class="tab-content" id="pageTabsContent">
             <div class="tab-pane fade show active" id="content" role="tabpanel">
-        <form method="POST" action="{{ route("admin.content-pages.update", [$contentPage->id]) }}" enctype="multipart/form-data">
-            @method('PUT')
-            @csrf
-            <div class="form-group">
-                <div class="form-check {{ $errors->has('published') ? 'is-invalid' : '' }}">
-                    <input type="hidden" name="published" value="0">
-                    <input class="form-check-input" type="checkbox" name="published" id="published" value="1" {{ $contentPage->published || old('published', 0) === 1 ? 'checked' : '' }}>
-                    <label class="form-check-label" for="published">{{ trans('cruds.contentPage.fields.published') }}</label>
-                </div>
-                @if($errors->has('published'))
-                    <span class="text-danger">{{ $errors->first('published') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.published_helper') }}</span>
-            </div>
-            @if($contentPage->is_fake)
-            <div class="alert alert-info py-2 mb-3">
-                <i class="fas fa-info-circle mr-1"></i> <strong>Demo Data</strong> - This is sample data for demonstration. It will be removed when you clear dummy data from Settings.
-            </div>
-            @endif
-            <div class="form-group">
-                <label class="required" for="title">{{ trans('cruds.contentPage.fields.title') }}</label>
-                <input class="form-control {{ $errors->has('title') ? 'is-invalid' : '' }}" type="text" name="title" id="title" value="{{ old('title', $contentPage->title) }}" required>
-                @if($errors->has('title'))
-                    <span class="text-danger">{{ $errors->first('title') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.title_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label for="slug">Slug (URL)</label>
-                <input class="form-control {{ $errors->has('slug') ? 'is-invalid' : '' }}" type="text" name="slug" id="slug" value="{{ old('slug', $contentPage->slug) }}">
-                @if($errors->has('slug'))
-                    <span class="text-danger">{{ $errors->first('slug') }}</span>
-                @endif
-                <span class="help-block">Leave blank to auto-generate from title</span>
-            </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="page_type">Page Type</label>
-                        <select class="form-control {{ $errors->has('page_type') ? 'is-invalid' : '' }}" name="page_type" id="page_type">
-                            @foreach($pageTypes as $key => $label)
-                                <option value="{{ $key }}" {{ old('page_type', $contentPage->page_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                        @if($errors->has('page_type'))
-                            <span class="text-danger">{{ $errors->first('page_type') }}</span>
-                        @endif
+                <form method="POST" action="{{ route("admin.content-pages.update", [$contentPage->id]) }}" enctype="multipart/form-data">
+                    @method('PUT')
+                    @csrf
+
+                    {{-- Display Options - Checkboxes at top --}}
+                    <div class="card card-outline card-secondary mb-3">
+                        <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fas fa-eye mr-1"></i> Display Options</h6>
+                            @if($contentPage->is_fake)
+                                <span class="badge badge-info"><i class="fas fa-info-circle mr-1"></i> Demo Data</span>
+                            @endif
+                        </div>
+                        <div class="card-body py-2">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="icheck-success">
+                                        <input type="hidden" name="published" value="0">
+                                        <input type="checkbox" name="published" id="published" value="1" {{ $contentPage->published || old('published', 0) === 1 ? 'checked' : '' }}>
+                                        <label for="published">{{ trans('cruds.contentPage.fields.published') }}</label>
+                                    </div>
+                                    <small class="text-muted">Visible on site</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="layout">Page Layout</label>
-                        <select class="form-control {{ $errors->has('layout') ? 'is-invalid' : '' }}" name="layout" id="layout">
-                            @foreach(\App\Models\ContentPage::LAYOUT_SELECT as $key => $label)
-                                <option value="{{ $key }}" {{ old('layout', $contentPage->layout) == $key ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                        @if($errors->has('layout'))
-                            <span class="text-danger">{{ $errors->first('layout') }}</span>
-                        @endif
+
+                    {{-- Settings - Selects --}}
+                    <div class="card card-outline card-info mb-3">
+                        <div class="card-header py-2">
+                            <h6 class="mb-0"><i class="fas fa-cog mr-1"></i> Settings</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="page_type">Page Type</label>
+                                        <select class="form-control {{ $errors->has('page_type') ? 'is-invalid' : '' }}" name="page_type" id="page_type">
+                                            @foreach($pageTypes as $key => $label)
+                                                <option value="{{ $key }}" {{ old('page_type', $contentPage->page_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if($errors->has('page_type'))
+                                            <span class="text-danger">{{ $errors->first('page_type') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="layout">Page Layout</label>
+                                        <select class="form-control {{ $errors->has('layout') ? 'is-invalid' : '' }}" name="layout" id="layout">
+                                            @foreach(\App\Models\ContentPage::LAYOUT_SELECT as $key => $label)
+                                                <option value="{{ $key }}" {{ old('layout', $contentPage->layout) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if($errors->has('layout'))
+                                            <span class="text-danger">{{ $errors->first('layout') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="client_id">Client (for client-specific pages)</label>
+                                        <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id">
+                                            @foreach($clients as $id => $name)
+                                                <option value="{{ $id }}" {{ old('client_id', $contentPage->client_id) == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if($errors->has('client_id'))
+                                            <span class="text-danger">{{ $errors->first('client_id') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label for="client_id">Client (for client-specific pages)</label>
-                        <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id">
-                            @foreach($clients as $id => $name)
-                                <option value="{{ $id }}" {{ old('client_id', $contentPage->client_id) == $id ? 'selected' : '' }}>{{ $name }}</option>
-                            @endforeach
-                        </select>
-                        @if($errors->has('client_id'))
-                            <span class="text-danger">{{ $errors->first('client_id') }}</span>
-                        @endif
-                        <span class="help-block">Select a client to make this page visible only to that client</span>
+
+                    {{-- Categories & Tags --}}
+                    <div class="card card-outline card-primary mb-3">
+                        <div class="card-header py-2">
+                            <h6 class="mb-0"><i class="fas fa-tags mr-1"></i> Categories & Tags</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="categories">{{ trans('cruds.contentPage.fields.category') }}</label>
+                                        <select class="form-control select2 {{ $errors->has('categories') ? 'is-invalid' : '' }}" name="categories[]" id="categories" multiple>
+                                            @foreach($categories as $id => $category)
+                                                <option value="{{ $id }}" {{ (in_array($id, old('categories', [])) || $contentPage->categories->contains($id)) ? 'selected' : '' }}>{{ $category }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if($errors->has('categories'))
+                                            <span class="text-danger">{{ $errors->first('categories') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="tags">{{ trans('cruds.contentPage.fields.tag') }}</label>
+                                        <select class="form-control select2 {{ $errors->has('tags') ? 'is-invalid' : '' }}" name="tags[]" id="tags" multiple>
+                                            @foreach($tags as $id => $tag)
+                                                <option value="{{ $id }}" {{ (in_array($id, old('tags', [])) || $contentPage->tags->contains($id)) ? 'selected' : '' }}>{{ $tag }}</option>
+                                            @endforeach
+                                        </select>
+                                        @if($errors->has('tags'))
+                                            <span class="text-danger">{{ $errors->first('tags') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="categories">{{ trans('cruds.contentPage.fields.category') }}</label>
-                <div style="padding-bottom: 4px">
-                    <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                    <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                </div>
-                <select class="form-control select2 {{ $errors->has('categories') ? 'is-invalid' : '' }}" name="categories[]" id="categories" multiple>
-                    @foreach($categories as $id => $category)
-                        <option value="{{ $id }}" {{ (in_array($id, old('categories', [])) || $contentPage->categories->contains($id)) ? 'selected' : '' }}>{{ $category }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('categories'))
-                    <span class="text-danger">{{ $errors->first('categories') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.category_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label for="tags">{{ trans('cruds.contentPage.fields.tag') }}</label>
-                <div style="padding-bottom: 4px">
-                    <span class="btn btn-info btn-xs select-all" style="border-radius: 0">{{ trans('global.select_all') }}</span>
-                    <span class="btn btn-info btn-xs deselect-all" style="border-radius: 0">{{ trans('global.deselect_all') }}</span>
-                </div>
-                <select class="form-control select2 {{ $errors->has('tags') ? 'is-invalid' : '' }}" name="tags[]" id="tags" multiple>
-                    @foreach($tags as $id => $tag)
-                        <option value="{{ $id }}" {{ (in_array($id, old('tags', [])) || $contentPage->tags->contains($id)) ? 'selected' : '' }}>{{ $tag }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('tags'))
-                    <span class="text-danger">{{ $errors->first('tags') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.tag_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label for="page_text">{{ trans('cruds.contentPage.fields.page_text') }}</label>
-                <textarea class="form-control ckeditor {{ $errors->has('page_text') ? 'is-invalid' : '' }}" name="page_text" id="page_text">{!! old('page_text', $contentPage->page_text) !!}</textarea>
-                @if($errors->has('page_text'))
-                    <span class="text-danger">{{ $errors->first('page_text') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.page_text_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label for="excerpt">{{ trans('cruds.contentPage.fields.excerpt') }}</label>
-                <textarea class="form-control {{ $errors->has('excerpt') ? 'is-invalid' : '' }}" name="excerpt" id="excerpt">{{ old('excerpt', $contentPage->excerpt) }}</textarea>
-                @if($errors->has('excerpt'))
-                    <span class="text-danger">{{ $errors->first('excerpt') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.excerpt_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <label for="featured_image">{{ trans('cruds.contentPage.fields.featured_image') }}</label>
-                <div class="needsclick dropzone {{ $errors->has('featured_image') ? 'is-invalid' : '' }}" id="featured_image-dropzone">
-                </div>
-                @if($errors->has('featured_image'))
-                    <span class="text-danger">{{ $errors->first('featured_image') }}</span>
-                @endif
-                <span class="help-block">{{ trans('cruds.contentPage.fields.featured_image_helper') }}</span>
-            </div>
-            <div class="form-group">
-                <button class="btn btn-danger" type="submit">
-                    {{ trans('global.save') }}
-                </button>
-            </div>
-        </form>
+
+                    {{-- Page Details - Title, Slug, Content --}}
+                    <div class="card card-outline card-success mb-3">
+                        <div class="card-header py-2">
+                            <h6 class="mb-0"><i class="fas fa-info-circle mr-1"></i> Page Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label class="required" for="title">{{ trans('cruds.contentPage.fields.title') }}</label>
+                                        <input class="form-control {{ $errors->has('title') ? 'is-invalid' : '' }}" type="text" name="title" id="title" value="{{ old('title', $contentPage->title) }}" required>
+                                        @if($errors->has('title'))
+                                            <span class="text-danger">{{ $errors->first('title') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="slug">Slug (URL)</label>
+                                        <input class="form-control {{ $errors->has('slug') ? 'is-invalid' : '' }}" type="text" name="slug" id="slug" value="{{ old('slug', $contentPage->slug) }}" placeholder="auto-generated if empty">
+                                        @if($errors->has('slug'))
+                                            <span class="text-danger">{{ $errors->first('slug') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="excerpt">{{ trans('cruds.contentPage.fields.excerpt') }}</label>
+                                <textarea class="form-control {{ $errors->has('excerpt') ? 'is-invalid' : '' }}" name="excerpt" id="excerpt" rows="2">{{ old('excerpt', $contentPage->excerpt) }}</textarea>
+                                @if($errors->has('excerpt'))
+                                    <span class="text-danger">{{ $errors->first('excerpt') }}</span>
+                                @endif
+                            </div>
+
+                            <div class="form-group">
+                                <label for="page_text">{{ trans('cruds.contentPage.fields.page_text') }}</label>
+                                <textarea class="form-control ckeditor {{ $errors->has('page_text') ? 'is-invalid' : '' }}" name="page_text" id="page_text">{!! old('page_text', $contentPage->page_text) !!}</textarea>
+                                @if($errors->has('page_text'))
+                                    <span class="text-danger">{{ $errors->first('page_text') }}</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Featured Image --}}
+                    <div class="card card-outline card-warning mb-3">
+                        <div class="card-header py-2">
+                            <h6 class="mb-0"><i class="fas fa-image mr-1"></i> Featured Image</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="needsclick dropzone {{ $errors->has('featured_image') ? 'is-invalid' : '' }}" id="featured_image-dropzone">
+                            </div>
+                            @if($errors->has('featured_image'))
+                                <span class="text-danger">{{ $errors->first('featured_image') }}</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-success" type="submit">
+                            <i class="fas fa-save mr-1"></i> {{ trans('global.save') }}
+                        </button>
+                        <a href="{{ route('admin.content-pages.index') }}" class="btn btn-secondary">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
             
             {{-- Page Builder Tab --}}

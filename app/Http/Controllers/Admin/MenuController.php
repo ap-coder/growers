@@ -9,7 +9,9 @@ use App\Menu\Models\MenuItems;
 use App\Models\ProductCategory;
 use App\Models\ContentPage;
 use App\Models\FaqCategory;
+use App\Models\FaqQuestion;
 use App\Models\Product;
+use App\Models\ProductCollection;
 use Gate;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -43,11 +45,13 @@ class MenuController extends Controller
         $productCategories = ProductCategory::orderBy('name')->get();
         $contentPages = ContentPage::where('published', true)->orderBy('title')->get();
         $faqCategories = FaqCategory::orderBy('category')->get();
+        $faqQuestions = FaqQuestion::with('category')->orderBy('question')->get();
         $products = Product::where('published', true)->orderBy('name')->get();
+        $productCollections = ProductCollection::where('published', true)->orderBy('name')->get();
         
         return view('admin.menus.index', compact(
             'menulist', 'indmenu', 'menus', 'roles', 'role_pk', 'role_title_field',
-            'productCategories', 'contentPages', 'faqCategories', 'products'
+            'productCategories', 'contentPages', 'faqCategories', 'faqQuestions', 'products', 'productCollections'
         ));
     }
 }

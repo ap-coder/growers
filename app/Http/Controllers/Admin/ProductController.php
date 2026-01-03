@@ -179,6 +179,7 @@ class ProductController extends Controller
         foreach ($request->input('accessories', []) as $accessoryId) {
             $accessoriesData[$accessoryId] = [
                 'is_default' => $request->has("accessory_defaults.{$accessoryId}"),
+                'included_in_price' => $request->has("accessory_included.{$accessoryId}"),
             ];
         }
         $product->accessories()->sync($accessoriesData);
@@ -253,11 +254,18 @@ class ProductController extends Controller
         $this->handleAdditionalPhotos($request, $product);
         $this->handleCKMedia($request, $product);
 
+        // Save active tab to session for persistence
+        if ($request->has('active_tab')) {
+            session(['product_active_tab' => $request->input('active_tab')]);
+        }
+
         // Check if we should redirect back to edit page or to index
         if ($request->input('redirect_back') == '1') {
             return redirect()->route('admin.products.edit', $product->id)->with('message', 'Product saved successfully.');
         }
         
+        // Clear tab session when going back to index
+        session()->forget('product_active_tab');
         return redirect()->route('admin.products.index');
     }
 
@@ -314,9 +322,11 @@ class ProductController extends Controller
             
             ProductPriceTier::create([
                 'product_id' => $product->id,
+                'tier_group' => $tier['tier_group'] ?? null,
                 'min_quantity' => $tier['min_quantity'],
                 'max_quantity' => !empty($tier['max_quantity']) ? $tier['max_quantity'] : null,
                 'price' => $tier['price'],
+                'discount_percent' => !empty($tier['discount_percent']) ? $tier['discount_percent'] : null,
                 'label' => $tier['label'] ?? null,
                 'sort_order' => $sortOrder++,
             ]);
@@ -351,6 +361,7 @@ class ProductController extends Controller
                 'full_price' => !empty($variation['full_price']) ? $variation['full_price'] : null,
                 'base_cost' => !empty($variation['base_cost']) ? $variation['base_cost'] : null,
                 'quantity' => $qty,
+                'show_quantity' => isset($variation['show_quantity']) ? (bool)$variation['show_quantity'] : false,
                 'qb_1' => $variation['qb_1'] ?? null,
                 'qb_2' => $variation['qb_2'] ?? null,
                 'sort_order' => $sortOrder++,

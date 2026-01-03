@@ -108,7 +108,153 @@ Should include:
 
 ---
 
-## Recent Changes (January 2, 2026 - Evening Session)
+## Recent Changes (January 2, 2026 - Late Night Session #4)
+
+### Collection Showcase Layouts (11 Layout Types)
+All layouts match xhtml template pages exactly and use existing products:
+- **grid** - Simple responsive grid layout
+- **masonry** - Masonry grid with category filtering
+- **carousel** - Swiper carousel showcase with prev/next navigation
+- **tiles** - Portfolio tiles with category filtering
+- **cobble-1** - Cobble pattern (small, small, large repeating)
+- **cobble-2** - Cobble pattern (large, small, small repeating)
+- **collage-1** - Collage with alternating large/small
+- **collage-2** - Collage with different alternating pattern
+- **film-strip** - Horizontal film strip slider
+- **split-slider** - Split view with image and content side by side
+- **thumbs-slider** - Main slider with thumbnail navigation
+
+### Collection Catalog/Advertisement Export
+- **Print-friendly view** - `/collections/{slug}/catalog` route
+- **PDF export** - Browser print dialog allows Save as PDF
+- **Catalog layout** - Clean, professional layout for catalogs and advertisements
+- **Download button** - Added to collection show pages
+
+### Menu Builder Fixes
+- **Save fix** - Removed role_id update causing "Column 'role_id' cannot be null" error
+- **Accordion persistence** - Sections stay open after adding items (localStorage)
+
+### Frontend Styling
+- **Accordion headers** - margin-bottom: 0.5rem, aligned with accordion header (1.25rem padding)
+- **Variation items** - Indented more (1.5rem padding-left)
+- **Price tiers units** - Darker text color (#555) for readability
+- **Shop hover icons** - Removed cart icon, kept eye and heart only
+
+### Routes Added
+- `GET /collections` - Collections index
+- `GET /collections/{slug}` - Collection show (layout-specific)
+- `GET /collections/{slug}/catalog` - Print-friendly catalog view
+
+### Files Created
+- `app/Http/Controllers/Site/CollectionController.php` - Updated with catalog method
+- `resources/views/site/collections/index.blade.php` - Collections listing
+- `resources/views/site/collections/catalog.blade.php` - Print-friendly catalog
+- `resources/views/site/collections/layouts/*.blade.php` - 11 layout files
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #3)
+
+### Product Collections System
+- **DummyProductCollectionsSeeder** - Creates one collection per layout type (11 total) with 4-8 random products
+- **Admin Settings button** - Add/Remove dummy collections in Developer Tools section
+- **Menu Builder** - Product Collections section added to menu builder for navigation links
+- **is_fake field** - Added to ProductCollection model for dummy data tracking
+- **Frontend route** - `/collections/{slug}` route with CollectionController@show
+- **Collection view** - `site/collections/show.blade.php` displays collection products in grid
+
+### Price Tiers Styling Update
+- **Label first** - Shows tier label (e.g., "Regular") before units
+- **Units in parentheses** - Shows "(1-24 units)" after label in gray
+- **No badge backgrounds** - Removed colored badge backgrounds from labels
+- **Discount as text** - Shows "X% off" in green text instead of badge
+
+### Accordion Spacing
+- **Category headers** - Added 0.5rem margin-top above headers (except first one)
+- **Applies to** - Variations, price tiers groups
+
+### Menu Ordering Fix
+- **Header navigation** - Fixed to properly order menu items by `sort` field
+- **Direct query** - Now fetches MenuItems directly with `orderBy('sort', 'asc')` instead of using relationship
+
+### Database Changes
+- `add_is_fake_to_product_collections_table` - Boolean for dummy data tracking
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #2)
+
+### Frontend Product Page Accordion System
+- **Accordion layout** - Variations, accessories, and price tiers now in collapsible accordion sections
+- **Template accordion** - Uses `dz-accordion accordion-sm` classes from xhtml template
+- **Accessory types as accordion items** - Each accessory type (Card Holders, Ribbons, etc.) gets its own accordion
+- **Fixed getAccessoriesByType()** - Now groups by type NAME instead of type ID
+
+### Frontend Styling Refinements
+- **Category headers** - Gray background (`bg-secondary`), white text, full width, no border radius
+- **Item rows** - Compact padding (`0.1rem 0.5rem 0.1rem 0.75rem`), indented names
+- **Prices** - Green color (`var(--primary)`), bold weight
+- **Item names** - Bold black text
+- **Quantity inputs** - Square (border-radius: 0), 40px width, 1.5rem height
+- **Font sizes** - All using rem for responsiveness (0.8rem rows, 0.75rem inputs)
+- **Current Total** - Renamed from "Selection Total", with hr lines above and below
+
+### Admin Pricing Tab Restructure
+- **Base Product Pricing** - Always visible section with SKU, UPC, Price, Full Price, Cost, Quantity, QB IDs
+- **Variation Pricing** - Table now includes Cost column for profit calculation
+- **Price Tiers grouped by tier_group** - Frontend displays tiers grouped by their tier_group name
+
+### Database Changes
+- `add_show_quantity_to_product_variations_table` - Boolean to control quantity display on frontend
+- `add_is_fake_to_price_tiers_and_accessories_tables` - Added `is_fake` to ProductPriceTier, Accessory, AccessoryType
+- `add_tier_group_to_product_price_tiers_table` - String field for grouping price tiers
+
+### New Frontend Partials
+- `product-variations-content.blade.php` - Variations grouped by category for accordion
+- `product-accessory-type-content.blade.php` - Single accessory type content for accordion
+- `product-price-tiers-content.blade.php` - Price tiers grouped by tier_group for accordion
+
+### Model Updates
+- **ProductVariation** - Added `show_quantity` to fillable/casts
+- **ProductPriceTier** - Added `tier_group`, `is_fake` to fillable/casts
+- **Accessory** - Added `is_fake` to fillable/casts
+- **AccessoryType** - Added `is_fake` to fillable/casts
+- **Product.getAccessoriesByType()** - Fixed to group by type name instead of ID
+- **ProductCollection** - Added `is_fake` to fillable/casts
+
+### DummyProductsSeeder Updates
+- All dummy data now sets `is_fake = true` on price tiers, accessories, accessory types
+- `removeDummyProducts()` now cleans up all fake data across all related models
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #1)
+
+### Product Detail Page Enhancements
+- **Excerpt/Description layout** - Excerpt shows in right column, full description moved below images
+- **Variations display** - Grouped by VariationCategory with stock badges (green >10, yellow 1-10, red Out)
+- **Quantity inputs** - Plain number inputs without +/- buttons, no spinner arrows, centered text
+- **Accessories section** - New partial `product-accessories.blade.php` displays product accessories
+- **Included in Price** - New `included_in_price` field on product_accessory pivot table with green "Included" badge
+
+### Admin Product Edit Enhancements
+- **Quick Add Variations** - Select from existing variations used on other products to maintain consistency
+- **Quick Add Price Tiers** - Select from existing tier ranges (e.g., 1-49, 50-99, 100+) used on other products
+- **Discount % on Price Tiers** - New `discount_percent` column on `product_price_tiers` table
+- **Included in Price checkbox** - New column on Accessories tab for accessories included in product price
+
+### WCL Developer Tools (Admin Settings)
+- **Session-based alerts** - SweetAlert messages persist across page changes using session flash
+- **Cache clearing** - Added before/after all WCL commands to prevent caching issues
+- **Timeout handling** - Extended timeout (5 min) for long-running commands
+
+### Database Migrations
+- `add_included_in_price_to_product_accessory_table` - Boolean for accessories included in price
+- `add_discount_to_product_price_tiers_table` - Decimal for discount percentage
+
+---
+
+## Previous Changes (January 2, 2026 - Evening Session)
 
 ### Menu Builder Enhancements
 - **Role-based menu items** - Enabled `use_roles` in config, added `role_id` column to `menu_items` table
@@ -469,3 +615,6 @@ Routes in `routes/frontend.php`, controller methods in `AccountController`.
 - Frontend views (not integrated): `resources/views/site/`
 - xhtml template source: `xhtml/`
 - Guidelines/requirements: `guidelines/`
+
+## Reference Links
+- **Original Template**: [xhtml/index.html](../xhtml/index.html) - Open to view all template pages and components

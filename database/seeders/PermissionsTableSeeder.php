@@ -526,6 +526,26 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => 129,
                 'title' => 'menu_access',
             ],
+            [
+                'id'    => 130,
+                'title' => 'collection_create',
+            ],
+            [
+                'id'    => 131,
+                'title' => 'collection_edit',
+            ],
+            [
+                'id'    => 132,
+                'title' => 'collection_show',
+            ],
+            [
+                'id'    => 133,
+                'title' => 'collection_delete',
+            ],
+            [
+                'id'    => 134,
+                'title' => 'collection_access',
+            ],
         ];
 
         Permission::insert($permissions);
