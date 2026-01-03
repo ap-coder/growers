@@ -156,6 +156,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('settings/remove-dummy-faqs', 'SettingController@removeDummyFaqs')->name('settings.removeDummyFaqs');
     Route::post('settings/seed-dummy-pages', 'SettingController@seedDummyPages')->name('settings.seedDummyPages');
     Route::post('settings/remove-dummy-pages', 'SettingController@removeDummyPages')->name('settings.removeDummyPages');
+    Route::post('settings/seed-dummy-collections', 'SettingController@seedDummyCollections')->name('settings.seedDummyCollections');
+    Route::post('settings/remove-dummy-collections', 'SettingController@removeDummyCollections')->name('settings.removeDummyCollections');
     Route::post('settings/seed-settings', 'SettingController@seedSettings')->name('settings.seedSettings');
     Route::post('settings/seed-menus', 'SettingController@seedMenus')->name('settings.seedMenus');
 

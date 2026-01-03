@@ -305,6 +305,48 @@ $currentUrl = url()->current();
                                                             </div>
                                                         </li>
                                                         
+                                                        <!-- Product Collections -->
+                                                        <li class="control-section accordion-section add-page" id="add-collections">
+                                                            <h3 class="accordion-section-title hndle" tabindex="0">Product Collections</h3>
+                                                            <div class="accordion-section-content">
+                                                                <div class="inside">
+                                                                    <div class="collectiondiv">
+                                                                        <div class="form-group">
+                                                                            <label for="collection-select">Select Collection</label>
+                                                                            <select id="collection-select" class="form-control">
+                                                                                <option value="">-- Select --</option>
+                                                                                @foreach($productCollections as $collection)
+                                                                                <option value="/collections/{{ $collection->slug }}" data-label="{{ $collection->name }}">{{ $collection->name }} ({{ $collection->layout_name }})</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="collection-label">Label</label>
+                                                                            <input id="collection-label" type="text" class="form-control">
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label for="collection-icon">Icon (optional)</label>
+                                                                            <input id="collection-icon" type="text" class="form-control" placeholder="fas fa-th-large">
+                                                                        </div>
+                                                                        @if(!empty($roles))
+                                                                        <div class="form-group">
+                                                                            <label for="collection-role">Restrict to Role (optional)</label>
+                                                                            <select id="collection-role" class="form-control">
+                                                                                <option value="0">-- All Users --</option>
+                                                                                @foreach($roles as $role)
+                                                                                    <option value="{{ $role->$role_pk }}">{{ ucfirst($role->$role_title_field) }}</option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                        @endif
+                                                                        <div class="form-group">
+                                                                            <button type="button" onclick="addFromSelect('collection-select', 'collection-label', 'collection-icon', 'collection-role')" class="btn btn-primary btn-sm">Add to Menu</button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </li>
+                                                        
                                                         <!-- Custom Link -->
                                                         <li class="control-section accordion-section add-page" id="add-page">
                                                             <h3 class="accordion-section-title hndle" tabindex="0">Custom Link</h3>
@@ -584,7 +626,7 @@ $currentUrl = url()->current();
 <script>
 $(document).ready(function() {
     // Handle select change to auto-fill label
-    $('#category-select, #product-select, #page-select, #faq-select').on('change', function() {
+    $('#category-select, #product-select, #page-select, #faq-select, #collection-select').on('change', function() {
         var label = $(this).find(':selected').data('label') || '';
         var labelInputId = $(this).attr('id').replace('-select', '-label');
         $('#' + labelInputId).val(label);
@@ -602,6 +644,13 @@ $(document).ready(function() {
             return false;
         });
     });
+    
+    // Reopen the section that was used to add an item
+    var openSection = localStorage.getItem('menuBuilderOpenSection');
+    if (openSection) {
+        $('#' + openSection).addClass('open');
+        localStorage.removeItem('menuBuilderOpenSection');
+    }
     
     // Show/hide label field based on separator type
     $('#separator-type').on('change', function() {
@@ -687,6 +736,9 @@ function addSeparator() {
         displayLabel = label || '---';
     }
     
+    // Store which section was used
+    localStorage.setItem('menuBuilderOpenSection', 'add-separator');
+    
     $.ajax({
         data: {
             labelmenu: displayLabel,
@@ -733,6 +785,12 @@ function addFromSelect(selectId, labelId, iconId, roleId) {
     if (!label) {
         alert('Please enter a label');
         return;
+    }
+    
+    // Store which section was used
+    var sectionId = $('#' + selectId).closest('.accordion-section').attr('id');
+    if (sectionId) {
+        localStorage.setItem('menuBuilderOpenSection', sectionId);
     }
     
     $.ajax({

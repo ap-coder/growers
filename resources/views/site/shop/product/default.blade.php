@@ -168,28 +168,36 @@
                                         </a>
                                     </h2>
                                     <div id="collapseVariations" class="accordion-collapse collapse show" aria-labelledby="headingVariations" data-bs-parent="#productOptionsAccordion">
-                                        <div class="accordion-body">
+                                        <div class="accordion-body p-0">
                                             @include('site.shop.partials.product-variations-content', ['product' => $product, 'clientId' => $clientId ?? null])
                                         </div>
                                     </div>
                                 </div>
                             @endif
                             
-                            {{-- Accessories Accordion --}}
+                            {{-- Accessories Accordion - One per Type --}}
                             @if($hasAccessories)
-                                <div class="accordion-item">
-                                    <h2 class="accordion-header" id="headingAccessories">
-                                        <a href="#" class="accordion-button {{ $hasVariations ? 'collapsed' : '' }}" data-bs-toggle="collapse" data-bs-target="#collapseAccessories" aria-expanded="{{ $hasVariations ? 'false' : 'true' }}" aria-controls="collapseAccessories">
-                                            Add-Ons & Accessories
-                                            <span class="toggle-close"></span>
-                                        </a>
-                                    </h2>
-                                    <div id="collapseAccessories" class="accordion-collapse collapse {{ $hasVariations ? '' : 'show' }}" aria-labelledby="headingAccessories" data-bs-parent="#productOptionsAccordion">
-                                        <div class="accordion-body">
-                                            @include('site.shop.partials.product-accessories-content', ['product' => $product, 'clientId' => $clientId ?? null])
+                                @php
+                                    $accessoriesByType = $product->getAccessoriesByType();
+                                @endphp
+                                @foreach($accessoriesByType as $typeName => $typeAccessories)
+                                    @php
+                                        $typeSlug = \Illuminate\Support\Str::slug($typeName);
+                                    @endphp
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading{{ $typeSlug }}">
+                                            <a href="#" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapse{{ $typeSlug }}" aria-expanded="false" aria-controls="collapse{{ $typeSlug }}">
+                                                {{ $typeName }}
+                                                <span class="toggle-close"></span>
+                                            </a>
+                                        </h2>
+                                        <div id="collapse{{ $typeSlug }}" class="accordion-collapse collapse" aria-labelledby="heading{{ $typeSlug }}" data-bs-parent="#productOptionsAccordion">
+                                            <div class="accordion-body p-0">
+                                                @include('site.shop.partials.product-accessory-type-content', ['typeAccessories' => $typeAccessories, 'clientId' => $clientId ?? null])
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endforeach
                             @endif
                             
                             {{-- Bulk Pricing Accordion --}}
@@ -202,7 +210,7 @@
                                         </a>
                                     </h2>
                                     <div id="collapsePricing" class="accordion-collapse collapse" aria-labelledby="headingPricing" data-bs-parent="#productOptionsAccordion">
-                                        <div class="accordion-body">
+                                        <div class="accordion-body p-0">
                                             @include('site.shop.partials.product-price-tiers-content', ['product' => $product, 'clientId' => $clientId ?? null])
                                         </div>
                                     </div>
@@ -212,10 +220,12 @@
                     @endif
                     
                     {{-- Running Total Section --}}
-                    <div class="order-total d-flex justify-content-between align-items-center p-3 bg-light rounded m-b20">
-                        <span class="fw-bold">Selection Total:</span>
+                    <hr class="m-t15 m-b15">
+                    <div class="order-total d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                        <span class="fw-bold">Current Total:</span>
                         <span class="h5 mb-0 text-primary" id="running-total">$0.00</span>
                     </div>
+                    <hr class="m-t15 m-b20">
                 </div>
             </div>
         </div>

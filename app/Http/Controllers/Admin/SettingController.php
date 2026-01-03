@@ -461,6 +461,65 @@ class SettingController extends Controller
         }
     }
 
+    public function seedDummyCollections(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            $this->extendTimeout();
+            $this->clearCaches();
+            
+            $seeder = new \Database\Seeders\DummyProductCollectionsSeeder();
+            $result = $seeder->createDummyCollections();
+            
+            $this->clearCaches();
+
+            if (!$result['success']) {
+                if ($request->ajax()) {
+                    return response()->json(['success' => false, 'message' => $result['message']], 400);
+                }
+                return redirect()->route('admin.settings.index')->with('error', $result['message']);
+            }
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => $result['message']]);
+            }
+            return redirect()->route('admin.settings.index')->with('message', $result['message']);
+        } catch (\Exception $e) {
+            $error = 'Error creating dummy collections: ' . $e->getMessage();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $error], 500);
+            }
+            return redirect()->route('admin.settings.index')->with('error', $error);
+        }
+    }
+
+    public function removeDummyCollections(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            $this->extendTimeout();
+            $this->clearCaches();
+            
+            $seeder = new \Database\Seeders\DummyProductCollectionsSeeder();
+            $result = $seeder->removeDummyCollections();
+            
+            $this->clearCaches();
+
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => $result['message']]);
+            }
+            return redirect()->route('admin.settings.index')->with('message', $result['message']);
+        } catch (\Exception $e) {
+            $error = 'Error removing dummy collections: ' . $e->getMessage();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $error], 500);
+            }
+            return redirect()->route('admin.settings.index')->with('error', $error);
+        }
+    }
+
     public function clearTelescope()
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');

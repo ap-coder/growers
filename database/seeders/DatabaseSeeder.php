@@ -24,5 +24,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(SettingsTableSeeder::class);
         $this->call(MediaTableSeeder::class);
+        $this->call(MenusTableSeeder::class);
+        $this->call(MenuItemsTableSeeder::class);
     }
 }

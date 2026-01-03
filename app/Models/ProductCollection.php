@@ -71,11 +71,13 @@ class ProductCollection extends Model
         'background_color',
         'text_color',
         'columns',
+        'is_fake',
     ];
 
     protected $casts = [
         'published' => 'boolean',
         'show_on_homepage' => 'boolean',
+        'is_fake' => 'boolean',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

@@ -108,7 +108,82 @@ Should include:
 
 ---
 
-## Recent Changes (January 2, 2026 - Late Night Session)
+## Recent Changes (January 2, 2026 - Late Night Session #3)
+
+### Product Collections System
+- **DummyProductCollectionsSeeder** - Creates one collection per layout type (11 total) with 4-8 random products
+- **Admin Settings button** - Add/Remove dummy collections in Developer Tools section
+- **Menu Builder** - Product Collections section added to menu builder for navigation links
+- **is_fake field** - Added to ProductCollection model for dummy data tracking
+- **Frontend route** - `/collections/{slug}` route with CollectionController@show
+- **Collection view** - `site/collections/show.blade.php` displays collection products in grid
+
+### Price Tiers Styling Update
+- **Label first** - Shows tier label (e.g., "Regular") before units
+- **Units in parentheses** - Shows "(1-24 units)" after label in gray
+- **No badge backgrounds** - Removed colored badge backgrounds from labels
+- **Discount as text** - Shows "X% off" in green text instead of badge
+
+### Accordion Spacing
+- **Category headers** - Added 0.5rem margin-top above headers (except first one)
+- **Applies to** - Variations, price tiers groups
+
+### Menu Ordering Fix
+- **Header navigation** - Fixed to properly order menu items by `sort` field
+- **Direct query** - Now fetches MenuItems directly with `orderBy('sort', 'asc')` instead of using relationship
+
+### Database Changes
+- `add_is_fake_to_product_collections_table` - Boolean for dummy data tracking
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #2)
+
+### Frontend Product Page Accordion System
+- **Accordion layout** - Variations, accessories, and price tiers now in collapsible accordion sections
+- **Template accordion** - Uses `dz-accordion accordion-sm` classes from xhtml template
+- **Accessory types as accordion items** - Each accessory type (Card Holders, Ribbons, etc.) gets its own accordion
+- **Fixed getAccessoriesByType()** - Now groups by type NAME instead of type ID
+
+### Frontend Styling Refinements
+- **Category headers** - Gray background (`bg-secondary`), white text, full width, no border radius
+- **Item rows** - Compact padding (`0.1rem 0.5rem 0.1rem 0.75rem`), indented names
+- **Prices** - Green color (`var(--primary)`), bold weight
+- **Item names** - Bold black text
+- **Quantity inputs** - Square (border-radius: 0), 40px width, 1.5rem height
+- **Font sizes** - All using rem for responsiveness (0.8rem rows, 0.75rem inputs)
+- **Current Total** - Renamed from "Selection Total", with hr lines above and below
+
+### Admin Pricing Tab Restructure
+- **Base Product Pricing** - Always visible section with SKU, UPC, Price, Full Price, Cost, Quantity, QB IDs
+- **Variation Pricing** - Table now includes Cost column for profit calculation
+- **Price Tiers grouped by tier_group** - Frontend displays tiers grouped by their tier_group name
+
+### Database Changes
+- `add_show_quantity_to_product_variations_table` - Boolean to control quantity display on frontend
+- `add_is_fake_to_price_tiers_and_accessories_tables` - Added `is_fake` to ProductPriceTier, Accessory, AccessoryType
+- `add_tier_group_to_product_price_tiers_table` - String field for grouping price tiers
+
+### New Frontend Partials
+- `product-variations-content.blade.php` - Variations grouped by category for accordion
+- `product-accessory-type-content.blade.php` - Single accessory type content for accordion
+- `product-price-tiers-content.blade.php` - Price tiers grouped by tier_group for accordion
+
+### Model Updates
+- **ProductVariation** - Added `show_quantity` to fillable/casts
+- **ProductPriceTier** - Added `tier_group`, `is_fake` to fillable/casts
+- **Accessory** - Added `is_fake` to fillable/casts
+- **AccessoryType** - Added `is_fake` to fillable/casts
+- **Product.getAccessoriesByType()** - Fixed to group by type name instead of ID
+- **ProductCollection** - Added `is_fake` to fillable/casts
+
+### DummyProductsSeeder Updates
+- All dummy data now sets `is_fake = true` on price tiers, accessories, accessory types
+- `removeDummyProducts()` now cleans up all fake data across all related models
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #1)
 
 ### Product Detail Page Enhancements
 - **Excerpt/Description layout** - Excerpt shows in right column, full description moved below images

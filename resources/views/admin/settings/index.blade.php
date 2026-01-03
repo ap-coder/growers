@@ -265,6 +265,36 @@
                     <div class="col-md-3">
                         <div class="card card-outline card-info h-100">
                             <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-th-large mr-2"></i> Dummy Collections</h6>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small">
+                                    Create sample product collections.
+                                </p>
+                                <ul class="small text-muted mb-2">
+                                    <li>One of each layout type</li>
+                                    <li>4-8 products per collection</li>
+                                    <li>Grid, Carousel, Masonry, etc.</li>
+                                </ul>
+                                <div class="d-grid gap-2 d-md-block mt-3">
+                                    <form action="{{ route('admin.settings.seedDummyCollections') }}" method="POST" class="d-inline dummy-add-form" data-type="collections" data-details="11 product collections (one for each layout type: Grid, Masonry, Carousel, Tiles, Cobble 1&2, Collage 1&2, Film Strip, Split Slider, Thumbs Slider) with 4-8 products each">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-success btn-sm"><i class="fas fa-plus mr-1"></i> Add</button>
+                                    </form>
+                                    <a href="{{ route('admin.product-collections.index') }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="fas fa-eye mr-1"></i> View</a>
+                                    <form action="{{ route('admin.settings.removeDummyCollections') }}" method="POST" class="d-inline dummy-remove-form" data-type="collections">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash mr-1"></i> Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-3">
+                        <div class="card card-outline card-info h-100">
+                            <div class="card-header">
                                 <h6 class="mb-0"><i class="fas fa-sliders-h mr-2"></i> Export Settings</h6>
                             </div>
                             <div class="card-body">

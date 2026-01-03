@@ -40,6 +40,9 @@ function getmenus() {
 
 function addcustommenu() {
   $('#spincustomu').show();
+  
+  // Store which section was used
+  localStorage.setItem('menuBuilderOpenSection', 'add-page');
 
   $.ajax({
     data: {

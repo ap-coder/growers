@@ -245,7 +245,9 @@ class Product extends Model implements HasMedia
         return $this->accessories()
             ->with('accessoryType')
             ->get()
-            ->groupBy('accessory_type_id');
+            ->groupBy(function ($accessory) {
+                return $accessory->accessoryType->name ?? 'Other';
+            });
     }
 
     public function getPriceForClient($clientId = null)

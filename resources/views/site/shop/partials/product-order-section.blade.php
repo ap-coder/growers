@@ -21,16 +21,9 @@
 
 <div class="dz-product-detail style-4">
     <div class="dz-content">
-        {{-- Base Product Price --}}
-        <div class="meta-content m-b20 d-flex align-items-center justify-content-between">
-            <div>
-                <span class="form-label d-block">Price</span>
-                <span class="price h4 mb-0">${{ number_format($basePrice ?? 0, 2) }}</span>
-                @if($product->full_price && $product->full_price > $basePrice)
-                    <span class="text-muted text-decoration-line-through ms-2">${{ number_format($product->full_price, 2) }}</span>
-                @endif
-            </div>
-            @if(!$hasVariations)
+        @if(!$hasVariations)
+            {{-- No variations - show quantity input --}}
+            <div class="meta-content m-b20 d-flex align-items-center">
                 <div>
                     <label class="form-label">Quantity</label>
                     <input id="base-product-qty" type="number" value="1" min="1"
@@ -39,8 +32,8 @@
                            data-product-id="{{ $product->id }}"
                            data-price="{{ $basePrice }}">
                 </div>
-            @endif
-        </div>
+            </div>
+        @endif
         
         {{-- Add to Cart Button --}}
         <div class="btn-group cart-btn m-b20">

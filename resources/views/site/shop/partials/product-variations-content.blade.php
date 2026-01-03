@@ -10,35 +10,35 @@
         $categoryModel = \App\Models\VariationCategory::find($categoryId);
         $categoryName = $categoryModel->name ?? 'Options';
     @endphp
-    <div class="variation-group m-b15">
-        <label class="form-label fw-bold">{{ $categoryName }}</label>
+    <div class="variation-group" style="{{ !$loop->first ? 'margin-top: 0.5rem;' : '' }}">
+        <div class="bg-secondary text-white py-1" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 1.25rem; margin-bottom: 0.5rem;">{{ $categoryName }}</div>
         <div class="variation-options">
             @foreach($categoryVariations as $variation)
                 @php
                     $varPrice = $variation->getPriceForClient($clientId) ?? $variation->base_price;
                     $isOutOfStock = $variation->quantity !== null && $variation->quantity <= 0;
                 @endphp
-                <div class="variation-item d-flex align-items-center justify-content-between p-2 mb-2 rounded {{ $isOutOfStock ? 'bg-light text-muted' : 'border' }}">
+                <div class="variation-item d-flex align-items-center justify-content-between {{ $isOutOfStock ? 'bg-light text-muted' : '' }}" style="font-size: 0.8rem; padding: 0.1rem 0.5rem 0.1rem 1.5rem; border-bottom: 1px solid #eee;">
                     <div class="variation-info flex-grow-1">
-                        <span class="variation-name fw-medium">{{ $variation->name }}</span>
+                        <span class="variation-name" style="font-weight: 600; color: #000;">{{ $variation->name }}</span>
                         @if($variation->sku)
-                            <small class="text-muted ms-2">{{ $variation->sku }}</small>
+                            <small class="text-muted ms-1" style="font-size: 0.75rem;">{{ $variation->sku }}</small>
                         @endif
                         @if($variation->show_quantity && $variation->quantity !== null)
-                            <span class="stock-badge ms-2">
+                            <span class="stock-badge ms-1">
                                 @if($variation->quantity > 10)
-                                    <span class="badge badge-sm bg-success">{{ $variation->quantity }} avail</span>
+                                    <span class="badge bg-success" style="font-size: 0.65rem;">{{ $variation->quantity }}</span>
                                 @elseif($variation->quantity > 0)
-                                    <span class="badge badge-sm bg-warning text-dark">{{ $variation->quantity }} left</span>
+                                    <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">{{ $variation->quantity }}</span>
                                 @else
-                                    <span class="badge badge-sm bg-danger">Out of Stock</span>
+                                    <span class="badge bg-danger" style="font-size: 0.65rem;">Out</span>
                                 @endif
                             </span>
                         @endif
                     </div>
-                    <div class="variation-price text-end me-3" style="min-width: 70px;">
+                    <div class="variation-price text-end me-2" style="min-width: 55px;">
                         @if($varPrice)
-                            <span class="price">${{ number_format($varPrice, 2) }}</span>
+                            <span style="font-weight: 600; color: var(--primary); font-size: 0.875rem;">${{ number_format($varPrice, 2) }}</span>
                         @endif
                     </div>
                     <div class="variation-qty">
@@ -51,7 +51,7 @@
                                value="0"
                                min="0"
                                {{ $variation->quantity !== null ? 'max=' . $variation->quantity : '' }}
-                               style="width: 70px; text-align: center; -moz-appearance: textfield; -webkit-appearance: none;"
+                               style="width: 40px; text-align: center; font-size: 0.75rem; padding: 0.1rem; height: 1.5rem; border-radius: 0;"
                                {{ $isOutOfStock ? 'disabled' : '' }}>
                     </div>
                 </div>

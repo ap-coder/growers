@@ -24,13 +24,14 @@
                     </div>
                     @php
                         $mainNavMenu = \App\Menu\Models\Menus::where('name', 'Main Navigation')->first();
-                        $hasMenuItems = $mainNavMenu && $mainNavMenu->items->count() > 0;
+                        $menuItems = $mainNavMenu ? \App\Menu\Models\MenuItems::where('menu', $mainNavMenu->id)->orderBy('sort', 'asc')->get() : collect();
+                        $hasMenuItems = $menuItems->where('parent', 0)->count() > 0;
                     @endphp
                     <ul class="nav navbar-nav">
                         @if($hasMenuItems)
-                            @foreach($mainNavMenu->items->where('parent', 0)->sortBy('sort') as $item)
+                            @foreach($menuItems->where('parent', 0) as $item)
                                 @php
-                                    $hasChildren = $mainNavMenu->items->where('parent', $item->id)->count() > 0;
+                                    $hasChildren = $menuItems->where('parent', $item->id)->count() > 0;
                                 @endphp
                                 <li class="{{ $hasChildren ? 'sub-menu-down' : '' }}">
                                     <a href="{{ $item->link ?: '#' }}">
@@ -43,7 +44,7 @@
                                     </a>
                                     @if($hasChildren)
                                         <ul class="sub-menu">
-                                            @foreach($mainNavMenu->items->where('parent', $item->id)->sortBy('sort') as $child)
+                                            @foreach($menuItems->where('parent', $item->id) as $child)
                                                 <li>
                                                     <a href="{{ $child->link ?: '#' }}">
                                                         @if($child->menu_icon_class)
