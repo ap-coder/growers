@@ -29,6 +29,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Marcellus&display=swap" rel="stylesheet">
     <link class="custom-css" rel="stylesheet" type="text/css" href="{{ asset('site/css/custom.css') }}?v={{ time() }}">
+    
+    <!-- Scoped Article Editor Content Styles -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('site/css/article-content.css') }}?v={{ time() }}">
 
     @yield('styles')
 </head>

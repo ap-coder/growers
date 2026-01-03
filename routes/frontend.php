@@ -50,9 +50,9 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/faqs', 'FaqController@index')->name('faqs.index')->withoutMiddleware('auth');
     Route::get('/faqs/{id}', 'FaqController@show')->name('faqs.show')->withoutMiddleware('auth');
     
-    // Favorites
-    Route::post('/favorites/{product}/toggle', 'FavoriteController@toggle')->name('favorites.toggle');
-    Route::get('/account/favorites', 'FavoriteController@index')->name('account.favorites');
+    // Favorites/Wishlist
+    Route::post('/wishlist/toggle', 'WishlistController@toggle')->name('wishlist.toggle');
+    Route::get('/account/wishlist', 'WishlistController@index')->name('account.wishlist');
     
     // Pages
     Route::get('/how-to-order', 'AccountController@howToOrder')->name('how-to-order');

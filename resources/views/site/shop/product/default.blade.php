@@ -81,14 +81,6 @@
                             </div>
                         </div>
                     @endif
-                    
-                    {{-- Full Description below images --}}
-                    @if($product->description)
-                        <div class="product-description mt-4">
-                            <h5 class="m-b15">Description</h5>
-                            <div class="description-content">{!! $product->description !!}</div>
-                        </div>
-                    @endif
                 </div>
             </div>
             <div class="col-lg-6 m-b30">
@@ -96,7 +88,7 @@
                     @if($product->categories->count() > 0)
                         <div class="product-category mb-2">
                             @foreach($product->categories as $category)
-                                <a href="{{ route('site.shop.index', ['category' => $category->id]) }}" class="badge bg-light text-dark me-1">{{ $category->name }}</a>
+                                <a href="{{ route('site.shop.index', ['category' => $category->id]) }}" class="badge bg-secondary text-white me-1">{{ $category->name }}</a>
                             @endforeach
                         </div>
                     @endif
@@ -110,13 +102,17 @@
                     </h2>
                     
                     @if($product->sku)
-                        <p class="text-muted mb-2"><small>SKU: {{ $product->sku }}</small></p>
+                        <p class="mb-2"><small>SKU: {{ $product->sku }}</small></p>
                     @endif
                     
-                    <div class="price-area mb-4">
-                        <span class="price h3 text-primary">
+                    <div class="meta-content m-b20">
+                        <span class="form-label">Price</span>
+                        <span class="price">
                             @if($price)
                                 ${{ number_format($price, 2) }}
+                                @if($product->show_original_price && $product->full_price && $product->full_price > $price)
+                                    <del>${{ number_format($product->full_price, 2) }}</del>
+                                @endif
                             @else
                                 <span class="text-muted">Contact for pricing</span>
                             @endif
@@ -134,15 +130,6 @@
                             @else
                                 <span class="badge bg-danger"><i class="fas fa-times me-1"></i> Out of Stock</span>
                             @endif
-                        </div>
-                    @endif
-                    
-                    @if($product->tags->count() > 0)
-                        <div class="product-tags mt-4">
-                            <strong>Tags:</strong>
-                            @foreach($product->tags as $tag)
-                                <span class="badge bg-secondary">{{ $tag->name }}</span>
-                            @endforeach
                         </div>
                     @endif
                     
@@ -226,22 +213,148 @@
                         <span class="h5 mb-0 text-primary" id="running-total">$0.00</span>
                     </div>
                     <hr class="m-t15 m-b20">
+                    
+                    {{-- Tags at bottom --}}
+                    @if($product->tags->count() > 0)
+                        <div class="product-tags mt-3">
+                            <strong>Tags:</strong>
+                            @foreach($product->tags as $tag)
+                                <a href="{{ route('site.shop.index', ['tag' => $tag->id]) }}" class="badge bg-secondary text-decoration-none">{{ $tag->name }}</a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
         
-        @if($relatedProducts->count() > 0)
-            <div class="row mt-5">
-                <div class="col-12">
-                    <h3 class="mb-4">Related Products</h3>
+        {{-- Product Description Tabs --}}
+        @php
+            // Check individual tab settings (default to true if null for backward compatibility)
+            $showDescTab = ($product->show_description_tab ?? true) && $product->description;
+            $showInfoTab = ($product->show_additional_info_tab ?? true) && $product->additional_info;
+            $showShipTab = ($product->show_shipping_return_tab ?? true) && $product->shipping_return;
+            $hasAnyTab = $showDescTab || $showInfoTab || $showShipTab;
+            $firstTab = $showDescTab ? 'description' : ($showInfoTab ? 'information' : 'return');
+        @endphp
+        
+        @if(($product->show_tabs ?? true) && $hasAnyTab)
+            <section class="content-inner-3 pb-0">
+                <div class="product-description">
+                    <div class="dz-tabs">
+                        <ul class="nav nav-tabs center" id="productTabs" role="tablist">
+                                @if($showDescTab)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{ $firstTab === 'description' ? 'active' : '' }}" id="description-tab" data-bs-toggle="tab" data-bs-target="#description-tab-pane" type="button" role="tab" aria-controls="description-tab-pane" aria-selected="{{ $firstTab === 'description' ? 'true' : 'false' }}">
+                                            Description
+                                        </button>
+                                    </li>
+                                @endif
+                                @if($showInfoTab)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{ $firstTab === 'information' ? 'active' : '' }}" id="information-tab" data-bs-toggle="tab" data-bs-target="#information-tab-pane" type="button" role="tab" aria-controls="information-tab-pane" aria-selected="{{ $firstTab === 'information' ? 'true' : 'false' }}">
+                                            Additional Information
+                                        </button>
+                                    </li>
+                                @endif
+                                @if($showShipTab)
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link {{ $firstTab === 'return' ? 'active' : '' }}" id="return-tab" data-bs-toggle="tab" data-bs-target="#return-tab-pane" type="button" role="tab" aria-controls="return-tab-pane" aria-selected="{{ $firstTab === 'return' ? 'true' : 'false' }}">
+                                            Shipping & Return
+                                        </button>
+                                    </li>
+                                @endif
+                            </ul>
+                            <div class="tab-content" id="productTabsContent">
+                                @if($showDescTab)
+                                    <div class="tab-pane fade {{ $firstTab === 'description' ? 'show active' : '' }}" id="description-tab-pane" role="tabpanel" aria-labelledby="description-tab" tabindex="0">
+                                        <div class="detail-bx article-content">
+                                            {!! $product->description !!}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if($showInfoTab)
+                                    <div class="tab-pane fade {{ $firstTab === 'information' ? 'show active' : '' }}" id="information-tab-pane" role="tabpanel" aria-labelledby="information-tab" tabindex="0">
+                                        <div class="detail-bx article-content">
+                                            {!! $product->additional_info !!}
+                                        </div>
+                                    </div>
+                                @endif
+                                @if($showShipTab)
+                                    <div class="tab-pane fade {{ $firstTab === 'return' ? 'show active' : '' }}" id="return-tab-pane" role="tabpanel" aria-labelledby="return-tab" tabindex="0">
+                                        <div class="detail-bx article-content">
+                                            {!! $product->shipping_return !!}
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                @foreach($relatedProducts as $related)
-                    @include('site.shop.partials.product-card', ['product' => $related, 'colSize' => 3])
-                @endforeach
-            </div>
+            </section>
         @endif
     </div>
 </section>
+
+{{-- Related Products Section --}}
+@if($relatedProducts->count() > 0)
+    <section class="content-inner-1 overflow-hidden">
+        <div class="container">
+            <div class="section-head style-5 d-md-flex align-items-center justify-content-between">
+                <div class="left-content">
+                    <h2 class="title mb-0">Related products</h2>
+                </div>
+                <a href="{{ route('site.shop.index') }}" class="text-secondary font-14 d-flex align-items-center gap-1">See all products
+                    <i class="icon feather icon-chevron-right font-18"></i>
+                </a>
+            </div>
+            <div class="swiper-btn-center-lr">
+                <div class="swiper swiper-four">
+                    <div class="swiper-wrapper">
+                        @foreach($relatedProducts as $related)
+                            <div class="swiper-slide">
+                                <div class="shop-card">
+                                    <div class="dz-media">
+                                        @if($related->is_fake || !$related->photo)
+                                            <img src="https://placehold.co/300x300/EEE/31343C/webp?font=oswald&text={{ urlencode($related->name) }}" alt="{{ $related->name }}">
+                                        @else
+                                            <img src="{{ $related->photo->shop_card }}" alt="{{ $related->name }}">
+                                        @endif
+                                        <div class="shop-meta">
+                                            <div class="btn btn-primary meta-icon dz-wishicon add-to-wishlist" data-product-id="{{ $related->id }}">
+                                                <i class="icon feather icon-heart dz-heart"></i>
+                                                <i class="icon feather icon-heart-on dz-heart-fill"></i>
+                                            </div>
+                                            <a href="javascript:void(0);" class="btn btn-primary meta-icon dz-wishicon" onclick="window.location='{{ route('site.shop.product', $related) }}'">
+                                                <i class="flaticon flaticon-eye d-md-none d-block"></i>
+                                                <span class="d-md-block d-none"><i class="flaticon flaticon-eye"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="dz-content">
+                                        <h2 class="title"><a href="{{ route('site.shop.product', $related) }}">{{ $related->name }}</a></h2>
+                                        <span class="price">
+                                            @php
+                                                $relatedPrice = $related->getPriceForClient($clientId ?? null);
+                                            @endphp
+                                            @if($relatedPrice)
+                                                ${{ number_format($relatedPrice, 2) }}
+                                                @if($related->show_original_price && $related->full_price && $related->full_price > $relatedPrice)
+                                                    <del>${{ number_format($related->full_price, 2) }}</del>
+                                                @endif
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="swiper-button-prev swiper-button-white"><i class="fa-solid fa-arrow-left"></i></div>
+                <div class="swiper-button-next swiper-button-white"><i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+        </div>
+    </section>
+@endif
 @endsection
 
 @section('scripts')
@@ -251,6 +364,37 @@ function changeMainImage(src, element) {
     document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
 }
+
+// Initialize Swiper for related products
+document.addEventListener('DOMContentLoaded', function() {
+    var swiperFour = new Swiper('.swiper-four', {
+        slidesPerView: 4,
+        spaceBetween: 30,
+        loop: true,
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+        breakpoints: {
+            320: {
+                slidesPerView: 1,
+                spaceBetween: 15,
+            },
+            576: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+            },
+            768: {
+                slidesPerView: 3,
+                spaceBetween: 25,
+            },
+            1024: {
+                slidesPerView: 4,
+                spaceBetween: 30,
+            }
+        }
+    });
+});
 </script>
 @stack('scripts')
 @endsection

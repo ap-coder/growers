@@ -58,6 +58,12 @@ class Product extends Model implements HasMedia
         'accessory_type_id',
         'sort_order',
         'description',
+        'additional_info',
+        'shipping_return',
+        'show_tabs',
+        'show_description_tab',
+        'show_additional_info_tab',
+        'show_shipping_return_tab',
         'excerpt',
         'base_price',
         'full_price',
@@ -92,6 +98,20 @@ class Product extends Model implements HasMedia
     ];
 
     protected $with = ['categories', 'clients', 'clientPrices'];
+
+    protected $casts = [
+        'published' => 'boolean',
+        'featured' => 'boolean',
+        'is_fake' => 'boolean',
+        'show_original_price' => 'boolean',
+        'show_variations' => 'boolean',
+        'show_sets' => 'boolean',
+        'show_accessories' => 'boolean',
+        'show_tabs' => 'boolean',
+        'show_description_tab' => 'boolean',
+        'show_additional_info_tab' => 'boolean',
+        'show_shipping_return_tab' => 'boolean',
+    ];
 
     protected function serializeDate(DateTimeInterface $date)
     {
