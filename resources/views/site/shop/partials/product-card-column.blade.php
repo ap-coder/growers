@@ -20,11 +20,6 @@
 					<i class="icon feather icon-heart dz-heart"></i>
 					<i class="icon feather icon-heart-on dz-heart-fill"></i>
 				</div>
-				<div class="btn btn-primary meta-icon dz-carticon">
-					<i class="flaticon flaticon-basket"></i>
-					<i class="flaticon flaticon-basket-on dz-heart-fill"></i>
-				</div>
-
 			</div>
 		</div>
 		<div class="dz-content equalHeights debug">
