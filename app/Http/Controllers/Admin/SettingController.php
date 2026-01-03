@@ -23,6 +23,16 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SettingController extends Controller
 {
+    /**
+     * Clear application caches via shell
+     */
+    private function clearCaches(): void
+    {
+        $basePath = base_path();
+        shell_exec("cd {$basePath} && php artisan config:clear 2>&1");
+        shell_exec("cd {$basePath} && php artisan cache:clear 2>&1");
+    }
+
     public function index(Request $request)
     {
         abort_if(Gate::denies('setting_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -144,7 +154,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyProducts(15);
+            $this->clearCaches();
             $message = "Created: {$counts['products']} products, {$counts['variations']} variations";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -164,7 +176,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyAccessoryProducts(5);
+            $this->clearCaches();
             $message = "Created: {$counts['accessories']} accessory products";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -184,7 +198,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyBundles(1);
+            $this->clearCaches();
             $message = "Created: {$counts['bundles']} bundles with {$counts['bundle_items']} items, {$counts['variations']} variations";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -204,7 +220,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::seedMoreVariations();
+            $this->clearCaches();
             $message = "Added variations to {$counts['products_updated']} products ({$counts['variations']} total variations)";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -224,7 +242,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::removeDummyProducts();
+            $this->clearCaches();
             $message = "Removed: {$counts['products']} products, {$counts['variations']} variations, {$counts['categories']} categories, {$counts['tags']} tags";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -244,7 +264,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             Artisan::call('iseed', ['tables' => 'settings,media', '--force' => true]);
+            $this->clearCaches();
             $output = Artisan::output();
             return redirect()->route('admin.settings.index')->with('message', 'Settings seeder generated successfully! ' . $output);
         } catch (\Exception $e) {
@@ -257,7 +279,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             Artisan::call('iseed', ['tables' => 'menus,menu_items', '--force' => true]);
+            $this->clearCaches();
             $output = Artisan::output();
             return redirect()->route('admin.settings.index')->with('message', 'Menu seeders generated successfully! ' . $output);
         } catch (\Exception $e) {
@@ -270,7 +294,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             Artisan::call('db:seed', ['--class' => 'DummyClientsSeeder']);
+            $this->clearCaches();
             $message = 'Dummy clients created successfully!';
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -290,7 +316,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyClientsSeeder::removeDummyClients();
+            $this->clearCaches();
             $message = "Removed: {$counts['clients']} clients, {$counts['addresses']} addresses";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -310,7 +338,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyFaqs();
+            $this->clearCaches();
 
             if ($counts['existing_fake'] > 0) {
                 $message = "Dummy FAQs already exist ({$counts['existing_fake']} categories). Remove them first before adding new ones.";
@@ -342,7 +372,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::removeDummyFaqs();
+            $this->clearCaches();
             $message = "Removed: {$counts['faq_categories']} FAQ categories, {$counts['faq_questions']} FAQ questions";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -362,7 +394,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyPages();
+            $this->clearCaches();
 
             if ($counts['existing_fake'] > 0) {
                 $message = "Dummy pages already exist ({$counts['existing_fake']} pages). Remove them first before adding new ones.";
@@ -394,7 +428,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->clearCaches();
             $count = DummyProductsSeeder::removeDummyPages();
+            $this->clearCaches();
             $message = "Removed {$count} dummy pages";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
@@ -414,8 +450,9 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
-            // Use shell_exec to run artisan command directly
-            $output = shell_exec('cd ' . base_path() . ' && php artisan telescope:clear 2>&1');
+            $this->clearCaches();
+            $output = shell_exec("cd " . base_path() . " && php artisan telescope:clear 2>&1");
+            $this->clearCaches();
 
             return response()->json([
                 'success' => true,
@@ -443,8 +480,9 @@ class SettingController extends Controller
                 File::delete($file);
             }
 
-            // Use shell_exec to run artisan command directly
-            $output = shell_exec('cd ' . base_path() . ' && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename="[datetime]_squashed_growers_schema.php" 2>&1');
+            $this->clearCaches();
+            $output = shell_exec("cd " . base_path() . " && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename=\"[datetime]_squashed_growers_schema.php\" 2>&1");
+            $this->clearCaches();
 
             return response()->json([
                 'success' => true,
