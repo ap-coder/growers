@@ -33,15 +33,23 @@
     </div>
 @endif
 
-{{-- Add to Cart Button --}}
-<div class="btn-group cart-btn m-b20">
-    <a href="javascript:void(0);" class="btn btn-secondary text-uppercase" onclick="addAllToCart({{ $product->id }})">
-        <i class="flaticon flaticon-shopping-cart-1 me-2"></i> Add To Cart
-    </a>
-    <a href="javascript:void(0);" class="btn btn-outline-secondary btn-icon add-to-wishlist {{ ($inWishlist ?? false) ? 'active' : '' }}" data-product-id="{{ $product->id }}">
-        <i class="flaticon {{ ($inWishlist ?? false) ? 'flaticon-heart-1' : 'flaticon-heart-3' }}"></i>
-    </a>
+{{-- Add to Cart Button with Total --}}
+<hr class="m-t15 m-b15">
+<div class="d-flex justify-content-between align-items-center m-b20">
+    <div class="btn-group cart-btn">
+        <a href="javascript:void(0);" class="btn btn-secondary text-uppercase" onclick="addAllToCart({{ $product->id }})">
+            <i class="flaticon flaticon-shopping-cart-1 me-2"></i> Add To Cart
+        </a>
+        <a href="javascript:void(0);" class="btn btn-outline-secondary btn-icon add-to-wishlist {{ ($inWishlist ?? false) ? 'active' : '' }}" data-product-id="{{ $product->id }}">
+            <i class="flaticon {{ ($inWishlist ?? false) ? 'flaticon-heart-1' : 'flaticon-heart-3' }}"></i>
+        </a>
+    </div>
+    <div class="order-total">
+        <span class="fw-bold text-muted me-2">Total:</span>
+        <span class="h4 mb-0 text-primary" id="running-total">$0.00</span>
+    </div>
 </div>
+<hr class="m-t0 m-b20">
 
 
 @push('scripts')

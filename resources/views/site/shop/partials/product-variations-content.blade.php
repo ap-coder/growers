@@ -11,7 +11,7 @@
         $categoryName = $categoryModel->name ?? 'Options';
     @endphp
     <div class="variation-group" style="{{ !$loop->first ? 'margin-top: 0.5rem;' : '' }}">
-        <div class="bg-secondary text-white py-1" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 1.75rem; margin-bottom: 0.5rem;">{{ $categoryName }}</div>
+        <div class="bg-secondary text-white py-1" style="font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-left: 1.75rem; margin-bottom: 0.5rem;">{{ $categoryName }} <span style="float: right; margin-right: 15px;">Qty</span></div>
         <div class="variation-options">
             @foreach($categoryVariations as $variation)
                 @php
@@ -27,11 +27,11 @@
                         @if($variation->show_quantity && $variation->quantity !== null)
                             <span class="stock-badge ms-1">
                                 @if($variation->quantity > 10)
-                                    <span class="badge bg-success" style="font-size: 0.65rem;">{{ $variation->quantity }}</span>
+                                    <span style="font-size: 1rem; font-weight: 600; color: #28a745;">{{ $variation->quantity }}</span>
                                 @elseif($variation->quantity > 0)
-                                    <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">{{ $variation->quantity }}</span>
+                                    <span style="font-size: 1rem; font-weight: 600; color: #ffc107;">{{ $variation->quantity }}</span>
                                 @else
-                                    <span class="badge bg-danger" style="font-size: 0.65rem;">Out</span>
+                                    <span style="font-size: 1rem; font-weight: 600; color: #dc3545;">Out</span>
                                 @endif
                             </span>
                         @endif

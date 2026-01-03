@@ -15601,7 +15601,7 @@ btn:focus {
   border-color: var(--secondary); }
 
 .badge {
-  padding: 5px 10px;
+  padding: 10px 10px;
   font-weight: var(--headings-font-weight);
   background-color: var(--primary);
   color: white;
@@ -33825,10 +33825,10 @@ body .working-location {
         margin-bottom: 15px; } }
   .dz-product-detail .price {
     margin-bottom: 0px;
-    font-size: 22px;
+    font-size: 28px;
     font-weight: 500;
     font-family: var(--font-family-base);
-    color: var(--secondary); }
+    color: var(--primary); }
     .dz-product-detail .price del {
       font-size: 16px;
       font-family: var(--font-family-base); }
@@ -40605,7 +40605,7 @@ a {
     font-family: var(--font-family-title); }
     .breadcrumb-row ol li.active,
     .breadcrumb-row ul li.active {
-      color: var(--title); }
+      color: #fff; }
     .breadcrumb-row ol li a,
     .breadcrumb-row ul li a {
       color: var(--title); }

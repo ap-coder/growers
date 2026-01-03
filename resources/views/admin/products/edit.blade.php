@@ -738,7 +738,121 @@
         });
         
         $('#quickAddTierPrice').on('input', checkQuickAddTierEnabled);
-        $('#quickAddTierGroup').on('change', checkQuickAddTierEnabled);
+        $('#quickAddTierGroup').on('change', function() {
+            checkQuickAddTierEnabled();
+            // Enable/disable bulk add button based on group selection
+            var hasGroup = $(this).val() !== '';
+            $('#bulkAddGroupBtn').prop('disabled', !hasGroup);
+        });
+        
+        // ========== BULK ADD ALL TIERS FROM GROUP ==========
+        $('#bulkAddGroupBtn').on('click', function() {
+            var selectedGroup = $('#quickAddTierGroup').val();
+            if (!selectedGroup) return;
+            
+            // Get all tiers from the selected group
+            var tiersToAdd = [];
+            $('#quickAddTier optgroup').each(function() {
+                if ($(this).attr('label') === selectedGroup) {
+                    $(this).find('option').each(function() {
+                        tiersToAdd.push({
+                            min: $(this).data('min'),
+                            max: $(this).data('max') || '',
+                            label: $(this).data('label') || '',
+                            group: $(this).data('group') || selectedGroup
+                        });
+                    });
+                }
+            });
+            
+            // If no optgroup, check ungrouped options
+            if (tiersToAdd.length === 0) {
+                $('#quickAddTier option').each(function() {
+                    if ($(this).data('group') === selectedGroup) {
+                        tiersToAdd.push({
+                            min: $(this).data('min'),
+                            max: $(this).data('max') || '',
+                            label: $(this).data('label') || '',
+                            group: $(this).data('group') || selectedGroup
+                        });
+                    }
+                });
+            }
+            
+            if (tiersToAdd.length === 0) {
+                toastr.warning('No tiers found for group: ' + selectedGroup);
+                return;
+            }
+            
+            // Prompt for base price
+            Swal.fire({
+                title: 'Bulk Add Price Tiers',
+                html: `
+                    <p>Add all <strong>${tiersToAdd.length}</strong> tier(s) from group "<strong>${selectedGroup}</strong>"</p>
+                    <div class="form-group text-left mt-3">
+                        <label>Base Price (will be applied to all tiers):</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                            <input type="number" step="0.01" id="bulkTierPrice" class="form-control" placeholder="0.00" autofocus>
+                        </div>
+                        <small class="text-muted">You can adjust individual prices after adding.</small>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Add All Tiers',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#28a745',
+                preConfirm: () => {
+                    const price = document.getElementById('bulkTierPrice').value;
+                    if (!price || parseFloat(price) <= 0) {
+                        Swal.showValidationMessage('Please enter a valid price');
+                        return false;
+                    }
+                    return price;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var basePrice = result.value;
+                    var addedCount = 0;
+                    
+                    tiersToAdd.forEach(function(tier) {
+                        var newRow = `
+                            <tr class="price-tier-row" data-index="${priceTierIndex}">
+                                <td><input type="text" name="price_tiers[${priceTierIndex}][tier_group]" class="form-control form-control-sm" value="${tier.group}" placeholder="Group name"></td>
+                                <td><input type="number" name="price_tiers[${priceTierIndex}][min_quantity]" class="form-control form-control-sm" min="1" value="${tier.min}"></td>
+                                <td><input type="number" name="price_tiers[${priceTierIndex}][max_quantity]" class="form-control form-control-sm" placeholder="No limit" value="${tier.max}"></td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                        <input type="number" step="0.01" name="price_tiers[${priceTierIndex}][price]" class="form-control" value="${basePrice}">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" step="0.01" name="price_tiers[${priceTierIndex}][discount_percent]" class="form-control" placeholder="0">
+                                        <div class="input-group-append"><span class="input-group-text">%</span></div>
+                                    </div>
+                                </td>
+                                <td><input type="text" name="price_tiers[${priceTierIndex}][label]" class="form-control form-control-sm" value="${tier.label}" placeholder="Label"></td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-outline-danger btn-sm remove-tier-btn">&times;</button>
+                                </td>
+                            </tr>
+                        `;
+                        $('#priceTiersBody').append(newRow);
+                        priceTierIndex++;
+                        addedCount++;
+                    });
+                    
+                    if (addedCount > 0) {
+                        toastr.success('Added ' + addedCount + ' price tier(s) from group "' + selectedGroup + '"');
+                        // Reset selections
+                        $('#quickAddTierGroup').val('');
+                        $('#bulkAddGroupBtn').prop('disabled', true);
+                    }
+                }
+            });
+        });
         
         $('#quickAddTierBtn').on('click', function() {
             var $selected = $('#quickAddTier option:selected');

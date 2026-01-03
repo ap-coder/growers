@@ -35,7 +35,7 @@
                             <select class="form-select" onchange="window.location.href=this.value">
                                 <option value="{{ route('site.shop.index', request()->except('category')) }}">All Categories</option>
                                 @foreach($categories as $category)
-                                    <option value="{{ route('site.shop.index', array_merge(request()->except('category'), ['category' => $category->id])) }}" {{ request('category') == $category->id ? 'selected' : '' }}>
+                                    <option value="{{ route('site.shop.index', array_merge(request()->except('category'), ['category' => $category->slug])) }}" {{ request('category') == $category->slug ? 'selected' : '' }}>
                                         {{ $category->name }}
                                     </option>
                                 @endforeach

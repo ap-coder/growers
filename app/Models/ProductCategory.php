@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Str;
 
 class ProductCategory extends Model implements HasMedia
 {
@@ -30,11 +31,29 @@ class ProductCategory extends Model implements HasMedia
         'published',
         'is_fake',
         'name',
+        'slug',
         'description',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($category) {
+            if (empty($category->slug) && !empty($category->name)) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
+
+        static::updating(function ($category) {
+            if ($category->isDirty('name') && empty($category->slug)) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
+    }
 
     protected function serializeDate(DateTimeInterface $date)
     {

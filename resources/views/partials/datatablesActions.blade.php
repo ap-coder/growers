@@ -3,6 +3,11 @@
         {{ trans('global.view') }}
     </a>
 @endcan
+@if($crudRoutePart === 'products' && isset($row->slug))
+    <a class="btn btn-xs btn-success" href="{{ route('site.shop.product', $row->slug) }}" target="_blank" title="View on Site">
+        <i class="fas fa-external-link-alt"></i>
+    </a>
+@endif
 @can($editGate)
     <a class="btn btn-xs btn-info" href="{{ route('admin.' . $crudRoutePart . '.edit', $row->id) }}">
         {{ trans('global.edit') }}

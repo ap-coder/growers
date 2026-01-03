@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Support\Str;
 
 class Product extends Model implements HasMedia
 {
@@ -54,6 +55,7 @@ class Product extends Model implements HasMedia
         'layout',
         'quantity',
         'name',
+        'slug',
         'product_type',
         'accessory_type_id',
         'sort_order',
@@ -112,6 +114,23 @@ class Product extends Model implements HasMedia
         'show_additional_info_tab' => 'boolean',
         'show_shipping_return_tab' => 'boolean',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (empty($product->slug) && !empty($product->name)) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
+
+        static::updating(function ($product) {
+            if ($product->isDirty('name') && empty($product->slug)) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
+    }
 
     protected function serializeDate(DateTimeInterface $date)
     {

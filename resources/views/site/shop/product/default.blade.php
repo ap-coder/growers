@@ -88,7 +88,7 @@
                     @if($product->categories->count() > 0)
                         <div class="product-category mb-2">
                             @foreach($product->categories as $category)
-                                <a href="{{ route('site.shop.index', ['category' => $category->id]) }}" class="badge bg-secondary text-white me-1">{{ $category->name }}</a>
+                                <a href="{{ route('site.shop.index', ['category' => $category->slug]) }}" class="badge bg-secondary text-white me-1">{{ $category->name }}</a>
                             @endforeach
                         </div>
                     @endif
@@ -149,12 +149,12 @@
                             @if($hasVariations)
                                 <div class="accordion-item">
                                     <h2 class="accordion-header" id="headingVariations">
-                                        <a href="#" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapseVariations" aria-expanded="true" aria-controls="collapseVariations">
+                                        <a href="#" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#collapseVariations" aria-expanded="false" aria-controls="collapseVariations">
                                             Product Options
                                             <span class="toggle-close"></span>
                                         </a>
                                     </h2>
-                                    <div id="collapseVariations" class="accordion-collapse collapse show" aria-labelledby="headingVariations" data-bs-parent="#productOptionsAccordion">
+                                    <div id="collapseVariations" class="accordion-collapse collapse" aria-labelledby="headingVariations" data-bs-parent="#productOptionsAccordion">
                                         <div class="accordion-body p-0">
                                             @include('site.shop.partials.product-variations-content', ['product' => $product, 'clientId' => $clientId ?? null])
                                         </div>
@@ -206,20 +206,12 @@
                         </div>
                     @endif
                     
-                    {{-- Running Total Section --}}
-                    <hr class="m-t15 m-b15">
-                    <div class="order-total d-flex justify-content-between align-items-center p-3 bg-light rounded">
-                        <span class="fw-bold">Current Total:</span>
-                        <span class="h5 mb-0 text-primary" id="running-total">$0.00</span>
-                    </div>
-                    <hr class="m-t15 m-b20">
-                    
                     {{-- Tags at bottom --}}
                     @if($product->tags->count() > 0)
                         <div class="product-tags mt-3">
                             <strong>Tags:</strong>
                             @foreach($product->tags as $tag)
-                                <a href="{{ route('site.shop.index', ['tag' => $tag->id]) }}" class="badge bg-secondary text-decoration-none">{{ $tag->name }}</a>
+                                <a href="{{ route('site.shop.index', ['tag' => $tag->slug]) }}" class="badge bg-secondary text-decoration-none">{{ $tag->name }}</a>
                             @endforeach
                         </div>
                     @endif

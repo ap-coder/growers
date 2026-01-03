@@ -235,14 +235,20 @@
                             <input type="number" step="0.01" id="quickAddTierPrice" class="form-control" placeholder="0.00">
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <label class="form-label small">&nbsp;</label>
                         <button type="button" class="btn btn-info btn-sm btn-block" id="quickAddTierBtn" disabled>
                             <i class="fas fa-plus mr-1"></i> Add
                         </button>
                     </div>
+                    <div class="col-md-1">
+                        <label class="form-label small">&nbsp;</label>
+                        <button type="button" class="btn btn-success btn-sm btn-block" id="bulkAddGroupBtn" disabled title="Add all tiers from selected group">
+                            <i class="fas fa-plus-circle mr-1"></i> Add All
+                        </button>
+                    </div>
                 </div>
-                <small class="text-muted">Select a tier group and range, enter the price, and click Add.</small>
+                <small class="text-muted">Select a tier group to add individual tiers, or click "Add All" to add all tiers from that group at once.</small>
             </div>
         </div>
         @endif

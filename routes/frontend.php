@@ -37,14 +37,14 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/account/messages/{topic}', 'MessageController@show')->name('account.messages.show');
     Route::post('/account/messages/{topic}/reply', 'MessageController@reply')->name('account.messages.reply');
     
-    // Shop - auth temporarily removed for testing
+    // Shop - auth temporarily removed for testing (uses slugs)
     Route::get('/shop', 'ShopController@index')->name('shop.index')->withoutMiddleware('auth');
-    Route::get('/shop/product/{product}', 'ShopController@show')->name('shop.product')->withoutMiddleware('auth');
+    Route::get('/shop/{product:slug}', 'ShopController@show')->name('shop.product')->withoutMiddleware('auth');
     
-    // Collections
+    // Collections (uses slugs)
     Route::get('/collections', 'CollectionController@index')->name('collections.index')->withoutMiddleware('auth');
-    Route::get('/collections/{collection}', 'CollectionController@show')->name('collections.show')->withoutMiddleware('auth');
-    Route::get('/collections/{collection}/catalog', 'CollectionController@catalog')->name('collections.catalog')->withoutMiddleware('auth');
+    Route::get('/collections/{collection:slug}', 'CollectionController@show')->name('collections.show')->withoutMiddleware('auth');
+    Route::get('/collections/{collection:slug}/catalog', 'CollectionController@catalog')->name('collections.catalog')->withoutMiddleware('auth');
     
     // FAQs
     Route::get('/faqs', 'FaqController@index')->name('faqs.index')->withoutMiddleware('auth');
