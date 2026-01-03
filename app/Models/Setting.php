@@ -34,6 +34,7 @@ class Setting extends Model
     public const TYPE_SELECT = [
         'text' => 'Text',
         'textarea' => 'Textarea',
+        'html' => 'HTML (WYSIWYG)',
         'image' => 'Image',
         'boolean' => 'Boolean',
         'select' => 'Select',
@@ -55,6 +56,12 @@ class Setting extends Model
         'sidebar' => 'Shop Sidebar',
         'style-1' => 'Shop Style 1',
         'style-2' => 'Shop Style 2',
+    ];
+
+    public const SHOP_DEFAULT_VIEW_SELECT = [
+        'grid-small' => 'Small Grid (4 columns)',
+        'grid-large' => 'Large Grid (2 columns)',
+        'list' => 'List View',
     ];
 
     public const PRODUCT_LAYOUT_SELECT = [

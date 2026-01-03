@@ -22,23 +22,15 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-10">
-                @if($page)
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="mb-4">{{ $page->title }}</h2>
-                            @if($page->featured_image)
-                                <img src="{{ $page->featured_image->url }}" alt="{{ $page->title }}" class="img-fluid mb-4">
-                            @endif
+                <div class="card">
+                    <div class="card-body">
+                        <h2 class="mb-4">How to Order{{ $client ? ' - ' . $client->name : '' }}</h2>
+                        
+                        @if($content)
                             <div class="page-content">
-                                {!! $page->page_text !!}
+                                {!! $content !!}
                             </div>
-                        </div>
-                    </div>
-                @else
-                    <div class="card">
-                        <div class="card-body">
-                            <h2 class="mb-4">How to Order with Pacific Plant Growers</h2>
-                            
+                        @else
                             <h4>Are You New to Ordering with Pacific Plant Growers?</h4>
                             <p>We have been a dedicated partner with floral departments for over 20 years. Pacific Plant Growers provides the highest quality indoor plants, plant dish gardens and plant novelties that help your floral department increase sales in the foliage category.</p>
                             
@@ -62,9 +54,9 @@
                                 <li>Submit your order</li>
                             </ol>
                             <p>You will receive a confirmation and our team will contact you if there are any questions about your order.</p>
-                        </div>
+                        @endif
                     </div>
-                @endif
+                </div>
             </div>
         </div>
     </div>

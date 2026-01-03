@@ -70,6 +70,42 @@
                                     </a>
                                 </li>
                             @endcan
+                                @can('user_alert_access')
+                                    <li class="nav-item">
+                                        <a href="{{ route("admin.user-alerts.index") }}" class="nav-link {{ request()->is("admin/user-alerts") || request()->is("admin/user-alerts/*") ? "active" : "" }}">
+                                            <i class="fa-fw nav-icon fas fa-bell">
+
+                                            </i>
+                                            <p>
+                                                {{ trans('cruds.userAlert.title') }}
+                                            </p>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @if(\Illuminate\Support\Facades\Schema::hasColumn('teams', 'owner_id') && \App\Models\Team::where('owner_id', auth()->user()->id)->exists())
+                                    <li class="nav-item">
+                                        <a class="{{ request()->is("admin/team-members") || request()->is("admin/team-members/*") ? "active" : "" }} nav-link" href="{{ route("admin.team-members.index") }}">
+                                            <i class="fa-fw fa fa-users nav-icon">
+                                            </i>
+                                            <p>
+                                                {{ trans("global.team-members") }}
+                                            </p>
+                                        </a>
+                                    </li>
+                                @endif
+                                @if(file_exists(app_path('Http/Controllers/Auth/ChangePasswordController.php')))
+                                    @can('profile_password_edit')
+                                        <li class="nav-item">
+                                            <a class="nav-link {{ request()->is('profile/password') || request()->is('profile/password/*') ? 'active' : '' }}" href="{{ route('profile.password.edit') }}">
+                                                <i class="fa-fw fas fa-key nav-icon">
+                                                </i>
+                                                <p>
+                                                    {{ trans('global.change_password') }}
+                                                </p>
+                                            </a>
+                                        </li>
+                                    @endcan
+                                @endif
                         </ul>
                     </li>
 @endcan

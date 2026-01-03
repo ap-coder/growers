@@ -72,12 +72,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-md-2" id="quantity_group">
-                    <div class="form-group mb-0">
-                        <label for="quantity" class="col-form-label-sm mb-0">Quantity</label>
-                        <input class="form-control form-control-sm" type="number" name="quantity" id="quantity" value="{{ old('quantity', '') }}" step="1">
-                    </div>
-                </div>
             </div>
             
             <div class="tab-content" id="product-tabs-content">
@@ -105,7 +99,16 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="description">{{ trans('cruds.product.fields.description') }}</label>
+                        <label for="excerpt">Excerpt (Short Description)</label>
+                        <textarea class="form-control {{ $errors->has('excerpt') ? 'is-invalid' : '' }}" name="excerpt" id="excerpt" rows="2" placeholder="Brief description for listings...">{{ old('excerpt') }}</textarea>
+                        <small class="text-muted">Used in product listings and cards. Keep it short.</small>
+                        @if($errors->has('excerpt'))
+                            <span class="text-danger">{{ $errors->first('excerpt') }}</span>
+                        @endif
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">{{ trans('cruds.product.fields.description') }} (Full Content)</label>
                         <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description" rows="5">{{ old('description') }}</textarea>
                         @if($errors->has('description'))
                             <span class="text-danger">{{ $errors->first('description') }}</span>
@@ -118,7 +121,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="base_price">Base Price</label>
+                                <label for="base_price">Current Price</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>

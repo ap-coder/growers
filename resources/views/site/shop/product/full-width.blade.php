@@ -4,6 +4,8 @@
 
 @php
     $price = $product->getPriceForClient($clientId ?? null);
+    $placeholder = 'https://placehold.co/800x600/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name);
+    $additionalColors = ['3B82F6/FFF', 'EF4444/FFF', '10B981/FFF', 'F59E0B/FFF', '8B5CF6/FFF', 'EC4899/FFF'];
 @endphp
 
 @section('banner')
@@ -29,10 +31,10 @@
             <div class="row g-0">
                 <div class="col-lg-8">
                     <div class="product-hero-image">
-                        @if($product->photo)
-                            <img src="{{ $product->photo->url }}" alt="{{ $product->name }}" class="w-100" style="max-height: 600px; object-fit: cover;">
+                        @if($product->is_fake || !$product->photo)
+                            <img src="{{ $placeholder }}" alt="{{ $product->name }}" class="w-100" style="max-height: 600px; object-fit: cover;">
                         @else
-                            <img src="{{ asset('site/images/shop/product/1.png') }}" alt="{{ $product->name }}" class="w-100">
+                            <img src="{{ $product->photo->full }}" alt="{{ $product->name }}" class="w-100" style="max-height: 600px; object-fit: cover;">
                         @endif
                     </div>
                 </div>
@@ -46,7 +48,13 @@
                             </div>
                         @endif
                         
-                        <h1 class="title mb-3">{{ $product->name }}</h1>
+                        <h1 class="title mb-3">{{ $product->name }}
+                            @can('product_edit')
+                                <a href="{{ route('admin.products.edit', $product) }}" target="_blank" class="btn btn-sm btn-outline-secondary ms-2" title="Edit in Admin">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            @endcan
+                        </h1>
                         
                         @if($product->sku)
                             <p class="text-muted mb-2"><small>SKU: {{ $product->sku }}</small></p>
@@ -72,16 +80,8 @@
                             </div>
                         @endif
                         
-                        <div class="product-actions mt-4">
-                            <div class="input-group mb-3">
-                                <button class="btn btn-outline-secondary" type="button" onclick="decrementQty()">-</button>
-                                <input type="number" class="form-control text-center" id="product-qty" value="1" min="1" style="max-width: 80px;">
-                                <button class="btn btn-outline-secondary" type="button" onclick="incrementQty()">+</button>
-                            </div>
-                            <button class="btn btn-primary btn-lg w-100" onclick="addToCart({{ $product->id }})">
-                                <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                            </button>
-                        </div>
+                        {{-- Product Order Section with Variations --}}
+                        @include('site.shop.partials.product-order-section', ['product' => $product, 'clientId' => $clientId ?? null])
                     </div>
                 </div>
             </div>
@@ -93,21 +93,30 @@
             <div class="row mb-5">
                 <div class="col-lg-8 mx-auto">
                     <h3 class="mb-4">Product Description</h3>
-                    <p class="lead">{!! nl2br(e($product->description)) !!}</p>
+                    <div class="lead description-content">{!! $product->description !!}</div>
                 </div>
             </div>
         @endif
         
-        @if($product->additional_photos && $product->additional_photos->count() > 0)
+        @if($product->is_fake || ($product->additional_photos && $product->additional_photos->count() > 0))
             <div class="row mb-5">
                 <div class="col-12">
                     <h3 class="mb-4">Gallery</h3>
                 </div>
-                @foreach($product->additional_photos as $photo)
-                    <div class="col-md-4 mb-4">
-                        <img src="{{ $photo->url }}" alt="{{ $product->name }}" class="w-100 rounded shadow-sm">
-                    </div>
-                @endforeach
+                @if($product->is_fake)
+                    @for($i = 0; $i < 6; $i++)
+                        @php $color = $additionalColors[$i % count($additionalColors)]; @endphp
+                        <div class="col-md-4 mb-4">
+                            <img src="https://placehold.co/400x400/{{ $color }}/webp?font=oswald&text={{ urlencode($product->name . ' ' . ($i + 2)) }}" alt="{{ $product->name }}" class="w-100 rounded shadow-sm">
+                        </div>
+                    @endfor
+                @else
+                    @foreach($product->additional_photos as $photo)
+                        <div class="col-md-4 mb-4">
+                            <img src="{{ $photo->shop_card }}" alt="{{ $product->name }}" class="w-100 rounded shadow-sm">
+                        </div>
+                    @endforeach
+                @endif
             </div>
         @endif
         
@@ -126,22 +135,5 @@
 @endsection
 
 @section('scripts')
-<script>
-function incrementQty() {
-    var input = document.getElementById('product-qty');
-    input.value = parseInt(input.value) + 1;
-}
-
-function decrementQty() {
-    var input = document.getElementById('product-qty');
-    if (parseInt(input.value) > 1) {
-        input.value = parseInt(input.value) - 1;
-    }
-}
-
-function addToCart(productId) {
-    var qty = document.getElementById('product-qty').value;
-    alert('Add to cart: Product ' + productId + ', Qty: ' + qty);
-}
-</script>
+@stack('scripts')
 @endsection

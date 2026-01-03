@@ -3,10 +3,22 @@
 
 <div class="card">
     <div class="card-header">
-        {{ trans('global.edit') }} {{ trans('cruds.contentPage.title_singular') }}
+        <ul class="nav nav-tabs card-header-tabs" id="pageTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="content-tab" data-toggle="tab" href="#content" role="tab">Content</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="sections-tab" data-toggle="tab" href="#sections" role="tab">
+                    <i class="fas fa-layer-group mr-1"></i> Page Builder
+                    <span class="badge badge-info">{{ $contentPage->sections->count() }}</span>
+                </a>
+            </li>
+        </ul>
     </div>
 
     <div class="card-body">
+        <div class="tab-content" id="pageTabsContent">
+            <div class="tab-pane fade show active" id="content" role="tabpanel">
         <form method="POST" action="{{ route("admin.content-pages.update", [$contentPage->id]) }}" enctype="multipart/form-data">
             @method('PUT')
             @csrf
@@ -21,6 +33,11 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.contentPage.fields.published_helper') }}</span>
             </div>
+            @if($contentPage->is_fake)
+            <div class="alert alert-info py-2 mb-3">
+                <i class="fas fa-info-circle mr-1"></i> <strong>Demo Data</strong> - This is sample data for demonstration. It will be removed when you clear dummy data from Settings.
+            </div>
+            @endif
             <div class="form-group">
                 <label class="required" for="title">{{ trans('cruds.contentPage.fields.title') }}</label>
                 <input class="form-control {{ $errors->has('title') ? 'is-invalid' : '' }}" type="text" name="title" id="title" value="{{ old('title', $contentPage->title) }}" required>
@@ -38,7 +55,7 @@
                 <span class="help-block">Leave blank to auto-generate from title</span>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="page_type">Page Type</label>
                         <select class="form-control {{ $errors->has('page_type') ? 'is-invalid' : '' }}" name="page_type" id="page_type">
@@ -51,7 +68,20 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="layout">Page Layout</label>
+                        <select class="form-control {{ $errors->has('layout') ? 'is-invalid' : '' }}" name="layout" id="layout">
+                            @foreach(\App\Models\ContentPage::LAYOUT_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('layout', $contentPage->layout) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @if($errors->has('layout'))
+                            <span class="text-danger">{{ $errors->first('layout') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="client_id">Client (for client-specific pages)</label>
                         <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id">
@@ -129,10 +159,15 @@
                 </button>
             </div>
         </form>
+            </div>
+            
+            {{-- Page Builder Tab --}}
+            <div class="tab-pane fade" id="sections" role="tabpanel">
+                @include('admin.contentPages.partials.page-builder', ['contentPage' => $contentPage])
+            </div>
+        </div>
     </div>
 </div>
-
-
 
 @endsection
 

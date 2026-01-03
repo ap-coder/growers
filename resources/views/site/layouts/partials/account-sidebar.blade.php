@@ -37,6 +37,10 @@
                 <div class="nav-title bg-light">ACCOUNT SETTINGS</div>
                 <ul class="account-info-list">
                     <li><a href="{{ route('site.account.profile') }}" class="{{ request()->routeIs('site.account.profile') ? 'active' : '' }}">Profile</a></li>
+                    @if(auth()->user()->client)
+                    <li><a href="{{ route('site.account.company') }}" class="{{ request()->routeIs('site.account.company') ? 'active' : '' }}">Company Info</a></li>
+                    <li><a href="{{ route('site.account.locations') }}" class="{{ request()->routeIs('site.account.locations*') ? 'active' : '' }}">Locations</a></li>
+                    @endif
                 </ul>
                 <div class="nav-title bg-light">HELP</div>
                 <ul class="account-info-list">

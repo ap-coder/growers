@@ -88,6 +88,22 @@
             @php $client = new \App\Models\Client(); @endphp
             @include('admin.clients.partials.addresses')
             <div class="form-group">
+                <label for="delivery_notes">Delivery Notes</label>
+                <textarea class="form-control {{ $errors->has('delivery_notes') ? 'is-invalid' : '' }}" name="delivery_notes" id="delivery_notes" rows="3">{{ old('delivery_notes') }}</textarea>
+                @if($errors->has('delivery_notes'))
+                    <span class="text-danger">{{ $errors->first('delivery_notes') }}</span>
+                @endif
+                <span class="help-block">Special delivery instructions for this client</span>
+            </div>
+            <div class="form-group">
+                <label for="how_to_order_content">How to Order Content (Client-Specific)</label>
+                <textarea class="form-control ckeditor {{ $errors->has('how_to_order_content') ? 'is-invalid' : '' }}" name="how_to_order_content" id="how_to_order_content" rows="8">{{ old('how_to_order_content') }}</textarea>
+                @if($errors->has('how_to_order_content'))
+                    <span class="text-danger">{{ $errors->first('how_to_order_content') }}</span>
+                @endif
+                <span class="help-block">Custom "How to Order" content for this client. Leave blank to use the default content.</span>
+            </div>
+            <div class="form-group">
                 <label for="prices_id">{{ trans('cruds.client.fields.prices') }}</label>
                 <select class="form-control select2 {{ $errors->has('prices') ? 'is-invalid' : '' }}" name="prices_id" id="prices_id">
                     @foreach($prices as $id => $entry)

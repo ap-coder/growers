@@ -24,26 +24,54 @@
                     </div>
                     @php
                         $mainNavMenu = \App\Menu\Models\Menus::where('name', 'Main Navigation')->first();
+                        $hasMenuItems = $mainNavMenu && $mainNavMenu->items->count() > 0;
                     @endphp
                     <ul class="nav navbar-nav">
-                        <li>
-                            <a href="{{ route('frontend.home') }}"><span>Home</span></a>
-                        </li>
-                        <li>
-                            <a href="{{ route('site.shop.index') }}"><span>Products</span></a>
-                        </li>
-                        @if($mainNavMenu && $mainNavMenu->items->count() > 0)
+                        @if($hasMenuItems)
                             @foreach($mainNavMenu->items->where('parent', 0)->sortBy('sort') as $item)
-                                <li>
-                                    <a href="{{ $item->link }}"><span>{{ $item->label }}</span></a>
+                                @php
+                                    $hasChildren = $mainNavMenu->items->where('parent', $item->id)->count() > 0;
+                                @endphp
+                                <li class="{{ $hasChildren ? 'sub-menu-down' : '' }}">
+                                    <a href="{{ $item->link ?: '#' }}">
+                                        @if($item->menu_icon_class)
+                                            <i class="{{ $item->menu_icon_class }}"></i>
+                                        @endif
+                                        @if(!$item->icon_only_menu)
+                                            <span>{{ $item->label }}</span>
+                                        @endif
+                                    </a>
+                                    @if($hasChildren)
+                                        <ul class="sub-menu">
+                                            @foreach($mainNavMenu->items->where('parent', $item->id)->sortBy('sort') as $child)
+                                                <li>
+                                                    <a href="{{ $child->link ?: '#' }}">
+                                                        @if($child->menu_icon_class)
+                                                            <i class="{{ $child->menu_icon_class }}"></i>
+                                                        @endif
+                                                        @if(!$child->icon_only_menu)
+                                                            <span>{{ $child->label }}</span>
+                                                        @endif
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
                                 </li>
                             @endforeach
-                        @endif
-                        @auth
+                        @else
                             <li>
-                                <a href="{{ route('site.account.orders') }}"><span>My Orders</span></a>
+                                <a href="{{ route('frontend.home') }}"><span>Home</span></a>
                             </li>
-                        @endauth
+                            <li>
+                                <a href="{{ route('site.shop.index') }}"><span>Products</span></a>
+                            </li>
+                            @auth
+                                <li>
+                                    <a href="{{ route('site.account.orders') }}"><span>My Orders</span></a>
+                                </li>
+                            @endauth
+                        @endif
                     </ul>
                 </div>
                 

@@ -29,6 +29,11 @@
                 @endif
                 <span class="help-block">{{ trans('cruds.faqCategory.fields.published_helper') }}</span>
             </div>
+            @if($faqCategory->is_fake)
+            <div class="alert alert-info py-2 mb-3">
+                <i class="fas fa-info-circle mr-1"></i> <strong>Demo Data</strong> - This is sample data for demonstration. It will be removed when you clear dummy data from Settings.
+            </div>
+            @endif
             <div class="form-group">
                 <button class="btn btn-danger" type="submit">
                     {{ trans('global.save') }}

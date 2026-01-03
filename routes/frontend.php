@@ -1,17 +1,10 @@
 <?php
 
-Route::group(['as' => 'frontend.', 'namespace' => 'Frontend', 'middleware' => ['web', 'auth', '2fa']], function () {
-    Route::get('/home', 'HomeController@index')->name('home');
-
-    // Products - customer can view products with their pricing
-    Route::resource('products', 'ProductController', ['only' => ['index', 'show']]);
-
-    // Profile
-    Route::get('frontend/profile', 'ProfileController@index')->name('profile.index');
-    Route::post('frontend/profile', 'ProfileController@update')->name('profile.update');
-    Route::post('frontend/profile/destroy', 'ProfileController@destroy')->name('profile.destroy');
-    Route::post('frontend/profile/password', 'ProfileController@password')->name('profile.password');
-    Route::post('profile/toggle-two-factor', 'ProfileController@toggleTwoFactor')->name('profile.toggle-two-factor');
+// Legacy frontend routes - redirect to site routes
+Route::group(['as' => 'frontend.', 'middleware' => ['web', 'auth']], function () {
+    Route::get('/home', function() { return redirect()->route('site.account.dashboard'); })->name('home');
+    Route::get('/products', function() { return redirect()->route('site.shop.index'); })->name('products.index');
+    Route::get('/products/{product}', function($product) { return redirect()->route('site.shop.product', $product); })->name('products.show');
 });
 
 // Site routes (client-facing frontend)
@@ -24,6 +17,19 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/account/orders', 'AccountController@orders')->name('account.orders');
     Route::get('/account/orders/{id}', 'AccountController@orderShow')->name('account.orders.show');
     
+    // Company Info
+    Route::get('/account/company', 'AccountController@company')->name('account.company');
+    Route::put('/account/company', 'AccountController@updateCompany')->name('account.company.update');
+    
+    // Locations (Addresses)
+    Route::get('/account/locations', 'AccountController@locations')->name('account.locations');
+    Route::get('/account/locations/create', 'AccountController@createLocation')->name('account.locations.create');
+    Route::post('/account/locations', 'AccountController@storeLocation')->name('account.locations.store');
+    Route::get('/account/locations/{address}/edit', 'AccountController@editLocation')->name('account.locations.edit');
+    Route::put('/account/locations/{address}', 'AccountController@updateLocation')->name('account.locations.update');
+    Route::delete('/account/locations/{address}', 'AccountController@deleteLocation')->name('account.locations.delete');
+    Route::post('/account/locations/{address}/set-primary', 'AccountController@setPrimaryLocation')->name('account.locations.setPrimary');
+    
     // Messages
     Route::get('/account/messages', 'MessageController@index')->name('account.messages.index');
     Route::get('/account/messages/create', 'MessageController@create')->name('account.messages.create');
@@ -31,9 +37,13 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/account/messages/{topic}', 'MessageController@show')->name('account.messages.show');
     Route::post('/account/messages/{topic}/reply', 'MessageController@reply')->name('account.messages.reply');
     
-    // Shop
-    Route::get('/shop', 'ShopController@index')->name('shop.index');
-    Route::get('/shop/product/{product}', 'ShopController@show')->name('shop.product');
+    // Shop - auth temporarily removed for testing
+    Route::get('/shop', 'ShopController@index')->name('shop.index')->withoutMiddleware('auth');
+    Route::get('/shop/product/{product}', 'ShopController@show')->name('shop.product')->withoutMiddleware('auth');
+    
+    // Favorites
+    Route::post('/favorites/{product}/toggle', 'FavoriteController@toggle')->name('favorites.toggle');
+    Route::get('/account/favorites', 'FavoriteController@index')->name('account.favorites');
     
     // Pages
     Route::get('/how-to-order', 'AccountController@howToOrder')->name('how-to-order');

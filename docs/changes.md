@@ -1,5 +1,56 @@
 # Pacific Plant Growers - Change Log
 
+## January 2, 2026
+
+### Shop Page Layout Fixes
+- **Banner** - Removed `dz-bnr-inr-sm` class, removed h1 title (template only has breadcrumb)
+- **Sidebar checkboxes** - Wrapped in `custom-control custom-checkbox d-flex`, added `square` class
+- **Nested categories** - Added `ps-3` indentation class
+- **Grid controls** - Added Default Sorting and Categories dropdowns
+- **Layout icons** - Changed SVG fill to `currentColor` for active state
+- **Product list view** - Fixed structure to match template for equal heights
+- **Favorite button** - Changed to `bookmark-btn style-1` checkbox
+- **Featured products** - Fixed price strikethrough (`<del>` inside `span.price`)
+- **Pagination** - Fixed to use `pagination style-1` with Prev/Next
+
+---
+
+## January 1, 2026
+
+### Settings System Enhancements
+- **Migration:** `2026_01_02_003543_change_settings_value_to_text` - Changed `value` column to TEXT for HTML content
+- **Setting model:** Added `html` type to `TYPE_SELECT` constant
+- **Settings edit view:** Added HTML/WYSIWYG field group with CKEditor
+
+### How to Order Feature
+- **Migration:** `2026_01_02_003225_add_how_to_order_content_to_clients_table`
+- **Client model:** Added `how_to_order_content` to fillable
+- **AccountController:** Updated `howToOrder()` with priority-based content loading
+- **Client admin forms:** Added `how_to_order_content` WYSIWYG field
+- **Setting created:** `how_to_order_default` with default ordering instructions
+
+### Dummy Data System Fixes
+- **DummyProductsSeeder:** Changed `set()` to `asSet()` (line 124) - Factory method conflict
+- **FaqQuestionFactory:** Removed `unique()` constraint causing overflow
+- **SettingController:** All dummy data methods now return JSON for AJAX requests
+- **Settings index view:** Added `dummy-data-form` class and SweetAlert AJAX handling
+
+### Menu Builder Fixes
+- **menus/index.blade.php:** Removed `@if` conditions hiding empty sections
+- **menus/index.blade.php:** Changed URL placeholder from `https://` to `/shop`
+- **menus/index.blade.php:** Updated data-url attributes to use paths instead of full URLs
+- **menus/index.blade.php:** Added item counts to all section headers
+- **menus/index.blade.php:** Added empty state messages for sections with no items
+
+### Shop Sidebar Update
+- **sidebar.blade.php:** Restructured to match xhtml template
+- Uses checkbox-based category filtering
+- Added featured products widget
+- Added product tags widget
+- Added search input
+
+---
+
 ## December 31, 2024
 
 ### Session 1 - Admin Fixes, Accessory System, and Frontend Setup

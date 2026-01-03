@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Site;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ContentPage;
+use App\Models\Client;
+use App\Models\ClientAddress;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -92,25 +95,255 @@ class AccountController extends Controller
     public function howToOrder()
     {
         $user = auth()->user();
-        $clientId = $user->client_id ?? null;
+        $client = $user->client ?? null;
+        $content = null;
+        $contentSource = 'default';
         
-        // Try to find client-specific "how to order" page first
-        $page = null;
-        if ($clientId) {
-            $page = ContentPage::where('client_id', $clientId)
+        // Priority 1: Client-specific how_to_order_content field
+        if ($client && !empty($client->how_to_order_content)) {
+            $content = $client->how_to_order_content;
+            $contentSource = 'client';
+        }
+        
+        // Priority 2: Client-specific ContentPage
+        if (!$content && $client) {
+            $page = ContentPage::where('client_id', $client->id)
                 ->where('page_type', 'how_to_order')
                 ->where('published', true)
                 ->first();
+            if ($page) {
+                $content = $page->page_text;
+                $contentSource = 'client_page';
+            }
         }
         
-        // Fall back to general "how to order" page
-        if (!$page) {
+        // Priority 3: General ContentPage (no client_id)
+        if (!$content) {
             $page = ContentPage::whereNull('client_id')
                 ->where('page_type', 'how_to_order')
                 ->where('published', true)
                 ->first();
+            if ($page) {
+                $content = $page->page_text;
+                $contentSource = 'general_page';
+            }
         }
         
-        return view('site.pages.how-to-order', compact('page'));
+        // Priority 4: Default setting
+        if (!$content) {
+            $content = Setting::get('how_to_order_default', '');
+            $contentSource = 'setting';
+        }
+        
+        return view('site.pages.how-to-order', compact('content', 'contentSource', 'client'));
+    }
+    
+    // Company Info
+    public function company()
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client) {
+            return redirect()->route('site.account.dashboard')
+                ->with('error', 'No company associated with your account.');
+        }
+        
+        return view('site.account.company', compact('client'));
+    }
+    
+    public function updateCompany(Request $request)
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client) {
+            return redirect()->route('site.account.dashboard')
+                ->with('error', 'No company associated with your account.');
+        }
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'store_number' => 'nullable|string|max:50',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
+        ]);
+        
+        $client->update($request->only([
+            'name', 'store_number', 'contact_name', 'contact_phone', 'contact_email'
+        ]));
+        
+        return back()->with('success', 'Company information updated successfully.');
+    }
+    
+    // Locations (Addresses)
+    public function locations()
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client) {
+            return redirect()->route('site.account.dashboard')
+                ->with('error', 'No company associated with your account.');
+        }
+        
+        $addresses = $client->addresses()->orderBy('address_type')->orderBy('is_primary', 'desc')->get();
+        
+        return view('site.account.locations.index', compact('client', 'addresses'));
+    }
+    
+    public function createLocation()
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client) {
+            return redirect()->route('site.account.dashboard')
+                ->with('error', 'No company associated with your account.');
+        }
+        
+        $addressTypes = ClientAddress::TYPE_SELECT;
+        
+        return view('site.account.locations.create', compact('client', 'addressTypes'));
+    }
+    
+    public function storeLocation(Request $request)
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client) {
+            return redirect()->route('site.account.dashboard')
+                ->with('error', 'No company associated with your account.');
+        }
+        
+        $request->validate([
+            'address_type' => 'required|in:' . implode(',', array_keys(ClientAddress::TYPE_SELECT)),
+            'label' => 'nullable|string|max:100',
+            'address_line_1' => 'required|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:50',
+            'postal_code' => 'required|string|max:20',
+            'country' => 'nullable|string|max:50',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
+            'delivery_notes' => 'nullable|string|max:500',
+            'is_primary' => 'nullable|boolean',
+        ]);
+        
+        $data = $request->all();
+        $data['client_id'] = $client->id;
+        $data['country'] = $data['country'] ?? 'USA';
+        $data['is_primary'] = $request->boolean('is_primary');
+        
+        // If setting as primary, unset other primaries of same type
+        if ($data['is_primary']) {
+            $client->addresses()
+                ->where('address_type', $data['address_type'])
+                ->update(['is_primary' => false]);
+        }
+        
+        ClientAddress::create($data);
+        
+        return redirect()->route('site.account.locations')
+            ->with('success', 'Location added successfully.');
+    }
+    
+    public function editLocation(ClientAddress $address)
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client || $address->client_id !== $client->id) {
+            return redirect()->route('site.account.locations')
+                ->with('error', 'Location not found.');
+        }
+        
+        $addressTypes = ClientAddress::TYPE_SELECT;
+        
+        return view('site.account.locations.edit', compact('client', 'address', 'addressTypes'));
+    }
+    
+    public function updateLocation(Request $request, ClientAddress $address)
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client || $address->client_id !== $client->id) {
+            return redirect()->route('site.account.locations')
+                ->with('error', 'Location not found.');
+        }
+        
+        $request->validate([
+            'address_type' => 'required|in:' . implode(',', array_keys(ClientAddress::TYPE_SELECT)),
+            'label' => 'nullable|string|max:100',
+            'address_line_1' => 'required|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'required|string|max:100',
+            'state' => 'required|string|max:50',
+            'postal_code' => 'required|string|max:20',
+            'country' => 'nullable|string|max:50',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
+            'delivery_notes' => 'nullable|string|max:500',
+            'is_primary' => 'nullable|boolean',
+        ]);
+        
+        $data = $request->all();
+        $data['is_primary'] = $request->boolean('is_primary');
+        
+        // If setting as primary, unset other primaries of same type
+        if ($data['is_primary'] && !$address->is_primary) {
+            $client->addresses()
+                ->where('address_type', $data['address_type'])
+                ->where('id', '!=', $address->id)
+                ->update(['is_primary' => false]);
+        }
+        
+        $address->update($data);
+        
+        return redirect()->route('site.account.locations')
+            ->with('success', 'Location updated successfully.');
+    }
+    
+    public function deleteLocation(ClientAddress $address)
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client || $address->client_id !== $client->id) {
+            return redirect()->route('site.account.locations')
+                ->with('error', 'Location not found.');
+        }
+        
+        $address->delete();
+        
+        return redirect()->route('site.account.locations')
+            ->with('success', 'Location deleted successfully.');
+    }
+    
+    public function setPrimaryLocation(ClientAddress $address)
+    {
+        $user = auth()->user();
+        $client = $user->client;
+        
+        if (!$client || $address->client_id !== $client->id) {
+            return redirect()->route('site.account.locations')
+                ->with('error', 'Location not found.');
+        }
+        
+        // Unset other primaries of same type
+        $client->addresses()
+            ->where('address_type', $address->address_type)
+            ->update(['is_primary' => false]);
+        
+        $address->update(['is_primary' => true]);
+        
+        return redirect()->route('site.account.locations')
+            ->with('success', 'Primary location updated.');
     }
 }

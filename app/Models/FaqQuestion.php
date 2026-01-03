@@ -21,6 +21,7 @@ class FaqQuestion extends Model
 
     protected $fillable = [
         'published',
+        'is_fake',
         'category_id',
         'question',
         'answer',

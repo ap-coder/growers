@@ -12,7 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Clear Telescope logs daily at midnight
+        $schedule->command('telescope:clear')->daily();
     }
 
     /**

@@ -23,6 +23,7 @@ class ProductBundleItem extends Model
         'is_selectable',
         'group_name',
         'sort_order',
+        'is_fake',
     ];
 
     public const PRICE_TYPE_DEFAULT = 'default';

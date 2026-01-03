@@ -27,7 +27,8 @@ class ClientsTableSeeder extends Seeder
                 'updated_at' => '2024-10-14 07:50:12',
                 'deleted_at' => NULL,
                 'team_id' => NULL,
-                'published' => 1,
+                'published' => 0,
+                'is_fake' => 0,
             ),
             1 => 
             array (
@@ -37,7 +38,8 @@ class ClientsTableSeeder extends Seeder
                 'updated_at' => '2024-11-26 03:34:19',
                 'deleted_at' => NULL,
                 'team_id' => NULL,
-                'published' => 1,
+                'published' => 0,
+                'is_fake' => 0,
             ),
             2 => 
             array (
@@ -47,7 +49,8 @@ class ClientsTableSeeder extends Seeder
                 'updated_at' => '2024-11-26 03:34:47',
                 'deleted_at' => NULL,
                 'team_id' => NULL,
-                'published' => 1,
+                'published' => 0,
+                'is_fake' => 0,
             ),
         ));
         

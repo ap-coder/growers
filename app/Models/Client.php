@@ -27,6 +27,7 @@ class Client extends Model
 
     protected $fillable = [
         'published',
+        'is_fake',
         'name',
         'logo',
         'store_number',
@@ -35,6 +36,7 @@ class Client extends Model
         'contact_email',
         'address',
         'delivery_notes',
+        'how_to_order_content',
         'requires_upc',
         'created_at',
         'prices_id',

@@ -1,0 +1,749 @@
+@extends('layouts.admin')
+
+@section('styles')
+    @parent
+    <style>
+        #clientPricingTable input[type="number"], #clientPricingTable input[type="text"] { border: none!important; border-bottom: 1px solid #ccc!important; outline: none!important; border-radius:0!important; width: 100%; padding: 5px; box-sizing: border-box; background-color: transparent; }
+        #clientPricingTable input[type="number"]:focus, #clientPricingTable input[type="text"]:focus { border: none!important; outline: none!important; }
+        #clientPricingTable { border-collapse: collapse; }
+        #clientPricingTable th, #clientPricingTable td { padding: 10px; text-align: left; }
+        .select2 { max-width: 80%!important; width: 80%!important; }
+    </style>
+
+@endsection
+
+@section('content')
+
+<form method="POST" action="{{ route('admin.products.update', [$product->id]) }}" enctype="multipart/form-data" id="product-form">
+    @csrf
+    @method('PUT')
+    
+    <div class="card card-primary card-outline card-outline-tabs">
+        <div class="card-header p-0 border-bottom-0">
+            <ul class="nav nav-tabs" id="product-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="general-tab" data-toggle="tab" href="#general" role="tab">
+                        <i class="fas fa-info-circle mr-1"></i> General
+                    </a>
+                </li>
+                <li class="nav-item" id="categories-tab-li">
+                    <a class="nav-link" id="categories-tab" data-toggle="tab" href="#categories" role="tab">
+                        <i class="fas fa-tags mr-1"></i> Categories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pricing-tab" data-toggle="tab" href="#pricing" role="tab">
+                        <i class="fas fa-dollar-sign mr-1"></i> Pricing
+                    </a>
+                </li>
+                <li class="nav-item" id="bundle-tab-li" style="{{ $product->product_type !== 'set' ? 'display:none;' : '' }}">
+                    <a class="nav-link" id="bundle-tab" data-toggle="tab" href="#bundle" role="tab">
+                        <i class="fas fa-box-open mr-1"></i> Bundle Items
+                    </a>
+                </li>
+                <li class="nav-item" id="accessories-tab-li">
+                    <a class="nav-link" id="accessories-tab" data-toggle="tab" href="#accessories" role="tab">
+                        <i class="fas fa-puzzle-piece mr-1"></i> Accessories
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="media-tab" data-toggle="tab" href="#media" role="tab">
+                        <i class="fas fa-images mr-1"></i> Media
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            {{-- Top Row: Checkboxes --}}
+            <div class="row mb-2">
+                <div class="col-12">
+                    <div class="icheck-primary d-inline mr-3">
+                        <input type="hidden" name="published" value="0">
+                        <input type="checkbox" name="published" id="published" value="1" {{ old('published', $product->published) == 1 ? 'checked' : '' }}>
+                        <label for="published">Published</label>
+                    </div>
+                    <div class="icheck-success d-inline" id="featured_group">
+                        <input type="hidden" name="featured" value="0">
+                        <input type="checkbox" name="featured" id="featured" value="1" {{ old('featured', $product->featured) ? 'checked' : '' }}>
+                        <label for="featured">Featured</label>
+                    </div>
+                    @if($product->is_fake)
+                    <span class="badge badge-info ml-3"><i class="fas fa-info-circle mr-1"></i> Demo Data</span>
+                    @endif
+                </div>
+            </div>
+            {{-- Second Row: Selects --}}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="form-group mb-0">
+                        <label for="product_type" class="col-form-label-sm mb-0">Product Type</label>
+                        <select class="form-control form-control-sm" name="product_type" id="product_type">
+                            @foreach(\App\Models\Product::TYPE_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('product_type', $product->product_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-0">
+                        <label for="layout" class="col-form-label-sm mb-0">Layout</label>
+                        <select class="form-control form-control-sm" name="layout" id="layout">
+                            @foreach(\App\Models\Product::LAYOUT_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('layout', $product->layout) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="product-tabs-content">
+                {{-- General Tab --}}
+                <div class="tab-pane fade show active" id="general" role="tabpanel">
+                    <div class="form-group">
+                        <label class="required" for="name">Product Name</label>
+                        <input class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" type="text" name="name" id="name" value="{{ old('name', $product->name) }}" required>
+                        @if($errors->has('name'))
+                            <span class="text-danger">{{ $errors->first('name') }}</span>
+                        @endif
+                    </div>
+                    
+                    <div class="form-group" id="accessory_type_group" style="{{ $product->product_type !== 'accessory' ? 'display:none;' : '' }}">
+                        <label for="accessory_type_id">Accessory Type</label>
+                        <select class="form-control" name="accessory_type_id" id="accessory_type_id">
+                            <option value="">-- Select Type --</option>
+                            @foreach(\App\Models\AccessoryType::orderBy('name')->get() as $type)
+                                <option value="{{ $type->id }}" {{ old('accessory_type_id', $product->accessory_type_id) == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="excerpt">Excerpt (Short Description)</label>
+                        <textarea class="form-control {{ $errors->has('excerpt') ? 'is-invalid' : '' }}" name="excerpt" id="excerpt" rows="2" placeholder="Brief description for listings...">{{ old('excerpt', $product->excerpt) }}</textarea>
+                        <small class="text-muted">Used in product listings and cards. Keep it short.</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description (Full Content)</label>
+                        <textarea class="form-control {{ $errors->has('description') ? 'is-invalid' : '' }}" name="description" id="description" rows="5">{{ old('description', $product->description) }}</textarea>
+                    </div>
+                </div>
+                
+                {{-- Categories Tab --}}
+                <div class="tab-pane fade" id="categories" role="tabpanel">
+                    @include('admin.products.partials.product_category')
+                </div>
+                
+                {{-- Pricing Tab --}}
+                <div class="tab-pane fade" id="pricing" role="tabpanel">
+                    @include('admin.products.partials.client_prices', [
+                        'product' => $product,
+                        'clients' => $clients
+                    ])
+                </div>
+                
+                {{-- Bundle Items Tab --}}
+                <div class="tab-pane fade" id="bundle" role="tabpanel">
+                    @include('admin.products.partials.bundle_items')
+                </div>
+                
+                {{-- Accessories Tab --}}
+                <div class="tab-pane fade" id="accessories" role="tabpanel">
+                    @include('admin.products.partials.accessories')
+                </div>
+                
+                {{-- Media Tab --}}
+                <div class="tab-pane fade" id="media" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="photo">Product Photo</label>
+                                <div class="needsclick dropzone" id="photo-dropzone"></div>
+                                <small class="text-muted">Main product image</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="additional_photos">{{ trans('cruds.product.fields.additional_photos') }}</label>
+                                <div class="needsclick dropzone {{ $errors->has('additional_photos') ? 'is-invalid' : '' }}" id="additional_photos-dropzone"></div>
+                                @if($errors->has('additional_photos'))
+                                    <span class="text-danger">{{ $errors->first('additional_photos') }}</span>
+                                @endif
+                                <small class="text-muted">Additional gallery images</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-save mr-1"></i> Save
+            </button>
+            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                <i class="fas fa-times mr-1"></i> Cancel
+            </a>
+        </div>
+    </div>
+</form>
+
+@endsection
+
+@section('scripts')
+
+    <script>
+
+
+
+
+        window.clientsData = @json($clients);
+        window.clientPrices = @json($product->clientPrices);
+        window.categories = @json($categories);
+        // console.log(clientsData);
+        // console.log(clientPrices);
+        // console.log(categories);
+
+
+        Dropzone.options.photoDropzone = {
+            url: '{{ route('admin.products.storeMedia') }}',
+            maxFilesize: 2, // MB
+            acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
+            maxFiles: 1,
+            addRemoveLinks: true,
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            params: {
+                size: 20,
+                width: 4096,
+                height: 4096
+            },
+            success: function (file, response) {
+                $('form').find('input[name="photo"]').remove()
+                $('form').append('<input type="hidden" name="photo" value="' + response.name + '">')
+            },
+            removedfile: function (file) {
+                file.previewElement.remove()
+                if (file.status !== 'error') {
+                    $('form').find('input[name="photo"]').remove()
+                    this.options.maxFiles = this.options.maxFiles + 1
+                }
+            },
+            init: function () {
+                @if(isset($product) && $product->photo)
+                var file = {!! json_encode($product->photo) !!}
+                this.options.addedfile.call(this, file)
+                this.options.thumbnail.call(this, file, file.preview ?? file.preview_url)
+                file.previewElement.classList.add('dz-complete')
+                $('form').append('<input type="hidden" name="photo" value="' + file.file_name + '">')
+                this.options.maxFiles = this.options.maxFiles - 1
+                @endif
+            },
+            error: function (file, response) {
+                if ($.type(response) === 'string') {
+                    var message = response; // Dropzone sends its own error messages in string format
+                } else {
+                    var message = response.errors.file;
+                }
+                file.previewElement.classList.add('dz-error');
+                var _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+                _ref.forEach(function(node) {
+                    node.textContent = message;
+                });
+            }
+        }
+
+        var uploadedAdditionalPhotosMap = {}
+
+        Dropzone.options.additionalPhotosDropzone = {
+            url: '{{ route('admin.products.storeMedia') }}',
+            maxFilesize: 2, // MB
+            acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
+            addRemoveLinks: true,
+            headers: {
+                'X-CSRF-TOKEN': "{{ csrf_token() }}"
+            },
+            params: {
+                size: 20,
+                width: 4096,
+                height: 4096
+            },
+            success: function (file, response) {
+                $('form').append('<input type="hidden" name="additional_photos[]" value="' + response.name + '">')
+                uploadedAdditionalPhotosMap[file.name] = response.name
+            },
+            removedfile: function (file) {
+                console.log(file)
+                file.previewElement.remove()
+                var name = ''
+                if (typeof file.file_name !== 'undefined') {
+                    name = file.file_name
+                } else {
+                    name = uploadedAdditionalPhotosMap[file.name]
+                }
+                $('form').find('input[name="additional_photos[]"][value="' + name + '"]').remove()
+            },
+            init: function () {
+                @if(isset($product) && $product->additional_photos)
+                var files = {!! json_encode($product->additional_photos) !!}
+                for (var i in files) {
+                    var file = files[i]
+                    this.options.addedfile.call(this, file)
+                    this.options.thumbnail.call(this, file, file.preview ?? file.preview_url)
+                    file.previewElement.classList.add('dz-complete')
+                    $('form').append('<input type="hidden" name="additional_photos[]" value="' + file.file_name + '">')
+                }
+                @endif
+            },
+            error: function (file, response) {
+                if ($.type(response) === 'string') {
+                    var message = response //dropzone sends it's own error messages in string
+                } else {
+                    var message = response.errors.file
+                }
+                file.previewElement.classList.add('dz-error')
+                _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]')
+                _results = []
+                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                    node = _ref[_i]
+                    _results.push(node.textContent = message)
+                }
+
+                return _results
+            }
+        }
+
+    </script>
+
+    <script>
+
+        window.clientsData = @json($clients);
+        window.clientPrices = @json($product->clientPrices);
+        window.categories = @json($categories);
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            $('#clientSelect').select2();
+
+            // Pre-populate existing client rows to ensure they are displayed correctly
+            $('#clientSelect').find('option:selected').each(function() {
+                const clientId = $(this).val();
+                const clientName = $(this).text();
+
+                // Ensure the existing client row is visible (in case it was hidden previously)
+                if (!document.querySelector(`#pricing-row-${clientId}`)) {
+                    // Existing rows are already rendered via Blade, only ensure visibility
+                    document.querySelector(`#pricing-row-${clientId}`).style.display = '';
+                }
+            });
+
+            $('#clientSelect').on('select2:select', function(e) {
+                const clientId = e.params.data.id;
+                const clientName = e.params.data.text;
+
+                // Add a client pricing row if it does not already exist
+                if (!document.querySelector(`#pricing-row-${clientId}`)) {
+                    addClientPricingRow(clientId, clientName, false);
+                } else {
+                    // If row already exists, ensure the row is visible (in case it was hidden)
+                    document.querySelector(`#pricing-row-${clientId}`).style.display = '';
+                }
+            });
+
+            // Event listener for unselecting a client (optional, for removing rows)
+            $('#clientSelect').on('select2:unselect', function (e) {
+                const clientId = e.params.data.id;
+                const row = document.querySelector(`#pricing-row-${clientId}`);
+                if (row) {
+                    row.style.display = 'none'; // Hide the row instead of removing it to keep existing data
+                }
+            });
+
+            // Function to add a new row to the client pricing table (simplified - price only)
+            function addClientPricingRow(clientId, clientName, isExisting) {
+                const tableBody = document.getElementById('clientPricingTableBody');
+
+                // Create a new row for client pricing
+                const row = document.createElement('tr');
+                row.className = 'client-pricing-row';
+                row.id = `pricing-row-${clientId}`;
+
+                row.innerHTML = `
+                    <td>${clientName}</td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="number" step="0.01" name="client_prices[${clientId}][price]" class="form-control" placeholder="Use base price">
+                        </div>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+            }
+        });
+
+
+
+        $('#addCategory').on('click', function() {
+            var categoryName = prompt("Enter new product category name:");
+            if (!categoryName) return;
+
+            $.ajax({
+                url: '/admin/product-categories/store-ajax',
+                type: 'POST',
+                data: {
+                    name: categoryName,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    var newOption = new Option(response.name, response.id, true, true);
+                    $('#categories').append(newOption).trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    alert("Error adding product category: " + error);
+                }
+            });
+        });
+
+        $('#addClient').on('click', function() {
+            var clientName = prompt("Enter new client name:");
+            if (!clientName) return;
+
+            $.ajax({
+                url: '/admin/clients/store-ajax', // Adjust this URL as needed
+                type: 'POST',
+                data: {
+                    name: clientName,
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    var newOption = new Option(response.name, response.id, true, true);
+                    $('#clientSelect').append(newOption).trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    alert("Error adding client: " + error);
+                }
+            });
+        });
+
+        // Product type change handler - show/hide tabs and fields
+        function toggleProductTypeSections() {
+            var type = $('#product_type').val();
+            
+            // Show/hide accessory type field
+            if (type === 'accessory') {
+                $('#accessory_type_group').show();
+            } else {
+                $('#accessory_type_group').hide();
+            }
+            
+            // Show/hide bundle tab
+            if (type === 'set') {
+                $('#bundle-tab-li').show();
+            } else {
+                $('#bundle-tab-li').hide();
+            }
+            
+            // Show/hide categories tab (hide for accessories)
+            if (type === 'accessory') {
+                $('#categories-tab-li').hide();
+            } else {
+                $('#categories-tab-li').show();
+            }
+            
+            // Show/hide accessories tab (hide for accessories themselves)
+            if (type === 'accessory') {
+                $('#accessories-tab-li').hide();
+            } else {
+                $('#accessories-tab-li').show();
+            }
+            
+            // Show/hide featured checkbox (hide for accessories)
+            if (type === 'accessory') {
+                $('#featured_group').hide();
+            } else {
+                $('#featured_group').show();
+            }
+            
+            // Show/hide quantity (hide for sets)
+            if (type === 'set') {
+                $('#quantity_group').hide();
+            } else {
+                $('#quantity_group').show();
+            }
+        }
+        
+        $('#product_type').on('change', toggleProductTypeSections);
+        toggleProductTypeSections(); // Run on page load
+
+        // Bundle items management
+        var groupIndex = {{ $product->bundleItems ? $product->bundleItems->groupBy('group_name')->count() : 1 }};
+        var productOptions = `@foreach(\App\Models\Product::where('id', '!=', $product->id)->orderBy('name')->get() as $p)<option value="{{ $p->id }}" data-price="{{ $p->base_price }}">{{ $p->name }} (${{ number_format($p->base_price ?? 0, 2) }})</option>@endforeach`;
+        var priceTypeOptions = `@foreach(\App\Models\ProductBundleItem::PRICE_TYPES as $key => $label)<option value="{{ $key }}">{{ $label }}</option>@endforeach`;
+        
+        // Price type change handler for individual bundle items
+        $(document).on('change', '.price-type-select', function() {
+            var row = $(this).closest('tr');
+            var priceType = $(this).val();
+            
+            row.find('.price-override-group').hide();
+            row.find('.price-adjustment-group').hide();
+            row.find('.price-default-text').hide();
+            
+            if (priceType === 'override') {
+                row.find('.price-override-group').show();
+            } else if (priceType === 'adjustment') {
+                row.find('.price-adjustment-group').show();
+            } else {
+                row.find('.price-default-text').show().text(priceType === 'free' ? 'Free' : 'Base');
+            }
+        });
+
+        // Overall bundle price type change handler
+        $('#bundle_price_type').on('change', function() {
+            var priceType = $(this).val();
+            
+            $('#bundle_price_override_group').hide();
+            $('#bundle_discount_group').hide();
+            
+            if (priceType === 'fixed') {
+                $('#bundle_price_override_group').show();
+            } else if (priceType === 'discount_percent') {
+                $('#bundle_discount_group').show();
+                $('#bundle_discount_symbol').text('%');
+                $('#bundle_discount_label').text('Discount Percentage');
+            } else if (priceType === 'discount_amount') {
+                $('#bundle_discount_group').show();
+                $('#bundle_discount_symbol').text('$');
+                $('#bundle_discount_label').text('Discount Amount');
+            }
+        });
+        
+        // Add new group
+        $('#addBundleGroupBtn').on('click', function() {
+            var newGroup = `
+                <div class="bundle-group card mb-3">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <input type="text" class="form-control form-control-sm w-50 group-name-input" 
+                               name="bundle_groups[${groupIndex}][name]" 
+                               value="" 
+                               placeholder="Group name (e.g., Choose your basket)">
+                        <button type="button" class="btn btn-sm btn-danger remove-group-btn">
+                            <i class="fas fa-trash"></i> Remove Group
+                        </button>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-bordered mb-2">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th style="min-width: 200px;">Product</th>
+                                        <th width="60">Qty</th>
+                                        <th width="120">Pricing</th>
+                                        <th width="100">Price</th>
+                                        <th width="70">Req.</th>
+                                        <th width="70">Select</th>
+                                        <th width="40"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bundle-items-body">
+                                    <tr class="bundle-item-row">
+                                        <td>
+                                            <select name="bundle_groups[${groupIndex}][items][0][product_id]" class="form-control form-control-sm bundle-product-select">
+                                                <option value="">-- Select Product --</option>
+                                                ${productOptions}
+                                            </select>
+                                        </td>
+                                        <td><input type="number" name="bundle_groups[${groupIndex}][items][0][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
+                                        <td>
+                                            <select name="bundle_groups[${groupIndex}][items][0][price_type]" class="form-control form-control-sm price-type-select">
+                                                ${priceTypeOptions}
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <div class="price-input-wrapper">
+                                                <div class="input-group input-group-sm price-override-group" style="display:none;">
+                                                    <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                                    <input type="number" step="0.01" name="bundle_groups[${groupIndex}][items][0][price_override]" class="form-control" placeholder="0.00">
+                                                </div>
+                                                <div class="input-group input-group-sm price-adjustment-group" style="display:none;">
+                                                    <div class="input-group-prepend"><span class="input-group-text">+/-</span></div>
+                                                    <input type="number" step="0.01" name="bundle_groups[${groupIndex}][items][0][price_adjustment]" class="form-control" placeholder="0.00">
+                                                </div>
+                                                <span class="price-default-text text-muted small">Base</span>
+                                            </div>
+                                        </td>
+                                        <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_required]" value="1" checked></td>
+                                        <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIndex}][items][0][is_selectable]" value="1"></td>
+                                        <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary add-item-btn">
+                            <i class="fas fa-plus"></i> Add Item
+                        </button>
+                    </div>
+                </div>
+            `;
+            $('#bundleItemsContainer').append(newGroup);
+            groupIndex++;
+        });
+
+        // Remove group
+        $(document).on('click', '.remove-group-btn', function() {
+            $(this).closest('.bundle-group').remove();
+        });
+
+        // Add item to group
+        $(document).on('click', '.add-item-btn', function() {
+            var tbody = $(this).closest('.card-body').find('.bundle-items-body');
+            var groupCard = $(this).closest('.bundle-group');
+            var groupIdx = groupCard.index();
+            var itemIdx = tbody.find('tr').length;
+            
+            var newRow = `
+                <tr class="bundle-item-row">
+                    <td>
+                        <select name="bundle_groups[${groupIdx}][items][${itemIdx}][product_id]" class="form-control form-control-sm bundle-product-select">
+                            <option value="">-- Select Product --</option>
+                            ${productOptions}
+                        </select>
+                    </td>
+                    <td><input type="number" name="bundle_groups[${groupIdx}][items][${itemIdx}][quantity]" class="form-control form-control-sm" value="1" min="1"></td>
+                    <td>
+                        <select name="bundle_groups[${groupIdx}][items][${itemIdx}][price_type]" class="form-control form-control-sm price-type-select">
+                            ${priceTypeOptions}
+                        </select>
+                    </td>
+                    <td>
+                        <div class="price-input-wrapper">
+                            <div class="input-group input-group-sm price-override-group" style="display:none;">
+                                <div class="input-group-prepend"><span class="input-group-text">$</span></div>
+                                <input type="number" step="0.01" name="bundle_groups[${groupIdx}][items][${itemIdx}][price_override]" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="input-group input-group-sm price-adjustment-group" style="display:none;">
+                                <div class="input-group-prepend"><span class="input-group-text">+/-</span></div>
+                                <input type="number" step="0.01" name="bundle_groups[${groupIdx}][items][${itemIdx}][price_adjustment]" class="form-control" placeholder="0.00">
+                            </div>
+                            <span class="price-default-text text-muted small">Base</span>
+                        </div>
+                    </td>
+                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIdx}][items][${itemIdx}][is_required]" value="1"></td>
+                    <td class="text-center"><input type="checkbox" name="bundle_groups[${groupIdx}][items][${itemIdx}][is_selectable]" value="1"></td>
+                    <td><button type="button" class="btn btn-sm btn-outline-danger remove-item-btn"><i class="fas fa-times"></i></button></td>
+                </tr>
+            `;
+            tbody.append(newRow);
+        });
+
+        // Remove item
+        $(document).on('click', '.remove-item-btn', function() {
+            $(this).closest('tr').remove();
+        });
+
+        // Price Tiers Management
+        var priceTierIndex = {{ isset($product) && $product->priceTiers ? $product->priceTiers->count() : 0 }};
+        
+        $('#addPriceTierBtn').on('click', function() {
+            var newRow = `
+                <tr class="price-tier-row" data-index="${priceTierIndex}">
+                    <td>
+                        <input type="text" name="price_tiers[${priceTierIndex}][min_quantity]" class="form-control text-right" placeholder="e.g., 50" required>
+                    </td>
+                    <td>
+                        <input type="text" name="price_tiers[${priceTierIndex}][max_quantity]" class="form-control text-right" placeholder="No limit">
+                    </td>
+                    <td>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" name="price_tiers[${priceTierIndex}][price]" class="form-control text-right" required>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="text" name="price_tiers[${priceTierIndex}][label]" class="form-control" placeholder="e.g., Retail, Bulk, Wholesale">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger tier-action-btn remove-tier-btn" title="Remove tier">&times;</button>
+                    </td>
+                </tr>
+            `;
+            $('#priceTiersBody').append(newRow);
+            priceTierIndex++;
+        });
+
+        $(document).on('click', '.remove-tier-btn', function() {
+            $(this).closest('tr').remove();
+        });
+
+        // Variations Management
+        var variationIndex = {{ isset($product) && $product->variations ? $product->variations->count() : 0 }};
+        
+        // Function to sum all variation quantities and update product quantity
+        function updateTotalQuantity() {
+            var total = 0;
+            $('.variation-qty').each(function() {
+                var qty = parseInt($(this).val()) || 0;
+                total += qty;
+            });
+            $('#quantity').val(total);
+        }
+        
+        // Update total when variation quantity changes
+        $(document).on('input', '.variation-qty', updateTotalQuantity);
+        
+        // Update total on page load
+        updateTotalQuantity();
+        
+        $('#addVariationBtn').on('click', function() {
+            var newRow = `
+                <tr class="variation-row" data-index="${variationIndex}">
+                    <td>
+                        <input type="text" name="variations[${variationIndex}][name]" class="form-control" placeholder="e.g., Small 8&quot;" required>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="number" step="0.01" name="variations[${variationIndex}][base_price]" class="form-control">
+                        </div>
+                    </td>
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="number" step="0.01" name="variations[${variationIndex}][base_cost]" class="form-control">
+                        </div>
+                    </td>
+                    <td>
+                        <input type="number" name="variations[${variationIndex}][quantity]" class="form-control form-control-sm variation-qty" value="0" min="0">
+                    </td>
+                    <td>
+                        <input type="text" name="variations[${variationIndex}][sku]" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                        <input type="text" name="variations[${variationIndex}][upc_code]" class="form-control form-control-sm">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-sm remove-variation-btn" title="Remove">&times;</button>
+                    </td>
+                </tr>
+            `;
+            $('#variationsBody').append(newRow);
+            variationIndex++;
+            updateTotalQuantity();
+        });
+
+        $(document).on('click', '.remove-variation-btn', function() {
+            $(this).closest('tr').remove();
+            updateTotalQuantity();
+        });
+    </script>
+@endsection
+

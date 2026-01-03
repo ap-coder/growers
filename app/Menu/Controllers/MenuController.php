@@ -51,23 +51,34 @@ class MenuController extends Controller
         if (is_array($arraydata)) {
             foreach ($arraydata as $value) {
                 $menuitem = MenuItems::find($value['id']);
-                $menuitem->label = $value['label'];
-                $menuitem->link = $value['link'];
-                $menuitem->class = $value['class'];
-                if (config('menu.use_roles')) {
-                    $menuitem->role_id = $value['role_id'] ? $value['role_id'] : 0 ;
+                if ($menuitem) {
+                    $menuitem->label = $value['label'];
+                    $menuitem->link = $value['link'];
+                    $menuitem->class = $value['class'];
+                    $menuitem->menu_icon_class = $value['icon'] ?? null;
+                    $menuitem->icon_only_menu = $value['icon_only'] ?? 0;
+                    if (config('menu.use_roles')) {
+                        $menuitem->role_id = $value['role_id'] ? $value['role_id'] : 0 ;
+                    }
+                    $menuitem->save();
                 }
-                $menuitem->save();
             }
         } else {
-            $menuitem = MenuItems::find(request()->input("id"));
-            $menuitem->label = request()->input("label");
-            $menuitem->link = request()->input("url");
-            $menuitem->class = request()->input("clases");
-            if (config('menu.use_roles')) {
-                $menuitem->role_id = request()->input("role_id") ? request()->input("role_id") : 0 ;
+            $id = request()->input("id");
+            if ($id) {
+                $menuitem = MenuItems::find($id);
+                if ($menuitem) {
+                    $menuitem->label = request()->input("label");
+                    $menuitem->link = request()->input("url");
+                    $menuitem->class = request()->input("clases");
+                    $menuitem->menu_icon_class = request()->input("icon");
+                    $menuitem->icon_only_menu = request()->input("icon_only") ? 1 : 0;
+                    if (config('menu.use_roles')) {
+                        $menuitem->role_id = request()->input("role_id") ? request()->input("role_id") : 0 ;
+                    }
+                    $menuitem->save();
+                }
             }
-            $menuitem->save();
         }
     }
 
@@ -77,6 +88,7 @@ class MenuController extends Controller
         $menuitem = new MenuItems();
         $menuitem->label = request()->input("labelmenu");
         $menuitem->link = request()->input("linkmenu");
+        $menuitem->menu_icon_class = request()->input("iconmenu");
         if (config('menu.use_roles')) {
             $menuitem->role_id = request()->input("rolemenu") ? request()->input("rolemenu")  : 0 ;
         }

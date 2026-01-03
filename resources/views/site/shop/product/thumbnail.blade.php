@@ -4,6 +4,9 @@
 
 @php
     $price = $product->getPriceForClient($clientId ?? null);
+    $placeholder = 'https://placehold.co/600x600/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name);
+    $thumbPlaceholder = 'https://placehold.co/100x100/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name);
+    $additionalColors = ['3B82F6/FFF', 'EF4444/FFF', '10B981/FFF', 'F59E0B/FFF', '8B5CF6/FFF', 'EC4899/FFF'];
 @endphp
 
 @section('banner')
@@ -28,15 +31,33 @@
         <div class="row">
             <div class="col-lg-1 col-md-2 m-b30 order-lg-1 order-2">
                 <div class="thumb-gallery-vertical">
-                    @if($product->photo)
-                        <div class="thumb-item active" onclick="changeMainImage('{{ $product->photo->url }}', this)">
-                            <img src="{{ $product->photo->thumbnail }}" alt="{{ $product->name }}">
+                    {{-- Main photo thumbnail --}}
+                    @if($product->is_fake || !$product->photo)
+                        <div class="thumb-item active" onclick="changeMainImage('{{ $placeholder }}', this)">
+                            <img src="{{ $thumbPlaceholder }}" alt="{{ $product->name }}">
+                        </div>
+                    @else
+                        <div class="thumb-item active" onclick="changeMainImage('{{ $product->photo->product_main }}', this)">
+                            <img src="{{ $product->photo->product_thumb }}" alt="{{ $product->name }}">
                         </div>
                     @endif
-                    @if($product->additional_photos)
+                    
+                    {{-- Additional photos or fake placeholders --}}
+                    @if($product->is_fake)
+                        @for($i = 0; $i < 3; $i++)
+                            @php 
+                                $color = $additionalColors[$i % count($additionalColors)];
+                                $fakeMain = 'https://placehold.co/600x600/' . $color . '/webp?font=oswald&text=' . urlencode($product->name . ' ' . ($i + 2));
+                                $fakeThumb = 'https://placehold.co/100x100/' . $color . '/webp?font=oswald&text=' . ($i + 2);
+                            @endphp
+                            <div class="thumb-item" onclick="changeMainImage('{{ $fakeMain }}', this)">
+                                <img src="{{ $fakeThumb }}" alt="{{ $product->name }} {{ $i + 2 }}">
+                            </div>
+                        @endfor
+                    @elseif($product->additional_photos)
                         @foreach($product->additional_photos as $photo)
-                            <div class="thumb-item" onclick="changeMainImage('{{ $photo->url }}', this)">
-                                <img src="{{ $photo->thumbnail }}" alt="{{ $product->name }}">
+                            <div class="thumb-item" onclick="changeMainImage('{{ $photo->product_main }}', this)">
+                                <img src="{{ $photo->product_thumb }}" alt="{{ $product->name }}">
                             </div>
                         @endforeach
                     @endif
@@ -45,10 +66,10 @@
             <div class="col-lg-5 col-md-10 m-b30 order-lg-2 order-1">
                 <div class="dz-product-detail sticky-top">
                     <div class="dz-media">
-                        @if($product->photo)
-                            <img src="{{ $product->photo->url }}" alt="{{ $product->name }}" id="main-product-image">
+                        @if($product->is_fake || !$product->photo)
+                            <img src="{{ $placeholder }}" alt="{{ $product->name }}" id="main-product-image">
                         @else
-                            <img src="{{ asset('site/images/shop/product/1.png') }}" alt="{{ $product->name }}" id="main-product-image">
+                            <img src="{{ $product->photo->product_main }}" alt="{{ $product->name }}" id="main-product-image">
                         @endif
                     </div>
                 </div>
@@ -63,7 +84,13 @@
                         </div>
                     @endif
                     
-                    <h2 class="title mb-3">{{ $product->name }}</h2>
+                    <h2 class="title mb-3">{{ $product->name }}
+                        @can('product_edit')
+                            <a href="{{ route('admin.products.edit', $product) }}" target="_blank" class="btn btn-sm btn-outline-secondary ms-2" title="Edit in Admin">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        @endcan
+                    </h2>
                     
                     @if($product->sku)
                         <p class="text-muted mb-2"><small>SKU: {{ $product->sku }}</small></p>
@@ -81,26 +108,12 @@
                     
                     @if($product->description)
                         <div class="product-description mb-4">
-                            <p>{!! nl2br(e($product->description)) !!}</p>
+                            <div class="description-content">{!! $product->description !!}</div>
                         </div>
                     @endif
                     
-                    <div class="product-actions mt-4">
-                        <div class="row g-2">
-                            <div class="col-md-4">
-                                <div class="input-group">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="decrementQty()">-</button>
-                                    <input type="number" class="form-control text-center" id="product-qty" value="1" min="1">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="incrementQty()">+</button>
-                                </div>
-                            </div>
-                            <div class="col-md-8">
-                                <button class="btn btn-primary w-100" onclick="addToCart({{ $product->id }})">
-                                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Product Order Section with Variations --}}
+                    @include('site.shop.partials.product-order-section', ['product' => $product, 'clientId' => $clientId ?? null])
                 </div>
             </div>
         </div>
@@ -126,24 +139,8 @@ function changeMainImage(src, element) {
     document.querySelectorAll('.thumb-item').forEach(el => el.classList.remove('active'));
     element.classList.add('active');
 }
-
-function incrementQty() {
-    var input = document.getElementById('product-qty');
-    input.value = parseInt(input.value) + 1;
-}
-
-function decrementQty() {
-    var input = document.getElementById('product-qty');
-    if (parseInt(input.value) > 1) {
-        input.value = parseInt(input.value) - 1;
-    }
-}
-
-function addToCart(productId) {
-    var qty = document.getElementById('product-qty').value;
-    alert('Add to cart: Product ' + productId + ', Qty: ' + qty);
-}
 </script>
+@stack('scripts')
 @endsection
 
 @section('styles')

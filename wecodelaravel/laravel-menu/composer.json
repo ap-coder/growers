@@ -1,0 +1,37 @@
+{
+    "name": "wecodelaravel/laravel-menu",
+    "description": "drag and drop menu generator like wordpress for laravel 5",
+    "keywords": ["Laravel", "Menu", "Builder"],
+    "authors": [{
+            "name": "Wecodelaravel",
+            "email": "wecodelaravel@gmail.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Cristian Garcia",
+            "email": "informacion@cristiangarcia.co",
+            "role": "Original Developer"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "illuminate/support": "5.* || 6.* || 7.* || 8.* || 9.* || 10.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Wecodelaravel\\Menu\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Wecodelaravel\\Menu\\MenuServiceProvider"
+            ],
+            "aliases": {
+                "Menu": "Wecodelaravel\\Menu\\Facades\\Menu"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

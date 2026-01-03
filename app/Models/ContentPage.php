@@ -28,10 +28,12 @@ class ContentPage extends Model implements HasMedia
 
     protected $fillable = [
         'published',
+        'is_fake',
         'client_id',
         'title',
         'slug',
         'page_type',
+        'layout',
         'page_text',
         'excerpt',
         'created_at',
@@ -77,10 +79,25 @@ class ContentPage extends Model implements HasMedia
         return $this->belongsTo(Client::class, 'client_id');
     }
 
+    public function sections()
+    {
+        return $this->hasMany(PageSection::class)->orderBy('sort_order');
+    }
+
     public const PAGE_TYPE_SELECT = [
         'general' => 'General',
         'how_to_order' => 'How to Order',
         'allocation_schedule' => 'Allocation Schedule',
         'delivery_info' => 'Delivery Information',
+    ];
+
+    public const LAYOUT_SELECT = [
+        'default' => 'Default (Full Width)',
+        'sidebar-left' => 'Sidebar Left',
+        'sidebar-right' => 'Sidebar Right',
+        'content-image' => 'Content Left, Image Right',
+        'image-content' => 'Image Left, Content Right',
+        'narrow' => 'Narrow (Centered)',
+        'wide' => 'Wide (No Container)',
     ];
 }

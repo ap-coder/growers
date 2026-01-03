@@ -21,6 +21,7 @@ class ProductTag extends Model
 
     protected $fillable = [
         'name',
+        'is_fake',
         'created_at',
         'updated_at',
         'deleted_at',
