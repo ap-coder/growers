@@ -416,9 +416,13 @@ class SettingController extends Controller
     public function clearTelescope()
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        abort_if(!auth()->user()->isWclDeveloper, Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            // Check if telescope:clear command exists
+            if (!array_key_exists('telescope:clear', Artisan::all())) {
+                return redirect()->route('admin.settings.index')->with('error', 'Telescope is not available in this environment.');
+            }
+            
             Artisan::call('telescope:clear');
             $output = Artisan::output();
             return redirect()->route('admin.settings.index')->with('message', 'Telescope logs cleared successfully! ' . $output);

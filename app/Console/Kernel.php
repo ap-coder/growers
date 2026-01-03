@@ -12,8 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Clear Telescope logs daily at midnight
-        $schedule->command('telescope:clear')->daily();
+        // Clear Telescope logs daily at midnight (only if Telescope is available)
+        if (array_key_exists('telescope:clear', \Illuminate\Support\Facades\Artisan::all())) {
+            $schedule->command('telescope:clear')->daily();
+        }
     }
 
     /**

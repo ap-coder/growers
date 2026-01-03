@@ -37,7 +37,11 @@
             <div class="row align-center-center">
                 <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-12 p-a0">
                     <div class="login-slider">
-                        <div class="banner-login" style="background-image: url({{ asset('site/images/registration/pic2.jpg') }})">
+                        @php
+                            $loginBg = \App\Models\Setting::get('login_background_image');
+                            $loginBgUrl = $loginBg ? asset('storage/' . $loginBg) : asset('site/images/registration/pic2.jpg');
+                        @endphp
+                        <div class="banner-login" style="background-image: url({{ $loginBgUrl }})">
                             <div class="banner-content">
                                 <h4 class="sub-title">Log in</h4>
                                 <h2 class="title">Welcome Back</h2>
