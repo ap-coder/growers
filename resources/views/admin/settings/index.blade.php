@@ -142,23 +142,6 @@
                 </h5>
             </div>
             <div class="card-body">
-                @if(session('message'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle mr-2"></i>{{ session('message') }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                @endif
-
                 <div class="row">
                     <div class="col-md-3">
                         <div class="card card-outline card-info h-100">
@@ -422,7 +405,7 @@
 @if(Auth::user()->isWclDeveloper)
 <div class="card mt-4">
     <div class="card-header bg-dark text-white">
-        <h5 class="mb-0"><i class="fas fa-code mr-2"></i> Developer Tools</h5>
+        <h5 class="mb-0"><i class="fas fa-code mr-2"></i> WCL Developer Tools</h5>
     </div>
     <div class="card-body">
         <div class="row">
@@ -434,9 +417,9 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Squash all migrations into a single file:</p>
-                        <form action="{{ route('admin.settings.squashMigrations') }}" method="POST">
+                        <form action="{{ route('admin.settings.squashMigrations') }}" method="POST" class="wcl-ajax-form">
                             @csrf
-                            <button type="submit" class="btn btn-dark btn-sm btn-block" onclick="return confirm('This will generate a squashed migration file from the current database schema. Continue?')">
+                            <button type="submit" class="btn btn-dark btn-sm btn-block">
                                 <i class="fas fa-compress-alt mr-1"></i> Squash Migrations
                             </button>
                         </form>
@@ -452,10 +435,10 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Regenerate ALL media with responsive images:</p>
-                        <form action="{{ route('admin.settings.regenerateMedia') }}" method="POST">
+                        <form action="{{ route('admin.settings.regenerateMedia') }}" method="POST" class="wcl-ajax-form">
                             @csrf
                             <input type="hidden" name="mode" value="all">
-                            <button type="submit" class="btn btn-dark btn-sm btn-block" onclick="return confirm('This will regenerate ALL media files. This may take a while. Continue?')">
+                            <button type="submit" class="btn btn-dark btn-sm btn-block">
                                 <i class="fas fa-sync mr-1"></i> Regenerate All
                             </button>
                         </form>
@@ -471,10 +454,10 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Regenerate only missing media conversions:</p>
-                        <form action="{{ route('admin.settings.regenerateMedia') }}" method="POST">
+                        <form action="{{ route('admin.settings.regenerateMedia') }}" method="POST" class="wcl-ajax-form">
                             @csrf
                             <input type="hidden" name="mode" value="missing">
-                            <button type="submit" class="btn btn-dark btn-sm btn-block" onclick="return confirm('This will regenerate only missing media conversions. Continue?')">
+                            <button type="submit" class="btn btn-dark btn-sm btn-block">
                                 <i class="fas fa-sync mr-1"></i> Regen Missing
                             </button>
                         </form>
@@ -493,9 +476,9 @@
                         <a href="{{ url('telescope') }}" target="_blank" class="btn btn-dark btn-sm btn-block mb-2">
                             <i class="fas fa-external-link-alt mr-1"></i> Open Telescope
                         </a>
-                        <form action="{{ route('admin.settings.clearTelescope') }}" method="POST">
+                        <form action="{{ route('admin.settings.clearTelescope') }}" method="POST" class="wcl-ajax-form">
                             @csrf
-                            <button type="submit" class="btn btn-outline-dark btn-sm btn-block" onclick="return confirm('Clear all Telescope logs?')">
+                            <button type="submit" class="btn btn-outline-dark btn-sm btn-block">
                                 <i class="fas fa-trash mr-1"></i> Clear Logs
                             </button>
                         </form>
@@ -513,10 +496,10 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Regenerate media for content pages:</p>
-                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST">
+                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST" class="wcl-ajax-form">
                             @csrf
                             <input type="hidden" name="model" value="ContentPage">
-                            <button type="submit" class="btn btn-secondary btn-sm btn-block" onclick="return confirm('Regenerate all media for Content Pages?')">
+                            <button type="submit" class="btn btn-secondary btn-sm btn-block">
                                 <i class="fas fa-sync mr-1"></i> Regen Pages
                             </button>
                         </form>
@@ -531,10 +514,10 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Regenerate media for products:</p>
-                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST">
+                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST" class="wcl-ajax-form">
                             @csrf
                             <input type="hidden" name="model" value="Product">
-                            <button type="submit" class="btn btn-secondary btn-sm btn-block" onclick="return confirm('Regenerate all media for Products?')">
+                            <button type="submit" class="btn btn-secondary btn-sm btn-block">
                                 <i class="fas fa-sync mr-1"></i> Regen Products
                             </button>
                         </form>
@@ -549,10 +532,10 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Regenerate media for clients:</p>
-                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST">
+                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST" class="wcl-ajax-form">
                             @csrf
                             <input type="hidden" name="model" value="Client">
-                            <button type="submit" class="btn btn-secondary btn-sm btn-block" onclick="return confirm('Regenerate all media for Clients?')">
+                            <button type="submit" class="btn btn-secondary btn-sm btn-block">
                                 <i class="fas fa-sync mr-1"></i> Regen Clients
                             </button>
                         </form>
@@ -567,10 +550,10 @@
                     </div>
                     <div class="card-body">
                         <p class="text-muted small">Regenerate media for settings (logo, etc):</p>
-                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST">
+                        <form action="{{ route('admin.settings.regenerateModelMedia') }}" method="POST" class="wcl-ajax-form">
                             @csrf
                             <input type="hidden" name="model" value="Setting">
-                            <button type="submit" class="btn btn-secondary btn-sm btn-block" onclick="return confirm('Regenerate all media for Settings?')">
+                            <button type="submit" class="btn btn-secondary btn-sm btn-block">
                                 <i class="fas fa-sync mr-1"></i> Regen Settings
                             </button>
                         </form>
@@ -636,6 +619,57 @@ $(document).ready(function() {
                         button.prop('disabled', false).html(originalText);
                     }
                 });
+            }
+        });
+    });
+    
+    // Handle WCL Developer Tools AJAX forms
+    $('.wcl-ajax-form').on('submit', function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var url = form.attr('action');
+        var button = form.find('button[type="submit"]');
+        var originalText = button.html();
+        
+        button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Processing...');
+        
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success === false) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.message || 'An error occurred',
+                        icon: 'error',
+                        timer: 10000,
+                        timerProgressBar: true,
+                        showConfirmButton: true
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message || 'Operation completed successfully!',
+                        icon: 'success',
+                        timer: 10000,
+                        timerProgressBar: true,
+                        showConfirmButton: true
+                    });
+                }
+                button.prop('disabled', false).html(originalText);
+            },
+            error: function(xhr) {
+                var errorMsg = xhr.responseJSON?.message || 'An error occurred';
+                Swal.fire({
+                    title: 'Error!',
+                    text: errorMsg,
+                    icon: 'error',
+                    timer: 10000,
+                    timerProgressBar: true,
+                    showConfirmButton: true
+                });
+                button.prop('disabled', false).html(originalText);
             }
         });
     });

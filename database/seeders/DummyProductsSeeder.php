@@ -12,6 +12,7 @@ use App\Models\AccessoryType;
 use App\Models\Accessory;
 use App\Models\ProductBundleItem;
 use App\Models\ProductPriceTier;
+use App\Models\VariationCategory;
 use App\Models\FaqCategory;
 use App\Models\FaqQuestion;
 use App\Models\ContentPage;
@@ -131,6 +132,8 @@ class DummyProductsSeeder extends Seeder
      */
     public static function seedDummyProducts(int $count = 15): array
     {
+        set_time_limit(120); // Allow up to 2 minutes for seeding with images
+        
         $data = self::ensureCategoriesAndTags();
         $categories = $data['categories'];
         $tags = $data['tags'];
@@ -142,12 +145,18 @@ class DummyProductsSeeder extends Seeder
         $variationCount = 0;
         
         foreach ($products as $product) {
-            // Attach 1-2 random categories
-            $numCategories = rand(1, 2);
-            $randomCategoryKeys = array_rand($categories, min($numCategories, count($categories)));
-            if (!is_array($randomCategoryKeys)) $randomCategoryKeys = [$randomCategoryKeys];
-            foreach ($randomCategoryKeys as $key) {
-                $product->categories()->syncWithoutDetaching([$categories[$key]->id]);
+            // Attach 1-2 random categories (always)
+            $categoryArray = array_values($categories);
+            $numCategories = rand(1, min(2, count($categoryArray)));
+            $randomCategories = collect($categoryArray)->random($numCategories);
+            $product->categories()->syncWithoutDetaching($randomCategories->pluck('id')->toArray());
+            
+            // Attach 1-3 random clients (always, if clients exist) and set client_access to 'selected'
+            if ($clients->count() > 0) {
+                $numClients = rand(1, min(3, $clients->count()));
+                $randomClients = $clients->random($numClients);
+                $product->clients()->syncWithoutDetaching($randomClients->pluck('id')->toArray());
+                $product->update(['client_access' => 'selected']);
             }
             
             // Attach 0-3 random tags
@@ -159,21 +168,61 @@ class DummyProductsSeeder extends Seeder
                 $product->tags()->attach($tagIds);
             }
             
-            // Add 2-4 variations to ~60% of products
+            // Add 2-4 variations to ~60% of products with variation categories
             if (rand(1, 100) <= 60) {
-                $variationNames = ['Small', 'Medium', 'Large', 'Extra Large', '4"', '6"', '8"', '10"'];
-                $numVariations = rand(2, 4);
-                $selectedVariations = array_rand(array_flip($variationNames), $numVariations);
-                if (!is_array($selectedVariations)) $selectedVariations = [$selectedVariations];
+                // Define variation category sets with their variations and descriptions
+                $variationSets = [
+                    'Size' => [
+                        'Small' => 'Compact size, perfect for small spaces',
+                        'Medium' => 'Standard size for most applications',
+                        'Large' => 'Generous size for maximum impact',
+                        'Extra Large' => 'Our largest option for statement pieces',
+                    ],
+                    'Pot Size' => [
+                        '4"' => '4 inch pot, ideal for windowsills',
+                        '6"' => '6 inch pot, great for desks and tables',
+                        '8"' => '8 inch pot, perfect floor accent',
+                        '10"' => '10 inch pot, impressive floor display',
+                    ],
+                    'Color' => [
+                        'Red' => 'Vibrant red variety',
+                        'Pink' => 'Soft pink coloring',
+                        'White' => 'Classic white variety',
+                        'Mixed' => 'Assorted color mix',
+                    ],
+                    'Grade' => [
+                        'Standard' => 'Quality standard grade',
+                        'Premium' => 'Hand-selected premium quality',
+                        'Select' => 'Top-tier select grade',
+                    ],
+                ];
+                
+                // Pick a random variation category
+                $categoryName = array_rand($variationSets);
+                $variationsForCategory = $variationSets[$categoryName];
+                
+                // Get or create the variation category
+                $variationCategory = VariationCategory::firstOrCreate(
+                    ['name' => $categoryName],
+                    ['published' => true, 'is_fake' => true]
+                );
+                
+                // Select 2-4 random variations from this category
+                $numVariations = rand(2, min(4, count($variationsForCategory)));
+                $selectedKeys = array_rand($variationsForCategory, $numVariations);
+                if (!is_array($selectedKeys)) $selectedKeys = [$selectedKeys];
                 
                 $sortOrder = 1;
-                foreach ($selectedVariations as $varName) {
+                foreach ($selectedKeys as $varName) {
+                    $varDescription = $variationsForCategory[$varName];
                     $varBasePrice = $product->base_price + (rand(-200, 500) / 100);
-                    $varFullPrice = round($varBasePrice * (1 + rand(15, 40) / 100), 2); // 15-40% higher
+                    $varFullPrice = round($varBasePrice * (1 + rand(15, 40) / 100), 2);
                     ProductVariation::create([
                         'product_id' => $product->id,
+                        'variation_category_id' => $variationCategory->id,
                         'name' => $varName,
-                        'sku' => $product->sku . '-' . strtoupper(substr($varName, 0, 2)),
+                        'description' => $varDescription,
+                        'sku' => $product->sku . '-' . strtoupper(substr(preg_replace('/[^a-zA-Z0-9]/', '', $varName), 0, 2)),
                         'base_price' => $varBasePrice,
                         'full_price' => $varFullPrice,
                         'quantity' => rand(0, 100),
@@ -272,18 +321,26 @@ class DummyProductsSeeder extends Seeder
      */
     public static function seedDummyAccessoryProducts(int $count = 5): array
     {
+        set_time_limit(120);
+        
         $data = self::ensureCategoriesAndTags();
         $categories = $data['categories'];
         $accessoryData = self::ensureAccessoryItems();
         $accessoryTypes = $accessoryData['types'];
         
         $accessories = Product::factory()->accessory()->count($count)->create();
+        $accessoryTypeArray = array_values($accessoryTypes);
+        $categoryArray = array_values($categories);
+        
         foreach ($accessories as $accessory) {
+            // Assign random accessory type
+            $randomType = $accessoryTypeArray[array_rand($accessoryTypeArray)];
             $accessory->update([
-                'accessory_type_id' => $accessoryTypes[array_rand($accessoryTypes)]->id
+                'accessory_type_id' => $randomType->id
             ]);
             
-            $randomCategory = $categories[array_rand($categories)];
+            // Assign random category
+            $randomCategory = $categoryArray[array_rand($categoryArray)];
             $accessory->categories()->attach($randomCategory->id);
             
             self::addPlaceholderImage($accessory, 'accessory');
@@ -297,6 +354,8 @@ class DummyProductsSeeder extends Seeder
      */
     public static function seedDummyBundles(int $count = 1): array
     {
+        set_time_limit(120);
+        
         $data = self::ensureCategoriesAndTags();
         $categories = $data['categories'];
         $bundleCount = 0;
