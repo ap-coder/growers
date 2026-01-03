@@ -236,7 +236,7 @@ class Product extends Model implements HasMedia
     public function accessories()
     {
         return $this->belongsToMany(Accessory::class, 'product_accessory')
-            ->withPivot(['is_default', 'is_required'])
+            ->withPivot(['is_default', 'is_required', 'included_in_price'])
             ->withTimestamps();
     }
 

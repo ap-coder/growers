@@ -40,7 +40,8 @@
                                         <th>{{ $accessoryType->name }}</th>
                                         <th style="width: 100px;">SKU</th>
                                         <th style="width: 80px;">Price</th>
-                                        <th style="width: 80px;" class="text-center">Included</th>
+                                        <th style="width: 80px;" class="text-center" title="Pre-selected by default">Default</th>
+                                        <th style="width: 100px;" class="text-center" title="Included in product price (no extra charge)">Included in Price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -73,6 +74,15 @@
                                                     class="accessory-default"
                                                     data-accessory-id="{{ $accessory->id }}"
                                                     {{ $pivot?->is_default ? 'checked' : '' }}
+                                                    {{ !$isSelected ? 'disabled' : '' }}>
+                                            </td>
+                                            <td class="text-center">
+                                                <input type="checkbox" 
+                                                    name="accessory_included[{{ $accessory->id }}]" 
+                                                    value="1"
+                                                    class="accessory-included"
+                                                    data-accessory-id="{{ $accessory->id }}"
+                                                    {{ $pivot?->included_in_price ? 'checked' : '' }}
                                                     {{ !$isSelected ? 'disabled' : '' }}>
                                             </td>
                                         </tr>
@@ -129,18 +139,18 @@ $(document).ready(function() {
         }
     });
 
-    // Enable/disable default and required checkboxes based on accessory selection
+    // Enable/disable default and included checkboxes based on accessory selection
     $(document).on('change', '.accessory-checkbox', function() {
         var accessoryId = $(this).data('accessory-id');
         var defaultCheckbox = $('.accessory-default[data-accessory-id="' + accessoryId + '"]');
-        var requiredCheckbox = $('.accessory-required[data-accessory-id="' + accessoryId + '"]');
+        var includedCheckbox = $('.accessory-included[data-accessory-id="' + accessoryId + '"]');
         
         if ($(this).is(':checked')) {
             defaultCheckbox.prop('disabled', false);
-            requiredCheckbox.prop('disabled', false);
+            includedCheckbox.prop('disabled', false);
         } else {
             defaultCheckbox.prop('disabled', true).prop('checked', false);
-            requiredCheckbox.prop('disabled', true).prop('checked', false);
+            includedCheckbox.prop('disabled', true).prop('checked', false);
         }
     });
 });

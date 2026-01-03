@@ -8,18 +8,23 @@ class ProductPriceTier extends Model
 {
     protected $fillable = [
         'product_id',
+        'tier_group',
         'min_quantity',
         'max_quantity',
         'price',
+        'discount_percent',
         'label',
         'sort_order',
+        'is_fake',
     ];
 
     protected $casts = [
         'min_quantity' => 'integer',
         'max_quantity' => 'integer',
         'price' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
         'sort_order' => 'integer',
+        'is_fake' => 'boolean',
     ];
 
     public function product()

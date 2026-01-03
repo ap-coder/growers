@@ -27,9 +27,15 @@ class Accessory extends Model
         'base_price',
         'published',
         'sort_order',
+        'is_fake',
         'created_at',
         'updated_at',
         'deleted_at',
+    ];
+
+    protected $casts = [
+        'published' => 'boolean',
+        'is_fake' => 'boolean',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

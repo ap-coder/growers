@@ -471,11 +471,13 @@ class SettingController extends Controller
             $output = shell_exec("cd " . base_path() . " && php artisan telescope:clear 2>&1");
             $this->clearCaches();
 
+            session()->flash('swal_success', 'Telescope data has been cleared. ' . $output);
             return response()->json([
                 'success' => true,
                 'message' => 'Telescope data has been cleared. ' . $output,
             ]);
         } catch (\Exception $e) {
+            session()->flash('swal_error', 'Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
@@ -501,11 +503,13 @@ class SettingController extends Controller
             $output = shell_exec("cd " . base_path() . " && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename=\"[datetime]_squashed_growers_schema.php\" 2>&1");
             $this->clearCaches();
 
+            session()->flash('swal_success', 'Migration squashed successfully! ' . $output);
             return response()->json([
                 'success' => true,
                 'message' => 'Migration squashed successfully! ' . $output,
             ]);
         } catch (\Exception $e) {
+            session()->flash('swal_error', 'Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
@@ -529,13 +533,22 @@ class SettingController extends Controller
             }
             $output = Artisan::output();
 
+            $message = $exitCode === 0
+                ? "Media regenerated ({$modeText}) successfully!"
+                : 'Failed to regenerate media: ' . $output;
+            
+            if ($exitCode === 0) {
+                session()->flash('swal_success', $message);
+            } else {
+                session()->flash('swal_error', $message);
+            }
+            
             return response()->json([
                 'success' => $exitCode === 0,
-                'message' => $exitCode === 0
-                    ? "Media regenerated ({$modeText}) successfully!"
-                    : 'Failed to regenerate media: ' . $output,
+                'message' => $message,
             ]);
         } catch (\Exception $e) {
+            session()->flash('swal_error', 'Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),
@@ -567,13 +580,22 @@ class SettingController extends Controller
             ]);
             $output = Artisan::output();
 
+            $message = $exitCode === 0
+                ? "Media regenerated for {$model} successfully!"
+                : 'Failed to regenerate media: ' . $output;
+            
+            if ($exitCode === 0) {
+                session()->flash('swal_success', $message);
+            } else {
+                session()->flash('swal_error', $message);
+            }
+            
             return response()->json([
                 'success' => $exitCode === 0,
-                'message' => $exitCode === 0
-                    ? "Media regenerated for {$model} successfully!"
-                    : 'Failed to regenerate media: ' . $output,
+                'message' => $message,
             ]);
         } catch (\Exception $e) {
+            session()->flash('swal_error', 'Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error: ' . $e->getMessage(),

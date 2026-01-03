@@ -24,6 +24,7 @@ class ProductVariation extends Model
         'full_price',
         'base_cost',
         'quantity',
+        'show_quantity',
         'qb_1',
         'qb_2',
         'sort_order',
@@ -47,6 +48,7 @@ class ProductVariation extends Model
         'published' => 'boolean',
         'active' => 'boolean',
         'is_fake' => 'boolean',
+        'show_quantity' => 'boolean',
     ];
 
     public function product()

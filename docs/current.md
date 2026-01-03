@@ -108,7 +108,33 @@ Should include:
 
 ---
 
-## Recent Changes (January 2, 2026 - Evening Session)
+## Recent Changes (January 2, 2026 - Late Night Session)
+
+### Product Detail Page Enhancements
+- **Excerpt/Description layout** - Excerpt shows in right column, full description moved below images
+- **Variations display** - Grouped by VariationCategory with stock badges (green >10, yellow 1-10, red Out)
+- **Quantity inputs** - Plain number inputs without +/- buttons, no spinner arrows, centered text
+- **Accessories section** - New partial `product-accessories.blade.php` displays product accessories
+- **Included in Price** - New `included_in_price` field on product_accessory pivot table with green "Included" badge
+
+### Admin Product Edit Enhancements
+- **Quick Add Variations** - Select from existing variations used on other products to maintain consistency
+- **Quick Add Price Tiers** - Select from existing tier ranges (e.g., 1-49, 50-99, 100+) used on other products
+- **Discount % on Price Tiers** - New `discount_percent` column on `product_price_tiers` table
+- **Included in Price checkbox** - New column on Accessories tab for accessories included in product price
+
+### WCL Developer Tools (Admin Settings)
+- **Session-based alerts** - SweetAlert messages persist across page changes using session flash
+- **Cache clearing** - Added before/after all WCL commands to prevent caching issues
+- **Timeout handling** - Extended timeout (5 min) for long-running commands
+
+### Database Migrations
+- `add_included_in_price_to_product_accessory_table` - Boolean for accessories included in price
+- `add_discount_to_product_price_tiers_table` - Decimal for discount percentage
+
+---
+
+## Previous Changes (January 2, 2026 - Evening Session)
 
 ### Menu Builder Enhancements
 - **Role-based menu items** - Enabled `use_roles` in config, added `role_id` column to `menu_items` table

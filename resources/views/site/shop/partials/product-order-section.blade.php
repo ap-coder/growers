@@ -1,155 +1,106 @@
-{{-- Product Order Section - Variations with quantities and single Add to Cart --}}
+{{-- Product Order Section - Add to Cart and Base Price --}}
+<style>
+.variation-qty-input::-webkit-outer-spin-button,
+.variation-qty-input::-webkit-inner-spin-button,
+.accessory-qty-input::-webkit-outer-spin-button,
+.accessory-qty-input::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+    display: none !important;
+}
+.variation-qty-input,
+.accessory-qty-input {
+    -moz-appearance: textfield !important;
+}
+</style>
 @php
     $clientId = $clientId ?? null;
-    $variations = $product->variations()->where('published', true)->where('active', true)->orderBy('variation_category_id')->orderBy('sort_order')->get();
-    $hasVariations = $variations->count() > 0;
-    $variationsByCategory = $variations->groupBy('variation_category_id');
+    $hasVariations = $product->variations()->where('published', true)->where('active', true)->count() > 0;
+    $basePrice = $product->getPriceForClient($clientId);
 @endphp
 
-<div class="product-order-section">
-    <hr class="my-4">
-    
-    @if($hasVariations)
-        {{-- Variations List Grouped by Category --}}
-        <div class="variations-list mb-4">
-            <h5 class="mb-3">Select Options</h5>
-            
-            @foreach($variationsByCategory as $category => $categoryVariations)
-            <div class="variation-category mb-3">
-                @php
-                    $categoryModel = \App\Models\VariationCategory::find($category);
-                @endphp
-                <h6 class="text-muted mb-2">
-                    <i class="fas fa-tag me-1"></i>
-                    {{ $categoryModel->name ?? 'Options' }}
-                </h6>
-                <div class="table-responsive">
-                    <table class="table table-sm align-middle mb-0">
-                        @if($loop->first)
-                        <thead class="table-light">
-                            <tr>
-                                <th>Option</th>
-                                <th class="text-end" style="width: 120px;">Price</th>
-                                <th class="text-center" style="width: 140px;">Quantity</th>
-                            </tr>
-                        </thead>
-                        @endif
-                        <tbody>
-                            @foreach($categoryVariations as $variation)
-                                @php
-                                    $varPrice = $variation->getPriceForClient($clientId) ?? $variation->base_price;
-                                @endphp
-                                <tr>
-                                    <td>
-                                        <strong>{{ $variation->name }}</strong>
-                                        @if($variation->description)
-                                            <br><small class="text-muted">{{ $variation->description }}</small>
-                                        @endif
-                                        @if($variation->sku)
-                                            <br><small class="text-muted">SKU: {{ $variation->sku }}</small>
-                                        @endif
-                                    </td>
-                                    <td class="text-end">
-                                        @if($varPrice)
-                                            ${{ number_format($varPrice, 2) }}
-                                        @else
-                                            <span class="text-muted">--</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="input-group input-group-sm">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="decrementVariationQty({{ $variation->id }})">-</button>
-                                            <input type="number" class="form-control text-center variation-qty" 
-                                                   id="variation-qty-{{ $variation->id }}" 
-                                                   data-variation-id="{{ $variation->id }}"
-                                                   data-product-id="{{ $product->id }}"
-                                                   data-price="{{ $varPrice }}"
-                                                   value="0" min="0">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="incrementVariationQty({{ $variation->id }})">+</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+<div class="dz-product-detail style-4">
+    <div class="dz-content">
+        {{-- Base Product Price --}}
+        <div class="meta-content m-b20 d-flex align-items-center justify-content-between">
+            <div>
+                <span class="form-label d-block">Price</span>
+                <span class="price h4 mb-0">${{ number_format($basePrice ?? 0, 2) }}</span>
+                @if($product->full_price && $product->full_price > $basePrice)
+                    <span class="text-muted text-decoration-line-through ms-2">${{ number_format($product->full_price, 2) }}</span>
+                @endif
             </div>
-            @endforeach
+            @if(!$hasVariations)
+                <div>
+                    <label class="form-label">Quantity</label>
+                    <input id="base-product-qty" type="number" value="1" min="1"
+                           class="form-control form-control-sm"
+                           style="width: 70px; text-align: center;"
+                           data-product-id="{{ $product->id }}"
+                           data-price="{{ $basePrice }}">
+                </div>
+            @endif
         </div>
-    @else
-        {{-- No variations - show base product quantity --}}
-        <div class="base-product-qty mb-4">
-            <div class="row align-items-center">
-                <div class="col-auto">
-                    <strong>{{ $product->name }}</strong>
-                    @if($product->sku)
-                        <br><small class="text-muted">SKU: {{ $product->sku }}</small>
-                    @endif
-                </div>
-                <div class="col-auto ms-auto text-end">
-                    @php $basePrice = $product->getPriceForClient($clientId); @endphp
-                    @if($basePrice)
-                        <strong>${{ number_format($basePrice, 2) }}</strong>
-                    @endif
-                </div>
-                <div class="col-auto" style="width: 140px;">
-                    <div class="input-group input-group-sm">
-                        <button class="btn btn-outline-secondary" type="button" onclick="decrementBaseQty()">-</button>
-                        <input type="number" class="form-control text-center" id="base-product-qty" 
-                               data-product-id="{{ $product->id }}"
-                               data-price="{{ $basePrice }}"
-                               value="1" min="1">
-                        <button class="btn btn-outline-secondary" type="button" onclick="incrementBaseQty()">+</button>
-                    </div>
-                </div>
-            </div>
+        
+        {{-- Add to Cart Button --}}
+        <div class="btn-group cart-btn m-b20">
+            <a href="javascript:void(0);" class="btn btn-secondary text-uppercase" onclick="addAllToCart({{ $product->id }})">
+                <i class="flaticon flaticon-shopping-cart-1 me-2"></i> Add To Cart
+            </a>
+            <a href="javascript:void(0);" class="btn btn-outline-secondary btn-icon add-to-wishlist" data-product-id="{{ $product->id }}">
+                <i class="flaticon flaticon-heart-3"></i>
+            </a>
         </div>
-    @endif
-    
-    <hr class="my-4">
-    
-    {{-- Single Add to Cart Button --}}
-    <div class="add-to-cart-section">
-        <button class="btn btn-primary btn-lg w-100" onclick="addAllToCart({{ $product->id }})">
-            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-        </button>
     </div>
 </div>
 
+
 @push('scripts')
 <script>
-function incrementVariationQty(variationId) {
-    var input = document.getElementById('variation-qty-' + variationId);
-    input.value = parseInt(input.value) + 1;
-}
-
-function decrementVariationQty(variationId) {
-    var input = document.getElementById('variation-qty-' + variationId);
-    if (parseInt(input.value) > 0) {
-        input.value = parseInt(input.value) - 1;
+function updateRunningTotal() {
+    var total = 0;
+    
+    // Check for variations
+    var variationInputs = document.querySelectorAll('.variation-qty-input');
+    if (variationInputs.length > 0) {
+        variationInputs.forEach(function(input) {
+            var qty = parseInt(input.value) || 0;
+            var price = parseFloat(input.dataset.price) || 0;
+            if (qty > 0) {
+                total += qty * price;
+            }
+        });
+    } else {
+        // Base product only
+        var baseInput = document.getElementById('base-product-qty');
+        if (baseInput) {
+            var qty = parseInt(baseInput.value) || 0;
+            var price = parseFloat(baseInput.dataset.price) || 0;
+            total = qty * price;
+        }
     }
-}
-
-function incrementBaseQty() {
-    var input = document.getElementById('base-product-qty');
-    input.value = parseInt(input.value) + 1;
-}
-
-function decrementBaseQty() {
-    var input = document.getElementById('base-product-qty');
-    if (parseInt(input.value) > 1) {
-        input.value = parseInt(input.value) - 1;
-    }
+    
+    // Add accessory prices
+    var accessoryInputs = document.querySelectorAll('.accessory-qty-input');
+    accessoryInputs.forEach(function(input) {
+        var qty = parseInt(input.value) || 0;
+        var price = parseFloat(input.dataset.price) || 0;
+        if (qty > 0) {
+            total += qty * price;
+        }
+    });
+    
+    document.getElementById('running-total').textContent = '$' + total.toFixed(2);
 }
 
 function addAllToCart(productId) {
     var items = [];
     
     // Check for variations
-    var variationInputs = document.querySelectorAll('.variation-qty');
+    var variationInputs = document.querySelectorAll('.variation-qty-input');
     if (variationInputs.length > 0) {
         variationInputs.forEach(function(input) {
-            var qty = parseInt(input.value);
+            var qty = parseInt(input.value) || 0;
             if (qty > 0) {
                 items.push({
                     product_id: productId,
@@ -161,13 +112,17 @@ function addAllToCart(productId) {
         });
         
         if (items.length === 0) {
-            alert('Please select at least one option with a quantity greater than 0.');
+            Swal.fire({
+                title: 'No Items Selected',
+                text: 'Please select at least one option with a quantity greater than 0.',
+                icon: 'warning'
+            });
             return;
         }
     } else {
         // Base product only
         var baseInput = document.getElementById('base-product-qty');
-        var qty = parseInt(baseInput.value);
+        var qty = parseInt(baseInput.value) || 1;
         if (qty > 0) {
             items.push({
                 product_id: productId,
@@ -180,7 +135,38 @@ function addAllToCart(productId) {
     
     // TODO: Implement actual cart functionality
     console.log('Adding to cart:', items);
-    alert('Adding ' + items.length + ' item(s) to cart. (Cart functionality to be implemented)');
+    Swal.fire({
+        title: 'Added to Cart!',
+        text: items.length + ' item(s) added to cart.',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+    });
 }
+
+// Update total on quantity change
+document.addEventListener('DOMContentLoaded', function() {
+    // Variation inputs
+    document.querySelectorAll('.variation-qty-input').forEach(function(input) {
+        input.addEventListener('input', updateRunningTotal);
+        input.addEventListener('change', updateRunningTotal);
+    });
+    
+    // Accessory inputs
+    document.querySelectorAll('.accessory-qty-input').forEach(function(input) {
+        input.addEventListener('input', updateRunningTotal);
+        input.addEventListener('change', updateRunningTotal);
+    });
+    
+    // Base product input
+    var baseInput = document.getElementById('base-product-qty');
+    if (baseInput) {
+        baseInput.addEventListener('input', updateRunningTotal);
+        baseInput.addEventListener('change', updateRunningTotal);
+    }
+    
+    // Initial calculation
+    updateRunningTotal();
+});
 </script>
 @endpush

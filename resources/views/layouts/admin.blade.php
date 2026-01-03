@@ -433,6 +433,32 @@
     </script>
     @yield('scripts')
     @stack('scripts')
+    
+    {{-- Session-based SweetAlert for long-running operations --}}
+    @if(session('swal_success'))
+    <script>
+        Swal.fire({
+            title: 'Success!',
+            text: {!! json_encode(session('swal_success')) !!},
+            icon: 'success',
+            timer: 10000,
+            timerProgressBar: true,
+            showConfirmButton: true
+        });
+    </script>
+    @endif
+    @if(session('swal_error'))
+    <script>
+        Swal.fire({
+            title: 'Error!',
+            text: {!! json_encode(session('swal_error')) !!},
+            icon: 'error',
+            timer: 10000,
+            timerProgressBar: true,
+            showConfirmButton: true
+        });
+    </script>
+    @endif
 </body>
 
 </html>
