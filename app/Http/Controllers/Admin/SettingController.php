@@ -23,14 +23,17 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SettingController extends Controller
 {
-    /**
-     * Clear application caches via shell
-     */
     private function clearCaches(): void
     {
         $basePath = base_path();
         shell_exec("cd {$basePath} && php artisan config:clear 2>&1");
         shell_exec("cd {$basePath} && php artisan cache:clear 2>&1");
+    }
+
+    private function extendTimeout(int $seconds = 300): void
+    {
+        set_time_limit($seconds);
+        ini_set('max_execution_time', $seconds);
     }
 
     public function index(Request $request)
@@ -154,6 +157,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyProducts(15);
             $this->clearCaches();
@@ -176,6 +180,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyAccessoryProducts(5);
             $this->clearCaches();
@@ -198,6 +203,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyBundles(1);
             $this->clearCaches();
@@ -220,6 +226,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::seedMoreVariations();
             $this->clearCaches();
@@ -242,6 +249,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::removeDummyProducts();
             $this->clearCaches();
@@ -264,6 +272,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             Artisan::call('iseed', ['tables' => 'settings,media', '--force' => true]);
             $this->clearCaches();
@@ -279,6 +288,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             Artisan::call('iseed', ['tables' => 'menus,menu_items', '--force' => true]);
             $this->clearCaches();
@@ -294,6 +304,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             Artisan::call('db:seed', ['--class' => 'DummyClientsSeeder']);
             $this->clearCaches();
@@ -316,6 +327,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyClientsSeeder::removeDummyClients();
             $this->clearCaches();
@@ -338,6 +350,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyFaqs();
             $this->clearCaches();
@@ -372,6 +385,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::removeDummyFaqs();
             $this->clearCaches();
@@ -394,6 +408,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $counts = DummyProductsSeeder::seedDummyPages();
             $this->clearCaches();
@@ -428,6 +443,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $count = DummyProductsSeeder::removeDummyPages();
             $this->clearCaches();
@@ -450,6 +466,7 @@ class SettingController extends Controller
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         try {
+            $this->extendTimeout();
             $this->clearCaches();
             $output = shell_exec("cd " . base_path() . " && php artisan telescope:clear 2>&1");
             $this->clearCaches();
@@ -473,13 +490,13 @@ class SettingController extends Controller
 
         try {
             $migrationsPath = database_path('migrations');
-            
-            // Remove existing squashed migration files
+
             $existingFiles = glob($migrationsPath . '/*_squashed_*.php');
             foreach ($existingFiles as $file) {
                 File::delete($file);
             }
 
+            $this->extendTimeout();
             $this->clearCaches();
             $output = shell_exec("cd " . base_path() . " && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename=\"[datetime]_squashed_growers_schema.php\" 2>&1");
             $this->clearCaches();
@@ -514,7 +531,7 @@ class SettingController extends Controller
 
             return response()->json([
                 'success' => $exitCode === 0,
-                'message' => $exitCode === 0 
+                'message' => $exitCode === 0
                     ? "Media regenerated ({$modeText}) successfully!"
                     : 'Failed to regenerate media: ' . $output,
             ]);
@@ -552,7 +569,7 @@ class SettingController extends Controller
 
             return response()->json([
                 'success' => $exitCode === 0,
-                'message' => $exitCode === 0 
+                'message' => $exitCode === 0
                     ? "Media regenerated for {$model} successfully!"
                     : 'Failed to regenerate media: ' . $output,
             ]);
