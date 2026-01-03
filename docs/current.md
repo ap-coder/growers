@@ -1,6 +1,6 @@
 # Pacific Plant Growers - Development Status
 
-## Last Updated: January 2, 2026 (Evening Session)
+## Last Updated: January 3, 2026 (Early Morning Session)
 
 ## Overview
 Wholesale plant seller admin application. Clients are retail grocery stores and flower shops (Harmon's, Smith's, Associated, Flower Shops).
@@ -108,7 +108,72 @@ Should include:
 
 ---
 
-## Recent Changes (January 2, 2026 - Late Night Session #4)
+## Recent Changes (January 3, 2026 - Early Morning Session)
+
+### Product Detail Page Enhancements
+- **Wishlist/Favorites System** - Complete AJAX-powered wishlist functionality
+  - Database: `wishlists` table with user_id/product_id unique constraint
+  - Model: `Wishlist` with User and Product relationships
+  - Controller: `WishlistController` with toggle and index methods
+  - Routes: POST `/wishlist/toggle`, GET `/account/wishlist`
+  - Frontend: Heart icon toggles between outline/filled, SweetAlert notifications
+  - Login prompt for unauthenticated users
+  - Shows correct state on page load (checks if product in wishlist)
+
+- **Product Tabs System** - Description, Additional Info, Shipping & Return tabs
+  - Database: `additional_info`, `shipping_return`, `show_tabs` fields on products table
+  - Individual tab controls: `show_description_tab`, `show_additional_info_tab`, `show_shipping_return_tab`
+  - Admin: "Content Display Options" section with 4 checkboxes (under product name)
+  - Frontend: Tabs section only shows if enabled and content exists
+  - Backward compatibility: Defaults to true for existing products
+
+- **Price Formatting** - Matches xhtml template exactly
+  - Format: `$45.00 <del>$132.17</del>` with strikethrough original price
+  - Shows when `show_original_price` enabled and `full_price` > current price
+  - Uses `meta-content` wrapper with `form-label` and `price` span
+
+- **Related Products Section** - Swiper carousel matching xhtml template
+  - Shows 4 products at a time (responsive: 1→2→3→4)
+  - Navigation arrows for sliding through products
+  - Shop-meta overlay with wishlist heart and eye icons (no cart icon)
+  - Proper container wrapper for correct width
+  - Uses `shop-card` class (not `shop-card style-1`)
+
+### CKEditor Enhancement (Admin Product Edit)
+- **Upgraded to CKEditor 5 v41.1.0 super-build** (from v16.0.0)
+- **Source Editing** - `</>` button to toggle between WYSIWYG and HTML code editing
+- **Alignment Tools** - Left, Center, Right, Justify buttons now available
+- **Text Formatting** - Bold, Italic, Underline, Strikethrough
+- **Font Options** - Font sizes (tiny, small, default, big, huge)
+- **Colors** - Font color and background color pickers
+- **Advanced Features** - Links, Tables, Block quotes, Horizontal lines
+- **HTML Support** - Full HTML with custom attributes, classes, and inline styles
+- **Applied to all 3 editors** - Description, Additional Info, Shipping & Return
+
+### Database Migrations
+- `2026_01_03_000001_create_wishlists_table` - Wishlist system
+- `2026_01_03_000002_add_product_tabs_fields` - Initial tab fields (additional_info, shipping_return, show_tabs)
+- `2026_01_03_000003_add_individual_tab_checkboxes` - Individual tab controls (show_description_tab, show_additional_info_tab, show_shipping_return_tab)
+
+### Files Modified
+- `resources/views/site/shop/product/default.blade.php` - Tabs section, related products, price format, removed duplicate description
+- `resources/views/site/shop/partials/product-order-section.blade.php` - Wishlist AJAX functionality
+- `resources/views/admin/products/edit.blade.php` - Content Display Options section, enhanced CKEditor config
+- `resources/views/layouts/admin.blade.php` - Upgraded CKEditor CDN link
+- `app/Http/Controllers/Site/ShopController.php` - Added wishlist check in show() method
+- `app/Models/Product.php` - Added new fillable fields and casts
+- `routes/frontend.php` - Added wishlist routes
+
+### Files Created
+- `database/migrations/2026_01_03_000001_create_wishlists_table.php`
+- `database/migrations/2026_01_03_000002_add_product_tabs_fields.php`
+- `database/migrations/2026_01_03_000003_add_individual_tab_checkboxes.php`
+- `app/Models/Wishlist.php`
+- `app/Http/Controllers/Site/WishlistController.php`
+
+---
+
+## Previous Changes (January 2, 2026 - Late Night Session #4)
 
 ### Collection Showcase Layouts (11 Layout Types)
 All layouts match xhtml template pages exactly and use existing products:

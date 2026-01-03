@@ -1,0 +1,140 @@
+/* Scoped Article Editor Content Styles */
+/* Only applies to elements inside .article-content */
+
+.article-content {
+    line-height: 1.6;
+}
+
+.article-content p {
+    margin-bottom: 1rem;
+}
+
+.article-content h1,
+.article-content h2,
+.article-content h3,
+.article-content h4,
+.article-content h5,
+.article-content h6 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.article-content h1 { font-size: 2.5rem; }
+.article-content h2 { font-size: 2rem; }
+.article-content h3 { font-size: 1.75rem; }
+.article-content h4 { font-size: 1.5rem; }
+.article-content h5 { font-size: 1.25rem; }
+.article-content h6 { font-size: 1rem; }
+
+.article-content ul,
+.article-content ol {
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+}
+
+.article-content li {
+    margin-bottom: 0.5rem;
+}
+
+.article-content blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    border-left: 4px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.article-content table {
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+}
+
+.article-content table th,
+.article-content table td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+}
+
+.article-content table th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+}
+
+.article-content a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.article-content a:hover {
+    text-decoration: underline;
+}
+
+.article-content strong,
+.article-content b {
+    font-weight: 600;
+}
+
+.article-content em,
+.article-content i {
+    font-style: italic;
+}
+
+.article-content code {
+    padding: 0.2rem 0.4rem;
+    background-color: #f5f5f5;
+    border-radius: 3px;
+    font-family: monospace;
+}
+
+.article-content pre {
+    padding: 1rem;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.article-content pre code {
+    padding: 0;
+    background-color: transparent;
+}
+
+/* Text Alignment Classes */
+.article-content [style*="text-align: left"],
+.article-content .text-left {
+    text-align: left !important;
+}
+
+.article-content [style*="text-align: center"],
+.article-content .text-center {
+    text-align: center !important;
+}
+
+.article-content [style*="text-align: right"],
+.article-content .text-right {
+    text-align: right !important;
+}
+
+.article-content [style*="text-align: justify"],
+.article-content .text-justify {
+    text-align: justify !important;
+}
+
+/* Preserve inline styles for alignment */
+.article-content p[style*="text-align"],
+.article-content h1[style*="text-align"],
+.article-content h2[style*="text-align"],
+.article-content h3[style*="text-align"],
+.article-content h4[style*="text-align"],
+.article-content h5[style*="text-align"],
+.article-content h6[style*="text-align"],
+.article-content div[style*="text-align"] {
+    /* Inline styles will take precedence */
+}

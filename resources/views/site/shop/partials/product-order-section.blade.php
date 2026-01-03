@@ -19,37 +19,109 @@
     $basePrice = $product->getPriceForClient($clientId);
 @endphp
 
-<div class="dz-product-detail style-4">
-    <div class="dz-content">
-        @if(!$hasVariations)
-            {{-- No variations - show quantity input --}}
-            <div class="meta-content m-b20 d-flex align-items-center">
-                <div>
-                    <label class="form-label">Quantity</label>
-                    <input id="base-product-qty" type="number" value="1" min="1"
-                           class="form-control form-control-sm"
-                           style="width: 70px; text-align: center;"
-                           data-product-id="{{ $product->id }}"
-                           data-price="{{ $basePrice }}">
-                </div>
-            </div>
-        @endif
-        
-        {{-- Add to Cart Button --}}
-        <div class="btn-group cart-btn m-b20">
-            <a href="javascript:void(0);" class="btn btn-secondary text-uppercase" onclick="addAllToCart({{ $product->id }})">
-                <i class="flaticon flaticon-shopping-cart-1 me-2"></i> Add To Cart
-            </a>
-            <a href="javascript:void(0);" class="btn btn-outline-secondary btn-icon add-to-wishlist" data-product-id="{{ $product->id }}">
-                <i class="flaticon flaticon-heart-3"></i>
-            </a>
+@if(!$hasVariations)
+    {{-- No variations - show quantity input --}}
+    <div class="meta-content m-b20 d-flex align-items-center">
+        <div>
+            <label class="form-label">Quantity</label>
+            <input id="base-product-qty" type="number" value="1" min="1"
+                   class="form-control form-control-sm"
+                   style="width: 70px; text-align: center;"
+                   data-product-id="{{ $product->id }}"
+                   data-price="{{ $basePrice }}">
         </div>
     </div>
+@endif
+
+{{-- Add to Cart Button --}}
+<div class="btn-group cart-btn m-b20">
+    <a href="javascript:void(0);" class="btn btn-secondary text-uppercase" onclick="addAllToCart({{ $product->id }})">
+        <i class="flaticon flaticon-shopping-cart-1 me-2"></i> Add To Cart
+    </a>
+    <a href="javascript:void(0);" class="btn btn-outline-secondary btn-icon add-to-wishlist {{ ($inWishlist ?? false) ? 'active' : '' }}" data-product-id="{{ $product->id }}">
+        <i class="flaticon {{ ($inWishlist ?? false) ? 'flaticon-heart-1' : 'flaticon-heart-3' }}"></i>
+    </a>
 </div>
 
 
 @push('scripts')
 <script>
+// Wishlist toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.add-to-wishlist').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var productId = this.dataset.productId;
+            var icon = this.querySelector('i');
+            
+            fetch('{{ route("site.wishlist.toggle") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Toggle heart icon state
+                    if (data.in_wishlist) {
+                        icon.classList.remove('flaticon-heart-3');
+                        icon.classList.add('flaticon-heart-1');
+                        this.classList.add('active');
+                    } else {
+                        icon.classList.remove('flaticon-heart-1');
+                        icon.classList.add('flaticon-heart-3');
+                        this.classList.remove('active');
+                    }
+                    
+                    // Show success message
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: data.in_wishlist ? 'Favorited for later!' : 'Removed from favorites',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                    }
+                } else if (data.redirect) {
+                    // Not logged in - redirect to login
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: data.message,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Login',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = data.redirect;
+                            }
+                        });
+                    } else {
+                        alert(data.message);
+                        window.location.href = data.redirect;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Something went wrong. Please try again.',
+                        icon: 'error'
+                    });
+                }
+            });
+        });
+    });
+});
+
 function updateRunningTotal() {
     var total = 0;
     

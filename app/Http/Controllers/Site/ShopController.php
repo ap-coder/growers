@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Setting;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -109,6 +110,14 @@ class ShopController extends Controller
             abort(403, 'You do not have access to this product.');
         }
 
+        // Check if product is in user's wishlist
+        $inWishlist = false;
+        if ($user) {
+            $inWishlist = Wishlist::where('user_id', $user->id)
+                ->where('product_id', $product->id)
+                ->exists();
+        }
+
         // Get product layout (use product-specific or default from settings)
         $layout = $product->layout ?: Setting::get('default_product_layout', 'default');
 
@@ -122,6 +131,6 @@ class ShopController extends Controller
             ->limit(4)
             ->get();
 
-        return view("site.shop.product.{$layout}", compact('product', 'relatedProducts', 'clientId'));
+        return view("site.shop.product.{$layout}", compact('product', 'relatedProducts', 'clientId', 'inWishlist'));
     }
 }

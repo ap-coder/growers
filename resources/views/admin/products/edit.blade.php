@@ -186,6 +186,46 @@
                         @endif
                     </div>
                     
+                    {{-- Content Display Options --}}
+                    <div class="card card-outline card-info mb-3">
+                        <div class="card-header py-2">
+                            <h6 class="mb-0"><i class="fas fa-list-alt mr-1"></i> Content Display Options</h6>
+                        </div>
+                        <div class="card-body py-2">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="icheck-primary">
+                                        <input type="hidden" name="show_description_tab" value="0">
+                                        <input type="checkbox" name="show_description_tab" id="show_description_tab" value="1" {{ old('show_description_tab', $product->show_description_tab ?? 1) ? 'checked' : '' }}>
+                                        <label for="show_description_tab">Show Description Tab</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="icheck-primary">
+                                        <input type="hidden" name="show_additional_info_tab" value="0">
+                                        <input type="checkbox" name="show_additional_info_tab" id="show_additional_info_tab" value="1" {{ old('show_additional_info_tab', $product->show_additional_info_tab ?? 1) ? 'checked' : '' }}>
+                                        <label for="show_additional_info_tab">Show Additional Info Tab</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="icheck-primary">
+                                        <input type="hidden" name="show_shipping_return_tab" value="0">
+                                        <input type="checkbox" name="show_shipping_return_tab" id="show_shipping_return_tab" value="1" {{ old('show_shipping_return_tab', $product->show_shipping_return_tab ?? 1) ? 'checked' : '' }}>
+                                        <label for="show_shipping_return_tab">Show Shipping & Return Tab</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="icheck-success">
+                                        <input type="hidden" name="show_tabs" value="0">
+                                        <input type="checkbox" name="show_tabs" id="show_tabs" value="1" {{ old('show_tabs', $product->show_tabs ?? 1) ? 'checked' : '' }}>
+                                        <label for="show_tabs">Enable Tabs Section</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted d-block mt-2">Control which content tabs are displayed on the product page. "Enable Tabs Section" must be checked for any tabs to show.</small>
+                        </div>
+                    </div>
+                    
                     {{-- Excerpt --}}
                     <div class="form-group">
                         <label for="excerpt">Excerpt (Short Description)</label>
@@ -202,6 +242,20 @@
                             </button>
                         @endif
                         <textarea class="form-control ckeditor" name="description" id="description" rows="6">{{ old('description', $product->description) }}</textarea>
+                    </div>
+                    
+                    {{-- Additional Info --}}
+                    <div class="form-group">
+                        <label for="additional_info">Additional Information</label>
+                        <textarea class="form-control ckeditor" name="additional_info" id="additional_info" rows="6">{{ old('additional_info', $product->additional_info) }}</textarea>
+                        <small class="text-muted">Additional product details, specifications, care instructions, etc.</small>
+                    </div>
+                    
+                    {{-- Shipping & Return --}}
+                    <div class="form-group">
+                        <label for="shipping_return">Shipping & Return Policy</label>
+                        <textarea class="form-control ckeditor" name="shipping_return" id="shipping_return" rows="6">{{ old('shipping_return', $product->shipping_return) }}</textarea>
+                        <small class="text-muted">Shipping information and return policy for this product.</small>
                     </div>
                 </div>
                 
@@ -850,60 +904,165 @@
         
         // ========== GENERATE DEMO CONTENT ==========
         function generateDemoContent() {
-            var productName = $('#name').val() || 'This Product';
+            var productName = $('#name').val() || 'Indoor Plant';
             
-            // Generate styled HTML description with theme classes
-            var descriptions = [
-                '<h3 class="dz-title mb-3">Product Overview</h3>' +
-                '<p class="mb-4">Discover the exceptional quality of our <strong>' + productName + '</strong>. Crafted with care and attention to detail, this product is designed to exceed your expectations.</p>' +
-                '<h4 class="dz-title mb-3">Key Features</h4>' +
-                '<ul class="list-check primary mb-4">' +
-                '<li><strong>Premium Quality:</strong> Made from the finest materials for lasting durability</li>' +
-                '<li><strong>Versatile Design:</strong> Perfect for any occasion or setting</li>' +
-                '<li><strong>Easy Care:</strong> Simple maintenance keeps it looking beautiful</li>' +
-                '<li><strong>Gift Ready:</strong> Makes an excellent gift for any special occasion</li>' +
-                '</ul>' +
-                '<h4 class="dz-title mb-3">Perfect For</h4>' +
-                '<p class="mb-4">Whether you are looking for a stunning centerpiece, a thoughtful gift, or a beautiful addition to your collection, the <em>' + productName + '</em> delivers on all fronts. Its timeless design complements both modern and traditional settings.</p>' +
-                '<div class="alert alert-light border-start border-primary border-4 ps-3">' +
-                '<strong>Pro Tip:</strong> Pair with our matching accessories for a complete, coordinated look!' +
-                '</div>',
-                
-                '<h3 class="dz-title mb-3">About ' + productName + '</h3>' +
-                '<p class="mb-4">Elevate your space with the stunning <strong>' + productName + '</strong>. This carefully curated piece combines functionality with aesthetic appeal.</p>' +
-                '<h4 class="dz-title mb-3">What Makes It Special</h4>' +
-                '<ul class="list-check primary mb-4">' +
-                '<li><strong>Handcrafted Excellence:</strong> Each piece is made with meticulous attention to detail</li>' +
-                '<li><strong>Sustainable Materials:</strong> Eco-friendly options that do not compromise on style</li>' +
-                '<li><strong>Timeless Appeal:</strong> A classic design that never goes out of style</li>' +
-                '<li><strong>Customer Favorite:</strong> Highly rated by our satisfied customers</li>' +
-                '</ul>' +
-                '<h4 class="dz-title mb-3">Care Instructions</h4>' +
-                '<p class="mb-3">To maintain the beauty of your <em>' + productName + '</em>, we recommend gentle cleaning with a soft cloth. Avoid direct sunlight for prolonged periods to preserve colors.</p>' +
-                '<p class="text-muted fst-italic"><strong>Dimensions and specifications may vary slightly as each piece is unique.</strong></p>',
-                
-                '<h3 class="dz-title mb-3">Introducing ' + productName + '</h3>' +
-                '<p class="mb-4">Transform any space with the elegant <strong>' + productName + '</strong>. This exceptional piece showcases superior craftsmanship and thoughtful design.</p>' +
-                '<h4 class="dz-title mb-3">Highlights</h4>' +
-                '<ul class="list-check primary mb-4">' +
-                '<li><strong>Quality Construction:</strong> Built to last with premium materials</li>' +
-                '<li><strong>Beautiful Finish:</strong> Eye-catching details that stand out</li>' +
-                '<li><strong>Multiple Uses:</strong> Versatile enough for home, office, or gifts</li>' +
-                '<li><strong>Value:</strong> Exceptional quality at a competitive price</li>' +
-                '</ul>' +
-                '<h4 class="dz-title mb-3">Why Choose Us?</h4>' +
-                '<p class="mb-3">We take pride in offering products that combine beauty, quality, and value. The <em>' + productName + '</em> is no exception, representing our commitment to excellence in every detail.</p>' +
-                '<p class="text-primary fw-semibold"><em>Order today and experience the difference quality makes!</em></p>'
-            ];
+            // Product Description - Pacific Plant Growers content
+            var description = '<div class="row  g-3 m-b30 align-items-center">' +
+                '<div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 ">' +
+                    '<div class="description style-1">' +
+                        '<h2 class="sub-title">The Quality &amp; Style</h2>' +
+                        '<h2 class="title">Premium Quality Indoor Plants</h2>' +
+                        '<p class="font-wight-500">Pacific Plant Growers has been supplying premium indoor plants to grocery stores and flower shops for over 20 years. Our ' + productName + ' is carefully grown and nurtured to ensure it arrives in peak condition, ready to delight your customers with its vibrant foliage and healthy appearance.</p>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-xl-4 col-lg-3 col-md-6 col-sm-6 ">' +
+                    '<div class="related-img dz-media">' +
+                        '<img src="{{ asset("site/images/feature/product-feature-4/1.png") }}" alt="/">' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-xl-4 col-lg-3 col-md-6 col-sm-6">' +
+                    '<div class="related-img dz-media">' +
+                        '<img src="{{ asset("site/images/feature/product-feature-4/2.png") }}" alt="/">' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<div class="row g-lg-4 g-3">' +
+                '<div class="col-xl-3 col-md-6 col-sm-12 ">' +
+                    '<div class="icon-bx-wraper style-6 m-b15">' +
+                        '<div class="icon-bx">' +
+                            '<i class="flaticon flaticon-chat-8"></i>' +
+                        '</div>' +
+                        '<div class="icon-content">' +
+                            '<h3 class="dz-title">Eco Friendly Product</h3>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-xl-3 col-md-6 col-sm-12 ">' +
+                    '<div class="icon-bx-wraper style-6 m-b15">' +
+                        '<div class="icon-bx">' +
+                            '<i class="flaticon flaticon-paper"></i>' +
+                        '</div>' +
+                        '<div class="icon-content">' +
+                            '<h3 class="dz-title">Easy To Clean And Maintain</h3>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-xl-3 col-md-6 col-sm-12">' +
+                    '<div class="icon-bx-wraper style-6 m-b15">' +
+                        '<div class="icon-bx">' +
+                            '<i class="flaticon flaticon-cardboard-box"></i>' +
+                        '</div>' +
+                        '<div class="icon-content">' +
+                            '<h3 class="dz-title">Premium Finish Quality</h3>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<div class="col-xl-3 col-md-6 col-sm-12">' +
+                    '<div class="icon-bx-wraper style-6 m-b15 border-0">' +
+                        '<div class="icon-bx">' +
+                            '<i class="flaticon flaticon-delivery-status"></i>' +
+                        '</div>' +
+                        '<div class="icon-content">' +
+                            '<h3 class="dz-title">Moisture Proof Product</h3>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+            '</div>' +
+            '<img src="{{ asset("site/images/background/bg4.jpg") }}" alt="">';
             
-            var randomDescription = descriptions[Math.floor(Math.random() * descriptions.length)];
+            // Additional Info content - Pacific Plant Growers
+            var additionalInfo = '<div class="detail-bx text-center">' +
+                '<h5 class="title">Additional Information</h5>' +
+                '<p class="para-text">' +
+                    'Pacific Plant Growers has been supplying premium indoor plants to retailers for over 20 years. Our ' + productName + ' represents our commitment to quality, freshness, and customer satisfaction. Each plant is carefully grown and nurtured in our greenhouses to ensure it arrives in peak condition, ready to delight your customers. We specialize in providing healthy, vibrant plants that are perfect for grocery stores, flower shops, and garden centers throughout the region.' +
+                '</p>' +
+                '<ul class="feature-detail justify-content-center">' +
+                    '<li>' +
+                        '<i class="icon feather icon-check"></i>' +
+                        '<h5>Technical Details</h5>' +
+                    '</li>' +
+                    '<li>' +
+                        '<i class="icon feather icon-check"></i>' +
+                        '<h5>Additional Information</h5>' +
+                    '</li>' +
+                    '<li>' +
+                        '<i class="icon feather icon-check"></i>' +
+                        '<h5> Feedback </h5>' +
+                    '</li>' +
+                '</ul>' +
+            '</div>' +
+            '<div class="table-responsive">' +
+                '<table class="table check-tbl">' +
+                    '<tbody>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Product ID</td>' +
+                            '<td class="product-item-name">PPG-' + productName.replace(/\s+/g, '-').toUpperCase() + '</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Grower</td>' +
+                            '<td class="product-item-name">Pacific Plant Growers</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Origin</td>' +
+                            '<td class="product-item-name">United States</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Growing Method</td>' +
+                            '<td class="product-item-name">Greenhouse Grown</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Pot Size</td>' +
+                            '<td class="product-item-name">4 inch / 6 inch / 8 inch</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Care Level</td>' +
+                            '<td class="product-item-name">Easy to Moderate</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Light Requirements</td>' +
+                            '<td class="product-item-name">Bright Indirect Light</td>' +
+                        '</tr>' +
+                        '<tr>' +
+                            '<td class="product-item-name">Category</td>' +
+                            '<td class="product-item-name">Indoor Plant</td>' +
+                        '</tr>' +
+                    '</tbody>' +
+                '</table>' +
+            '</div>';
             
-            // Generate plain text excerpt
+            // Shipping & Return content - Pacific Plant Growers
+            var shippingReturn = '<div class="detail-bx text-center">' +
+                '<h5 class="title">Shipping Policy</h5>' +
+                '<p class="para-text">' +
+                    'We deliver fresh, healthy plants directly to your store location. All plants are carefully packaged to ensure they arrive in excellent condition. Our delivery schedules are coordinated with your receiving department for maximum convenience. We understand the importance of timely delivery for perishable products, and our logistics team works diligently to ensure your ' + productName + ' arrives ready for immediate display and sale to your customers.' +
+                '</p>' +
+                '<h5 class="title">Returns Policy</h5>' +
+                '<p class="para-text">' +
+                    'We stand behind the quality of our plants. If you receive a plant that does not meet our quality standards, please contact us within 48 hours of delivery. We will work with you to resolve any issues promptly, whether through replacement or credit. Your satisfaction is our priority, and we are committed to ensuring every ' + productName + ' you receive meets the high standards Pacific Plant Growers is known for throughout the industry.' +
+                '</p>' +
+                '<ul class="feature-detail justify-content-center">' +
+                    '<li>' +
+                        '<i class="icon feather icon-check"></i>' +
+                        '<h5>7 Days Replacement only</h5>' +
+                    '</li>' +
+                    '<li>' +
+                        '<i class="icon feather icon-check"></i>' +
+                        '<h5>7 Days Refund for accidental orders only</h5>' +
+                    '</li>' +
+                    '<li>' +
+                        '<i class="icon feather icon-check"></i>' +
+                        '<h5>3 days refund only</h5>' +
+                    '</li>' +
+                '</ul>' +
+            '</div>';
+            
+            
+            // Generate plain text excerpts for plants
             var excerpts = [
-                'Discover the exceptional quality of our ' + productName + '. Crafted with care and attention to detail, perfect for any occasion.',
-                'Elevate your space with the stunning ' + productName + '. A beautiful combination of functionality and aesthetic appeal.',
-                'Transform any setting with the elegant ' + productName + '. Superior craftsmanship meets thoughtful design.',
-                'Experience premium quality with our ' + productName + '. Made from the finest materials for lasting beauty and durability.'
+                'Premium quality ' + productName + ' perfect for retail display. Healthy, vibrant plants that your customers will love.',
+                'Fresh, beautiful ' + productName + ' from Pacific Plant Growers. Easy care and excellent for grocery stores and flower shops.',
+                'Wholesale ' + productName + ' with consistent quality and reliable delivery. Perfect addition to your plant department.',
+                'Attractive ' + productName + ' ideal for retail sales. Low maintenance and customer-friendly care requirements.'
             ];
             
             var randomExcerpt = excerpts[Math.floor(Math.random() * excerpts.length)];
@@ -911,11 +1070,23 @@
             // Set the excerpt
             $('#excerpt').val(randomExcerpt);
             
-            // Set the description - handle CKEditor 5 if present
+            // Set content for Froala editors using global instances
             if (window.descriptionEditor) {
-                window.descriptionEditor.setData(randomDescription);
+                window.descriptionEditor.html.set(description);
             } else {
-                $('#description').val(randomDescription);
+                $('#description').val(description);
+            }
+            
+            if (window.additionalInfoEditor) {
+                window.additionalInfoEditor.html.set(additionalInfo);
+            } else {
+                $('#additional_info').val(additionalInfo);
+            }
+            
+            if (window.shippingReturnEditor) {
+                window.shippingReturnEditor.html.set(shippingReturn);
+            } else {
+                $('#shipping_return').val(shippingReturn);
             }
             
             // Show success feedback
@@ -959,23 +1130,48 @@
         $('#active_tab').val(tabId);
     });
     
-    // ========== CKEDITOR INITIALIZATION ==========
-    var descriptionEditor = null;
-    ClassicEditor
-        .create(document.querySelector('#description'), {
-            toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', 'undo', 'redo']
-        })
-        .then(editor => {
-            descriptionEditor = editor;
-            window.descriptionEditor = editor; // Make available globally
-            
-            // Sync CKEditor content to textarea before form submit
-            document.querySelector('#product-form').addEventListener('submit', function() {
-                document.querySelector('#description').value = editor.getData();
-            });
-        })
-        .catch(error => {
-            console.error('CKEditor error:', error);
-        });
+    // ========== FROALA EDITOR INITIALIZATION ==========
+    $(document).ready(function() {
+        // Froala Editor configuration
+        const froalaConfig = {
+            toolbarButtons: {
+                'moreText': {
+                    'buttons': ['bold', 'italic', 'underline', 'strikeThrough', 'subscript', 'superscript', 'fontFamily', 'fontSize', 'textColor', 'backgroundColor', 'inlineClass', 'inlineStyle', 'clearFormatting']
+                },
+                'moreParagraph': {
+                    'buttons': ['alignLeft', 'alignCenter', 'formatOLSimple', 'alignRight', 'alignJustify', 'formatOL', 'formatUL', 'paragraphFormat', 'paragraphStyle', 'lineHeight', 'outdent', 'indent', 'quote']
+                },
+                'moreRich': {
+                    'buttons': ['insertLink', 'insertImage', 'insertVideo', 'insertTable', 'emoticons', 'fontAwesome', 'specialCharacters', 'embedly', 'insertFile', 'insertHR']
+                },
+                'moreMisc': {
+                    'buttons': ['undo', 'redo', 'fullscreen', 'print', 'getPDF', 'spellChecker', 'selectAll', 'html', 'help'],
+                    'align': 'right',
+                    'buttonsVisible': 2
+                }
+            },
+            pluginsEnabled: ['align', 'charCounter', 'codeBeautifier', 'codeView', 'colors', 'draggable', 'emoticons', 'entities', 'fontFamily', 'fontSize', 'fullscreen', 'image', 'imageManager', 'inlineStyle', 'lineBreaker', 'lineHeight', 'link', 'lists', 'paragraphFormat', 'paragraphStyle', 'quickInsert', 'quote', 'save', 'table', 'url', 'video', 'wordPaste'],
+            heightMin: 300,
+            attribution: false
+        };
+        
+        // Store editor instances globally
+        window.descriptionEditor = null;
+        window.additionalInfoEditor = null;
+        window.shippingReturnEditor = null;
+        
+        // Initialize Froala on all three textareas
+        if ($('#description').length) {
+            window.descriptionEditor = new FroalaEditor('#description', froalaConfig);
+        }
+        
+        if ($('#additional_info').length) {
+            window.additionalInfoEditor = new FroalaEditor('#additional_info', froalaConfig);
+        }
+        
+        if ($('#shipping_return').length) {
+            window.shippingReturnEditor = new FroalaEditor('#shipping_return', froalaConfig);
+        }
+    });
 </script>
 @endsection
