@@ -616,11 +616,11 @@ $(document).ready(function() {
                     data: form.serialize(),
                     success: function(response) {
                         Swal.fire({
-                            title: 'Success!',
-                            text: response.message || 'Dummy ' + dataType + ' created successfully!',
-                            icon: 'success',
-                            timer: 3000,
-                            showConfirmButton: true
+                            title: '<i class="fas fa-check-circle text-success"></i> Complete!',
+                            html: '<div class="alert alert-success mb-0"><strong>' + (response.message || 'Dummy ' + dataType + ' created successfully!') + '</strong></div>',
+                            icon: null,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
                         }).then(() => {
                             window.location.reload();
                         });
@@ -628,9 +628,10 @@ $(document).ready(function() {
                     error: function(xhr) {
                         var errorMsg = xhr.responseJSON?.message || xhr.responseJSON?.error || 'An error occurred';
                         Swal.fire({
-                            title: 'Error!',
-                            text: errorMsg,
-                            icon: 'error'
+                            title: '<i class="fas fa-times-circle text-danger"></i> Error!',
+                            html: '<div class="alert alert-danger mb-0">' + errorMsg + '</div>',
+                            icon: null,
+                            showConfirmButton: true
                         });
                         button.prop('disabled', false).html(originalText);
                     }
@@ -666,11 +667,11 @@ $(document).ready(function() {
                     data: form.serialize(),
                     success: function(response) {
                         Swal.fire({
-                            title: 'Removed!',
-                            text: response.message || 'Dummy ' + dataType + ' removed successfully!',
-                            icon: 'success',
-                            timer: 3000,
-                            showConfirmButton: true
+                            title: '<i class="fas fa-check-circle text-success"></i> Removed!',
+                            html: '<div class="alert alert-success mb-0"><strong>' + (response.message || 'Dummy ' + dataType + ' removed successfully!') + '</strong></div>',
+                            icon: null,
+                            showConfirmButton: true,
+                            confirmButtonText: 'OK'
                         }).then(() => {
                             window.location.reload();
                         });
@@ -678,9 +679,10 @@ $(document).ready(function() {
                     error: function(xhr) {
                         var errorMsg = xhr.responseJSON?.message || xhr.responseJSON?.error || 'An error occurred';
                         Swal.fire({
-                            title: 'Error!',
-                            text: errorMsg,
-                            icon: 'error'
+                            title: '<i class="fas fa-times-circle text-danger"></i> Error!',
+                            html: '<div class="alert alert-danger mb-0">' + errorMsg + '</div>',
+                            icon: null,
+                            showConfirmButton: true
                         });
                         button.prop('disabled', false).html(originalText);
                     }
