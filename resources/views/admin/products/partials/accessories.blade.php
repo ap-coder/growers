@@ -26,7 +26,7 @@
                                     <th width="50">Select</th>
                                     <th>Accessory</th>
                                     <th>SKU</th>
-                                    <th>Base Price</th>
+                                    <th>Current Price</th>
                                     <th width="80">Default</th>
                                     <th width="80">Required</th>
                                 </tr>

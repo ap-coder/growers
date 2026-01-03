@@ -60,14 +60,18 @@
             </div>
             <div class="form-group" id="value-text-group">
                 <label for="value">{{ trans('cruds.setting.fields.value') }}</label>
-                <input class="form-control {{ $errors->has('value') ? 'is-invalid' : '' }}" type="text" name="value" id="value" value="{{ old('value', $setting->value) }}">
+                <input class="form-control {{ $errors->has('value') ? 'is-invalid' : '' }}" type="text" name="value" id="value" value="{{ old('value', $setting->value) }}" disabled>
                 @if($errors->has('value'))
                     <span class="text-danger">{{ $errors->first('value') }}</span>
                 @endif
             </div>
             <div class="form-group" id="value-textarea-group" style="display: none;">
                 <label for="value_textarea">Value</label>
-                <textarea class="form-control" name="value" id="value_textarea" rows="4">{{ old('value', $setting->value) }}</textarea>
+                <textarea class="form-control" name="value" id="value_textarea" rows="4" disabled>{{ old('value', $setting->value) }}</textarea>
+            </div>
+            <div class="form-group" id="value-html-group" style="display: none;">
+                <label for="value_html">Value (HTML)</label>
+                <textarea class="form-control ckeditor" name="value" id="value_html" rows="8" disabled>{{ old('value', $setting->value) }}</textarea>
             </div>
             <div class="form-group" id="value-image-group" style="display: none;">
                 <label for="image_value">Image</label>
@@ -84,8 +88,8 @@
             </div>
             <div class="form-group" id="value-boolean-group" style="display: none;">
                 <div class="form-check">
-                    <input type="hidden" name="value" value="0">
-                    <input class="form-check-input" type="checkbox" name="value" id="value_boolean" value="1" {{ old('value', $setting->value) == '1' ? 'checked' : '' }}>
+                    <input type="hidden" name="value_bool_fallback" id="value_boolean_hidden" value="0" disabled>
+                    <input class="form-check-input" type="checkbox" name="value_bool" id="value_boolean" value="1" {{ old('value', $setting->value) == '1' ? 'checked' : '' }} disabled>
                     <label class="form-check-label" for="value_boolean">Enabled</label>
                 </div>
             </div>
@@ -94,6 +98,10 @@
                 <select class="form-control" name="value" id="value_select">
                     @if($setting->key === 'shop_layout')
                         @foreach(\App\Models\Setting::SHOP_LAYOUT_SELECT as $key => $label)
+                            <option value="{{ $key }}" {{ old('value', $setting->value) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    @elseif($setting->key === 'shop_default_view')
+                        @foreach(\App\Models\Setting::SHOP_DEFAULT_VIEW_SELECT as $key => $label)
                             <option value="{{ $key }}" {{ old('value', $setting->value) == $key ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     @elseif($setting->key === 'default_product_layout')
@@ -126,12 +134,12 @@
 <script>
 $(function() {
     var settingKey = '{{ $setting->key }}';
-    var selectSettings = ['shop_layout', 'default_product_layout'];
+    var selectSettings = ['shop_layout', 'shop_default_view', 'default_product_layout'];
     
     function toggleValueFields() {
         var type = $('#type').val();
-        $('#value-text-group, #value-textarea-group, #value-image-group, #value-boolean-group, #value-select-group').hide();
-        $('#value, #value_textarea, #value_select').prop('disabled', true);
+        $('#value-text-group, #value-textarea-group, #value-html-group, #value-image-group, #value-boolean-group, #value-select-group').hide();
+        $('#value, #value_textarea, #value_html, #value_select, #value_boolean, #value_boolean_hidden').prop('disabled', true);
         
         if (type === 'select' && selectSettings.includes(settingKey)) {
             $('#value-select-group').show();
@@ -142,10 +150,14 @@ $(function() {
         } else if (type === 'textarea') {
             $('#value-textarea-group').show();
             $('#value_textarea').prop('disabled', false);
+        } else if (type === 'html') {
+            $('#value-html-group').show();
+            $('#value_html').prop('disabled', false);
         } else if (type === 'image') {
             $('#value-image-group').show();
         } else if (type === 'boolean') {
             $('#value-boolean-group').show();
+            $('#value_boolean, #value_boolean_hidden').prop('disabled', false);
         }
     }
     

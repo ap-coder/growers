@@ -36,6 +36,33 @@
                 </li>
             </ul>
 
+            @auth
+                @if(Auth::user()->isWclDeveloper)
+                    <ul class="navbar-nav mr-3">
+                        <li class="nav-item">
+                            <div class="btn-group">
+                                <a type="button" target="_blank" href="{{ url('admin/r') }}" class="btn btn-outline-secondary" title="Route Endpoints">Routes</a>
+                                <a type="button" target="_blank" href="{{ url('/telescope') }}" class="btn btn-outline-secondary" title="Requests & Responses">Telescope</a>
+                                <a type="button" target="_blank" href="{{ url('log-viewer') }}" class="btn btn-outline-secondary" title="Application Logs">Logs</a>
+
+                            </div>
+                        </li>
+                    </ul>
+                @endif
+            @endauth
+
+            <ul class="navbar-nav mr-3">
+                <li class="nav-item">
+                    <div class="btn-group">
+                        <a type="button" target="_blank" href="{{ url('shop') }}" class="btn btn-outline-success" title="View Shop">Shop</a>
+                        <a type="button" target="_blank" href="{{ url('account') }}" class="btn btn-outline-success" title="View Account Area">Account Area</a>
+                        @if(isset($product) && $product->id)
+                            <a type="button" target="_blank" href="{{ route('site.shop.product', $product) }}" class="btn btn-outline-primary" title="View Product on Frontend"><i class="fas fa-eye mr-1"></i>View Product</a>
+                        @endif
+                    </div>
+                </li>
+            </ul>
+
             <!-- Right navbar links -->
             @if(count(config('panel.available_languages', [])) > 1)
                 <ul class="navbar-nav ml-auto">
@@ -167,13 +194,13 @@
                 }
             });
         });
-        
+
         function showReminders(reminders) {
             var reminder = reminders[0]; // Show first reminder
-            var iconType = reminder.type === 'warning' ? 'warning' : 
-                          reminder.type === 'error' ? 'error' : 
+            var iconType = reminder.type === 'warning' ? 'warning' :
+                          reminder.type === 'error' ? 'error' :
                           reminder.type === 'success' ? 'success' : 'info';
-            
+
             Swal.fire({
                 title: reminder.title,
                 html: reminder.message + (reminder.link ? '<br><br><a href="' + reminder.link + '" class="btn btn-primary btn-sm">' + reminder.link_text + '</a>' : ''),

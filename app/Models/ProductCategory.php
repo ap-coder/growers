@@ -28,6 +28,7 @@ class ProductCategory extends Model implements HasMedia
 
     protected $fillable = [
         'published',
+        'is_fake',
         'name',
         'description',
         'created_at',
@@ -56,5 +57,10 @@ class ProductCategory extends Model implements HasMedia
         }
 
         return $file;
+    }
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class);
     }
 }

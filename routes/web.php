@@ -11,12 +11,17 @@ Auth::routes();
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'middleware' => ['auth', '2fa', 'admin']], function () {
 
     Route::get('/', 'HomeController@index')->name('home');
-    
+
     // Documentation
     Route::get('/docs', function() {
         $content = file_get_contents(base_path('docs/features.md'));
         return view('admin.docs.index', ['content' => $content]);
     })->name('docs');
+
+    Route::get('r', function () { return view('routes'); })->name('assigned-routes');
+
+    // Menu Builder
+    Route::get('menu-builder', 'MenuController@index')->name('menu-builder');
 
     // Permissions
     Route::delete('permissions/destroy', 'PermissionsController@massDestroy')->name('permissions.massDestroy');
@@ -55,6 +60,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('content-pages/media', 'ContentPageController@storeMedia')->name('content-pages.storeMedia');
     Route::post('content-pages/ckmedia', 'ContentPageController@storeCKEditorImages')->name('content-pages.storeCKEditorImages');
     Route::resource('content-pages', 'ContentPageController');
+    
+    // Page Sections (Page Builder)
+    Route::post('page-sections', 'PageSectionController@store')->name('page-sections.store');
+    Route::put('page-sections/{pageSection}', 'PageSectionController@update')->name('page-sections.update');
+    Route::delete('page-sections/{pageSection}', 'PageSectionController@destroy')->name('page-sections.destroy');
+    Route::post('page-sections/reorder', 'PageSectionController@reorder')->name('page-sections.reorder');
 
     // Faq Category
     Route::delete('faq-categories/destroy', 'FaqCategoryController@massDestroy')->name('faq-categories.massDestroy');
@@ -135,10 +146,22 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Setting
     Route::delete('settings/destroy', 'SettingController@massDestroy')->name('settings.massDestroy');
     Route::post('settings/seed-dummy-products', 'SettingController@seedDummyProducts')->name('settings.seedDummyProducts');
+    Route::post('settings/seed-dummy-accessories', 'SettingController@seedDummyAccessories')->name('settings.seedDummyAccessories');
+    Route::post('settings/seed-dummy-bundles', 'SettingController@seedDummyBundles')->name('settings.seedDummyBundles');
+    Route::post('settings/seed-dummy-variations', 'SettingController@seedDummyVariations')->name('settings.seedDummyVariations');
     Route::post('settings/remove-dummy-products', 'SettingController@removeDummyProducts')->name('settings.removeDummyProducts');
     Route::post('settings/seed-dummy-clients', 'SettingController@seedDummyClients')->name('settings.seedDummyClients');
     Route::post('settings/remove-dummy-clients', 'SettingController@removeDummyClients')->name('settings.removeDummyClients');
+    Route::post('settings/seed-dummy-faqs', 'SettingController@seedDummyFaqs')->name('settings.seedDummyFaqs');
+    Route::post('settings/remove-dummy-faqs', 'SettingController@removeDummyFaqs')->name('settings.removeDummyFaqs');
+    Route::post('settings/seed-dummy-pages', 'SettingController@seedDummyPages')->name('settings.seedDummyPages');
+    Route::post('settings/remove-dummy-pages', 'SettingController@removeDummyPages')->name('settings.removeDummyPages');
     Route::post('settings/seed-settings', 'SettingController@seedSettings')->name('settings.seedSettings');
+    Route::post('settings/seed-menus', 'SettingController@seedMenus')->name('settings.seedMenus');
+    Route::post('settings/squash-migrations', 'SettingController@squashMigrations')->name('settings.squashMigrations');
+    Route::post('settings/regenerate-media', 'SettingController@regenerateMedia')->name('settings.regenerateMedia');
+    Route::post('settings/regenerate-model-media', 'SettingController@regenerateModelMedia')->name('settings.regenerateModelMedia');
+    Route::post('settings/clear-telescope', 'SettingController@clearTelescope')->name('settings.clearTelescope');
     Route::resource('settings', 'SettingController', ['except' => ['show']]);
 
     // Setup Wizard
@@ -166,6 +189,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Accessory Types
     Route::delete('accessory-types/destroy', 'AccessoryTypeController@massDestroy')->name('accessory-types.massDestroy');
     Route::resource('accessory-types', 'AccessoryTypeController');
+
+    // Variation Categories
+    Route::delete('variation-categories/destroy', 'VariationCategoryController@massDestroy')->name('variation-categories.massDestroy');
+    Route::resource('variation-categories', 'VariationCategoryController');
 
     // Accessories
     Route::delete('accessories/destroy', 'AccessoryController@massDestroy')->name('accessories.massDestroy');

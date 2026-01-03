@@ -3,7 +3,7 @@
 @section('title', 'Shop - Pacific Plant Growers')
 
 @section('banner')
-<div class="dz-bnr-inr" style="background-image:url({{ asset('site/images/background/bg1.jpg') }});">
+<div class="dz-bnr-inr dz-bnr-inr-sm" style="background-image:url({{ asset('site/images/background/bg1.jpg') }});">
     <div class="container">
         <div class="dz-bnr-inr-entry">
             <h1>Shop</h1>
@@ -48,7 +48,7 @@
                 
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="view-grid" role="tabpanel" aria-labelledby="view-grid-tab">
-                        <div class="row">
+                        <div class="row" data-equal=".shop-card">
                             @forelse($products as $product)
                                 @include('site.shop.partials.product-card', ['product' => $product, 'colSize' => 3])
                             @empty

@@ -1,13 +1,258 @@
 # Pacific Plant Growers - Development Status
 
-## Last Updated: December 31, 2024 (End of Day)
+## Last Updated: January 2, 2026 (Evening Session)
 
 ## Overview
 Wholesale plant seller admin application. Clients are retail grocery stores and flower shops (Harmon's, Smith's, Associated, Flower Shops).
 
-## Recent Changes (Dec 31, 2024)
+---
+
+## CRITICAL BUSINESS REQUIREMENTS (from guidelines/)
+
+### Company Overview
+- Indoor plant wholesaler selling to retail grocery store chains and flower shops
+- In business 20+ years, never had a functioning website
+- Orders currently placed by phone or email
+- Printed catalog sent out regularly to current clients
+- Produces seasonal product categories and regular "Everyday" catalog
+- Website must be very user-friendly with mobile devices
+
+### Customer Profile
+- Grocery store floral managers and flower shop owners
+- High turnover - many don't have computer access at work
+- Use personal cell phones or email to receive catalogs and call in orders
+
+### CRITICAL: No Public Pricing
+- **Pricing NOT visible to public** - must be logged in to see prices
+- **No credit card/merchant gateway** - invoices produced upon order placement
+- Customer signature takes place upon delivery
+- **No invoice or pricing total needed for any store**
+
+### Client Types & Requirements
+Each client type has different requirements:
+
+**HARMON'S:**
+- UPC Code Numbering
+- Exclusive product offering
+- Special Request buttons
+- Delivery request date info
+- Log-in credentials: ~85 users
+
+**SMITH'S:**
+- UPC Code Numbering
+- Store location request
+- Special Request buttons
+- Delivery request date info
+- Log-in credentials: ~30 users
+
+**ASSOCIATED:**
+- UPC Code Numbering (only for some stores)
+- Store location request
+- Delivery request date info
+- Log-in credentials: ~60 users
+
+**FLOWER SHOPS:**
+- Special Request buttons
+- Delivery request date info
+- Log-in credentials: ~30 users
+
+### Product Categories
+Standard categories (may adjust per store):
+- baskets, table top tins, floor tins, ceramics, wood, novelty, money trees, bamboo, supplies
+
+Seasonal landing pages:
+- Valentines, Spring, Mother's Day, Summer, Fall, Halloween, Christmas, Product specials
+
+### Packing Slip (FOR CUSTOMER)
+Should include:
+- Product order listing items ordered/quantities
+- Delivery details
+- Special notes/requests
+- **NO invoice product totals needed**
+
+### Order Ticket (FOR FULFILLMENT)
+Should include:
+- Store Name/Number
+- Name of person ordering
+- Contact phone # - good time to reach
+- Requested date of delivery
+- Product order by category listing
+- Delivery details
+- **No product dollar amount totals needed for customer, but on order ticket**
+- UPC codes/quantities (on applicable stores)
+- Sorting capabilities by UPC coding or product category
+- Custom page size/font size/categories or fulfillment protocols
+
+### Product Field Needs
+- UPC code (does not show to customer, but used for order ticket needs)
+- Options to purchase in sets (e.g., 2 sets, 4 sets, 6 sets)
+- Inventory count
+- Special request field
+
+### Product Check-Out
+- Packing slip for customer with product order list
+- Order ticket for fulfillment
+- Special request/note field
+- Desired delivery date
+- **No invoice or pricing total is needed for any store**
+
+### Promotional Blasts
+- Ability to send out discounts and promotional specials
+- Email blast with link that takes customer directly to landing page of special
+- Ability to navigate back to all products
+
+### Customer Check-Out Requirements
+- Need ability to list any special requests
+- Need to describe delivery/pick up needs
+- **Does not need to have prices/check out totals**
+
+---
+
+## Recent Changes (January 2, 2026 - Evening Session)
+
+### Menu Builder Enhancements
+- **Role-based menu items** - Enabled `use_roles` in config, added `role_id` column to `menu_items` table
+- **Role select on ALL menu types** - Categories, Products, Pages, FAQs, Custom Links, Separators/Dividers
+- **Divider options** - Added separator types: Separator (labeled), Divider | (horizontal), Divider ─ (vertical)
+- **Fixed config** - Changed `roles_title_field` from 'name' to 'title' to match roles table
+
+### Settings Admin - Developer Tools (WCL Developer only)
+- **Squash Migrations** - Button to run `migrate:generate --squash`
+- **Media Regenerate All** - Regenerate all media with responsive images
+- **Media Regenerate Missing** - Only regenerate missing conversions
+- **Per-model media regen** - Separate buttons for Pages, Products, Clients, Settings
+- **Telescope** - Link to open + Clear Logs button
+- **Daily telescope:clear** - Scheduled job in Kernel.php
+
+### Settings Admin - Seeding Improvements
+- **Export Menus** - New button to generate seeders for menus/menu_items tables
+- **Separated dummy seeders** - Each button only creates its own data type (products don't create FAQs/Pages)
+- **Duplicate checking** - FAQs and Pages check for existing fake data before creating
+- **Fixed product images** - All dummy products (including accessories and bundles) now get placeholder images
+
+### Telescope Configuration
+- Moved to production dependencies in composer.json
+- Access restricted to admins and WCL developers via gate
+
+### Composer Updates
+- Removed `wecodelaravel/laravel-menu` (hardcoded now)
+- Added platform PHP 8.2
+- Moved `kitloong/laravel-migrations-generator` and `laravel/telescope` to require (from require-dev)
+
+### Product Admin Refactor (Earlier in day)
+- **Tab structure** - General, Variations, Pricing, Client Access, Categories & Tags, Accessories, Bundle, Media
+- **Visibility controls** - show_original_price, show_variations, show_sets, show_accessories
+- **Active flags** - Added to variations, bundle items, accessories for granular control
+
+---
+
+## Previous Changes (January 2, 2026 - Morning)
+
+### Shop Page Layout Fixes (Rewritten to Match Template Exactly)
+**NEW RULE: Never modify original template styles/classes - only ADD new classes for Laravel functionality**
+
+- **List view as default** - Template has list view active by default, grid controls updated
+- **Tab structure** - Added `row > col-12 tab-content shop-` wrapper to match template exactly
+- **Product card list** - Matches template structure: `dz-shop-card style-2`, `bookmark-btn style-1` with `flaticon flaticon-heart-3`
+- **Grid controls** - Matches template: `panel-btn`, `default-select` dropdowns, SVG icons with `#949494` fill
+- **Sidebar** - Matches template: `widget_search` with `form-group`, `widget_categories` with `custom-control custom-checkbox d-flex`
+- **Category checkboxes** - Uses `form-check-input square` class (template default)
+- **Added classes for Laravel** - `category-filter` on checkboxes, `add-to-cart-btn` on buttons (additions only, no modifications)
+
+### Files Modified
+- `resources/views/site/shop/standard.blade.php` - Banner, scripts, styles
+- `resources/views/site/shop/partials/grid-controls.blade.php` - Added dropdowns, fixed SVGs
+- `resources/views/site/shop/partials/sidebar.blade.php` - Fixed checkbox structure, price display
+- `resources/views/site/shop/partials/category-menu-item.blade.php` - Fixed checkbox structure, indentation
+- `resources/views/site/shop/partials/product-card-list.blade.php` - Fixed structure to match template
+- `resources/views/site/shop/partials/pagination.blade.php` - Fixed to use template pagination style
+
+## Previous Changes (January 1, 2026)
+
+### Settings & Dummy Data System
+- **Settings value column** - Changed from VARCHAR to TEXT to support HTML content
+- **Settings types** - Added `html` type for WYSIWYG editor fields
+- **Dummy data AJAX** - Added SweetAlert confirmations and AJAX responses for dummy data buttons
+- **DummyProductsSeeder** - Fixed `Factory::set()` conflict by renaming to `asSet()`
+- **FaqQuestionFactory** - Fixed unique overflow error
+
+### How to Order Page
+- **Client.how_to_order_content** - New field for client-specific ordering instructions
+- **Priority system**: Client field → Client ContentPage → General ContentPage → Default setting → Hardcoded fallback
+- **Default setting** - `how_to_order_default` with HTML type for default content
+- Admin forms updated to edit client-specific content
+
+### Menu Builder (Fixed January 1, 2026)
+- **Database fix**: Added missing `link` column to `menu_items` table
+- **Controller fix**: Changed from `Menu::getByName()` (returns arrays) to `MenuItems::getall()` (returns objects)
+- **Null checks**: Added to `updateitem()` method to prevent errors
+- **Section order**: Product Categories, Products, Pages, FAQ Categories, Custom Link, Separator (Custom Link and Separator moved to bottom)
+- **All sections closed by default**: Removed `open` class from accordion sections
+- **Select dropdowns**: Each section uses select dropdown with Label and Icon inputs (not checkboxes)
+- **AdminLTE styling**: All selects use `form-control select2` with bootstrap4 theme, inputs use `form-control`
+- **Select2 events**: Uses `select2:select` event to auto-fill label when selection changes
+- **Icon support**: Menu items can have FontAwesome icons, with "Icon Only" checkbox to hide label
+- **Icon only field**: `icon_only_menu` column saves/displays correctly
+
+### Header Navigation (Fixed January 1, 2026)
+- **No duplicates**: Only shows menu items if "Main Navigation" menu has items, otherwise falls back to defaults
+- **Icon display**: Shows icon before label when `menu_icon_class` is set
+- **Icon only**: Hides label when `icon_only_menu` is true
+- **Dropdown support**: Nested menu items create dropdown menus with `sub-menu-down` class
+- **FontAwesome CDN**: Added to frontend layout for icon display
+
+### Shop Sidebar
+- Updated to match xhtml template structure
+- Checkbox-based category filtering
+- Featured products widget
+- Product tags widget
+- Search input
+
+### Shop AJAX Filtering
+- **ShopController** - Returns JSON for AJAX requests with rendered HTML partials
+- **products-grid.blade.php** - New partial for product grid content
+- **pagination.blade.php** - New partial for pagination
+- **standard.blade.php** - Added JavaScript for AJAX filtering:
+  - Category checkboxes filter without page reload
+  - Search input with debounce (500ms)
+  - Sort dropdown triggers AJAX
+  - Pagination links load via AJAX
+  - Reset filters button clears all and reloads
+  - URL updates via pushState for bookmarkability
+  - Loading state with opacity change
+
+## Previous Changes (Dec 31, 2024)
 
 ### Accessory System (Complete)
+
+#### Concepts Explained
+
+**Accessory Types** = Categories/groupings for accessories
+- Examples: "Ribbon", "Pot Cover", "Pick", "Bow", "Card Holder"
+- Used to organize and group related accessories together
+
+**Accessories** = Specific items that belong to an Accessory Type
+- Example: Accessory Type "Ribbon" contains:
+  - "Red Satin Ribbon"
+  - "Gold Ribbon"  
+  - "White Organza Ribbon"
+- Each accessory has its own SKU, price, and can have client-specific pricing
+
+**Product → Accessories relationship** = Which accessories can be added to a product
+- When editing a product, you select which specific accessories are available for that product
+- Example: A "6" Poinsettia" product might have these accessories available:
+  - Red Satin Ribbon (type: Ribbon)
+  - Gold Ribbon (type: Ribbon)
+  - Foil Wrap (type: Pot Cover)
+  - Holiday Pick (type: Pick)
+- Accessories can be marked as `is_default` (pre-selected) or `is_required` (must include)
+
+**Product.accessory_type_id** = When a PRODUCT is itself an accessory
+- Only applies when `product_type = 'accessory'`
+- Tells you what category this accessory-product belongs to
+- Example: Product "Red Satin Ribbon" with `product_type = 'accessory'` and `accessory_type_id = 1` (Ribbon)
+
+#### Database Structure
 - Created `accessory_types` table - categories like "Basket", "Card Holder"
 - Created `accessories` table - individual items with base pricing
 - Created `product_accessory` pivot table with `is_default` and `is_required` flags
@@ -132,6 +377,47 @@ Wholesale plant seller admin application. Clients are retail grocery stores and 
 - Added `product_id` to `ClientPrice` model fillable
 - Added `orderItems()` relationship to `Order` model
 - Simplified frontend routes (removed references to non-existent controllers)
+
+### Dummy Data System (Demo Data)
+
+The application includes a demo data system for showcasing functionality to new clients.
+
+#### How It Works
+- **Real Seeders** (`ClientsTableSeeder`, etc.) create skeleton records with `published = false`, `is_fake = false`
+- **Dummy Seeders** (`DummyClientsSeeder`, `DummyProductsSeeder`) create demo versions with full data, `published = true`, `is_fake = true`
+- Demo data shows owners how complete records look
+- Clearing dummy data only removes records where `is_fake = true`
+- Real records remain (unpublished) for owners to fill in and publish
+
+#### Admin Settings Page
+Separate buttons for each data type:
+- **Add/Remove Products** - Products, categories, tags
+- **Add/Remove Clients** - Clients with addresses
+- **Remove FAQs** - FAQ categories and questions
+- **Remove Pages** - Content pages
+
+#### Visual Indicators
+- Demo data shows info badge/alert: "Demo Data - This is sample data for demonstration"
+- Displayed on edit forms for products, clients, FAQ categories, content pages
+
+#### Factories Used
+- `ClientFactory` - Generates demo clients (Harmons, Albertsons, Walgreens)
+- `ClientAddressFactory` - Generates addresses with Utah cities
+- `ProductFactory` - Generates plant products with placeholder images
+- `ProductCategoryFactory`, `ProductTagFactory` - Categories and tags
+- `FaqCategoryFactory`, `FaqQuestionFactory` - FAQ content
+- `ContentPageFactory` - Content pages
+
+### Frontend Account Area (Client Self-Service)
+
+Added client-facing account management:
+- **Company Info** (`/account/company`) - Edit client name, contact info, store number
+- **Locations** (`/account/locations`) - Manage multiple addresses (corporate, shipping, billing)
+  - Add/edit/delete addresses
+  - Set primary address per type
+  - Full address fields with contact info and delivery notes
+
+Routes in `routes/frontend.php`, controller methods in `AccountController`.
 
 ## Pending Tasks
 

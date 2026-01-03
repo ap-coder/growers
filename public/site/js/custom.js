@@ -1401,6 +1401,36 @@ jQuery(window).on('load',function () {
 		document.body.classList.remove( 'show-focus-outline' );
 	});
 
+	// Shop view tab persistence and equalHeights
+	var shopViewKey = 'shopViewTab';
+	var savedView = localStorage.getItem(shopViewKey);
+	console.log('Saved view from localStorage:', savedView);
+	
+	// Restore saved view on page load
+	if (savedView) {
+		var tabBtn = jQuery('a[data-bs-toggle="pill"][href="' + savedView + '"]');
+		console.log('Found tab button:', tabBtn.length);
+		if (tabBtn.length) {
+			var bsTab = new bootstrap.Tab(tabBtn[0]);
+			bsTab.show();
+			console.log('Tab shown:', savedView);
+		}
+	}
+	
+	// Apply equalHeights to .dz-content only
+	setTimeout(function() {
+		jQuery('.tab-pane.active .shop-card .dz-content').equalHeights();
+	}, 200);
+	
+	// Save view and re-trigger equalHeights on tab change (pills use shown.bs.tab event too)
+	jQuery('a[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+		var target = jQuery(e.target).attr('href');
+		console.log('Saving view to localStorage:', target);
+		localStorage.setItem(shopViewKey, target);
+		setTimeout(function() {
+			jQuery(target).find('.shop-card .dz-content').equalHeights();
+		}, 50);
+	});
 	
 });
 /*  Window Load END */

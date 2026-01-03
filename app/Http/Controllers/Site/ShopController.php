@@ -13,15 +13,22 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $clientId = $user->client_id;
+        $clientId = $user?->client_id;
 
         $query = Product::where('published', 1)
             ->where('product_type', 'standard');
 
-        // Filter by client access
+        // Filter by client access (only if user has a client_id)
         if ($clientId) {
             $query->whereHas('clients', function ($q) use ($clientId) {
                 $q->where('client_id', $clientId);
+            });
+        }
+        // If no client_id, show products that either have no client restrictions OR are fake (for testing)
+        elseif (!$clientId) {
+            $query->where(function($q) {
+                $q->whereDoesntHave('clients')
+                  ->orWhere('is_fake', true);
             });
         }
 
@@ -61,16 +68,37 @@ class ShopController extends Controller
         $products = $query->paginate(12);
         $categories = ProductCategory::orderBy('name')->get();
 
+        // Get featured products for sidebar
+        $featuredQuery = Product::where('published', 1)
+            ->where('featured', 1)
+            ->where('product_type', 'standard');
+        if ($clientId) {
+            $featuredQuery->whereHas('clients', function ($q) use ($clientId) {
+                $q->where('client_id', $clientId);
+            });
+        }
+        $featuredProducts = $featuredQuery->limit(3)->get();
+
         // Get shop layout from settings
         $layout = Setting::get('shop_layout', 'standard');
 
-        return view("site.shop.{$layout}", compact('products', 'categories', 'clientId'));
+        // Return JSON for AJAX requests
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('site.shop.partials.products-grid', compact('products', 'clientId'))->render(),
+                'pagination' => $products->hasPages() ? view('site.shop.partials.pagination', compact('products'))->render() : '',
+                'total' => $products->total(),
+                'showing' => $products->count() > 0 ? "Showing {$products->firstItem()}–{$products->lastItem()} of {$products->total()} Results" : 'No products found',
+            ]);
+        }
+
+        return view("site.shop.{$layout}", compact('products', 'categories', 'clientId', 'featuredProducts'));
     }
 
     public function show(Product $product)
     {
         $user = auth()->user();
-        $clientId = $user->client_id;
+        $clientId = $user?->client_id;
 
         // Check if product is published and user has access
         if (!$product->published) {

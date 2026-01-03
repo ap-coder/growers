@@ -37,7 +37,7 @@
                 <span class="help-block">Leave blank to auto-generate from title</span>
             </div>
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="page_type">Page Type</label>
                         <select class="form-control {{ $errors->has('page_type') ? 'is-invalid' : '' }}" name="page_type" id="page_type">
@@ -50,7 +50,20 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="layout">Page Layout</label>
+                        <select class="form-control {{ $errors->has('layout') ? 'is-invalid' : '' }}" name="layout" id="layout">
+                            @foreach(\App\Models\ContentPage::LAYOUT_SELECT as $key => $label)
+                                <option value="{{ $key }}" {{ old('layout', 'default') == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @if($errors->has('layout'))
+                            <span class="text-danger">{{ $errors->first('layout') }}</span>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="form-group">
                         <label for="client_id">Client (for client-specific pages)</label>
                         <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id">

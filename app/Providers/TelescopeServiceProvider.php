@@ -56,9 +56,8 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     protected function gate(): void
     {
         Gate::define('viewTelescope', function ($user) {
-            return in_array($user->email, [
-                'phillip.madsen.21@gmail.com',
-            ]);
+            // Allow WCL developers or admins
+            return $user->isWclDeveloper || $user->is_admin;
         });
     }
 }

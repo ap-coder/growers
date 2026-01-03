@@ -9,12 +9,14 @@ use App\Http\Requests\MassDestroyProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Client;
-
 use App\Models\ClientPrice;
 use App\Models\Product;
 use App\Models\ProductBundleItem;
 use App\Models\ProductCategory;
+use App\Models\ProductPriceTier;
 use App\Models\ProductTag;
+use App\Models\ProductVariation;
+use App\Models\VariationClientPrice;
 use Gate;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -58,7 +60,18 @@ class ProductController extends Controller
                 return '<input type="checkbox" disabled ' . ($row->published ? 'checked' : null) . '>';
             });
             $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : '';
+                if ($row->name) {
+                    return sprintf('<a href="%s">%s</a>', route('admin.products.edit', $row->id), $row->name);
+                }
+                return '';
+            });
+            $table->editColumn('product_type', function ($row) {
+                $types = [
+                    'standard' => '<span class="badge badge-primary">Standard</span>',
+                    'accessory' => '<span class="badge badge-info">Accessory</span>',
+                    'set' => '<span class="badge badge-success">Set/Bundle</span>',
+                ];
+                return $types[$row->product_type] ?? '<span class="badge badge-secondary">' . ucfirst($row->product_type ?? 'standard') . '</span>';
             });
             $table->editColumn('category', function ($row) {
                 $labels = [];
@@ -69,15 +82,18 @@ class ProductController extends Controller
                 return implode(' ', $labels);
             });
             $table->editColumn('photo', function ($row) {
+                $placeholder = 'https://placehold.co/50x50/EEE/31343C.png?font=source-sans-pro&text=' . urlencode(substr($row->name, 0, 8));
                 if ($photo = $row->photo) {
+                    // Try thumbnail first, fall back to main URL
+                    $thumbUrl = $photo->thumbnail ?: $photo->url;
                     return sprintf(
-                        '<a href="%s" target="_blank"><img src="%s" width="50px" height="50px"></a>',
+                        '<a href="%s" target="_blank"><img src="%s" width="50px" height="50px" style="object-fit: cover;" onerror="this.src=\'%s\'"></a>',
                         $photo->url,
-                        $photo->thumbnail
+                        $thumbUrl,
+                        $placeholder
                     );
                 }
-
-                return '';
+                return sprintf('<img src="%s" width="50px" height="50px">', $placeholder);
             });
             $table->editColumn('clients', function ($row) {
                 $labels = [];
@@ -88,12 +104,16 @@ class ProductController extends Controller
                 return implode(' ', $labels);
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'published', 'category', 'photo', 'clients']);
+            $table->rawColumns(['actions', 'placeholder', 'published', 'name', 'product_type', 'category', 'photo', 'clients']);
 
             return $table->make(true);
         }
 
-        return view('admin.products.index');
+        // Define columns and default visibility
+        $columns = ['id', 'published', 'name', 'product_type', 'category', 'photo', 'clients'];
+        $defaultVisible = ['name', 'product_type', 'category', 'photo', 'clients'];
+        
+        return view('admin.products.index', compact('columns', 'defaultVisible'));
     }
 
     public function create()
@@ -138,7 +158,7 @@ class ProductController extends Controller
         $tags = ProductTag::pluck('name', 'id');
         $clients = Client::select('id', 'name')->get();
 
-        $product->load('categories', 'tags', 'clients', 'clientPrices', 'clientPrices.client', 'team', 'accessories', 'bundleItems.itemProduct');
+        $product->load('categories', 'tags', 'clients', 'clientPrices', 'clientPrices.client', 'team', 'accessories', 'bundleItems.itemProduct', 'variations', 'priceTiers');
 
         $prices = $product->clientPrices;
 
@@ -164,29 +184,57 @@ class ProductController extends Controller
         }
         $product->accessories()->sync($accessoriesData);
 
+        // Handle base product client prices
         if ($request->has('client_prices')) {
             $clientPricesData = [];
             foreach ($request->input('client_prices') as $clientId => $clientPriceData) {
-                $clientPricesData[] = [
-                    'product_id' => $product->id,
-                    'client_id' => $clientId,
-                    'price' => $clientPriceData['price'] ?? null,
-                    'sku' => $clientPriceData['sku'] ?? null,
-                    'mpn' => $clientPriceData['mpn'] ?? null,
-                    'gtin' => $clientPriceData['gtin'] ?? null,
-                    'upc' => $clientPriceData['upc'] ?? null,
-                    'qb_1' => $clientPriceData['qb_1'] ?? null,
-                    'qb_2' => $clientPriceData['qb_2'] ?? null,
-                    'published' => isset($clientPriceData['published']) ? (int)$clientPriceData['published'] : 1,
-                ];
+                // Only save if price is provided
+                if (!empty($clientPriceData['price'])) {
+                    $clientPricesData[] = [
+                        'product_id' => $product->id,
+                        'client_id' => $clientId,
+                        'price' => $clientPriceData['price'],
+                        'sku' => $clientPriceData['sku'] ?? null,
+                        'mpn' => $clientPriceData['mpn'] ?? null,
+                        'gtin' => $clientPriceData['gtin'] ?? null,
+                        'upc' => $clientPriceData['upc'] ?? null,
+                        'qb_1' => $clientPriceData['qb_1'] ?? null,
+                        'qb_2' => $clientPriceData['qb_2'] ?? null,
+                        'published' => isset($clientPriceData['published']) ? (int)$clientPriceData['published'] : 1,
+                    ];
+                }
             }
 
-            // Use upsert to insert or update client prices
-            ClientPrice::upsert(
-                $clientPricesData,
-                ['product_id', 'client_id'],
-                ['price', 'sku', 'mpn', 'gtin', 'upc', 'qb_1', 'qb_2']
-            );
+            // Delete existing and insert new client prices
+            ClientPrice::where('product_id', $product->id)->delete();
+            if (!empty($clientPricesData)) {
+                ClientPrice::insert($clientPricesData);
+            }
+        }
+
+        // Handle variation client prices
+        if ($request->has('variation_client_prices')) {
+            $variationClientPricesData = [];
+            foreach ($request->input('variation_client_prices') as $clientId => $variations) {
+                foreach ($variations as $variationId => $price) {
+                    if (!empty($price)) {
+                        $variationClientPricesData[] = [
+                            'variation_id' => $variationId,
+                            'client_id' => $clientId,
+                            'price' => $price,
+                        ];
+                    }
+                }
+            }
+
+            // Delete existing variation client prices for this product's variations
+            $variationIds = $product->variations->pluck('id')->toArray();
+            if (!empty($variationIds)) {
+                VariationClientPrice::whereIn('variation_id', $variationIds)->delete();
+            }
+            if (!empty($variationClientPricesData)) {
+                VariationClientPrice::insert($variationClientPricesData);
+            }
         }
 
         //dd($request->all());
@@ -196,10 +244,21 @@ class ProductController extends Controller
             $this->syncBundleItems($product, $request->input('bundle_groups'));
         }
 
+        // Handle price tiers
+        $this->syncPriceTiers($product, $request->input('price_tiers', []));
+
+        // Handle variations
+        $this->syncVariations($product, $request->input('variations', []));
+
         $this->handlePhotoUpload($request, $product);
         $this->handleAdditionalPhotos($request, $product);
         $this->handleCKMedia($request, $product);
 
+        // Check if we should redirect back to edit page or to index
+        if ($request->input('redirect_back') == '1') {
+            return redirect()->route('admin.products.edit', $product->id)->with('message', 'Product saved successfully.');
+        }
+        
         return redirect()->route('admin.products.index');
     }
 
@@ -237,6 +296,88 @@ class ProductController extends Controller
                     'sort_order' => $sortOrder++,
                 ]);
             }
+        }
+    }
+
+    /**
+     * Sync price tiers for a product
+     */
+    private function syncPriceTiers(Product $product, array $priceTiers)
+    {
+        // Delete existing price tiers
+        $product->priceTiers()->delete();
+        
+        $sortOrder = 0;
+        foreach ($priceTiers as $tier) {
+            if (empty($tier['min_quantity']) || empty($tier['price'])) {
+                continue;
+            }
+            
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'min_quantity' => $tier['min_quantity'],
+                'max_quantity' => !empty($tier['max_quantity']) ? $tier['max_quantity'] : null,
+                'price' => $tier['price'],
+                'label' => $tier['label'] ?? null,
+                'sort_order' => $sortOrder++,
+            ]);
+        }
+    }
+
+    /**
+     * Sync product variations (sizes, etc.)
+     */
+    private function syncVariations(Product $product, array $variations)
+    {
+        $existingIds = [];
+        $sortOrder = 0;
+        $totalQuantity = 0;
+        
+        foreach ($variations as $variation) {
+            if (empty($variation['name'])) {
+                continue;
+            }
+            
+            $qty = !empty($variation['quantity']) ? (int)$variation['quantity'] : 0;
+            $totalQuantity += $qty;
+            
+            $data = [
+                'product_id' => $product->id,
+                'variation_category_id' => !empty($variation['variation_category_id']) ? $variation['variation_category_id'] : null,
+                'name' => $variation['name'],
+                'description' => $variation['description'] ?? null,
+                'sku' => $variation['sku'] ?? null,
+                'upc_code' => $variation['upc_code'] ?? null,
+                'base_price' => !empty($variation['base_price']) ? $variation['base_price'] : null,
+                'full_price' => !empty($variation['full_price']) ? $variation['full_price'] : null,
+                'base_cost' => !empty($variation['base_cost']) ? $variation['base_cost'] : null,
+                'quantity' => $qty,
+                'qb_1' => $variation['qb_1'] ?? null,
+                'qb_2' => $variation['qb_2'] ?? null,
+                'sort_order' => $sortOrder++,
+                'active' => isset($variation['active']) ? (bool)$variation['active'] : true,
+            ];
+            
+            if (!empty($variation['id'])) {
+                // Update existing
+                $productVariation = ProductVariation::find($variation['id']);
+                if ($productVariation) {
+                    $productVariation->update($data);
+                    $existingIds[] = $productVariation->id;
+                }
+            } else {
+                // Create new
+                $productVariation = ProductVariation::create($data);
+                $existingIds[] = $productVariation->id;
+            }
+        }
+        
+        // Delete variations that were removed
+        $product->variations()->whereNotIn('id', $existingIds)->delete();
+        
+        // Update product total quantity from variations
+        if (count($existingIds) > 0) {
+            $product->update(['quantity' => $totalQuantity]);
         }
     }
 

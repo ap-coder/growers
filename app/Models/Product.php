@@ -50,6 +50,7 @@ class Product extends Model implements HasMedia
     protected $fillable = [
         'published',
         'featured',
+        'is_fake',
         'layout',
         'quantity',
         'name',
@@ -57,7 +58,14 @@ class Product extends Model implements HasMedia
         'accessory_type_id',
         'sort_order',
         'description',
+        'excerpt',
         'base_price',
+        'full_price',
+        'show_original_price',
+        'show_variations',
+        'show_sets',
+        'show_accessories',
+        'base_cost',
         'bundle_price_type',
         'bundle_price_override',
         'bundle_discount',
@@ -90,10 +98,52 @@ class Product extends Model implements HasMedia
         return $date->format('Y-m-d H:i:s');
     }
 
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('thumb')->fit('crop', 50, 50);
-        $this->addMediaConversion('preview')->fit('crop', 120, 120);
+        $this->addMediaConversion('thumb')
+            ->fit('crop', 50, 50)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('preview')
+            ->fit('crop', 120, 120)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('shop-card')
+            ->fit('crop', 300, 300)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('shop-card-sm')
+            ->fit('crop', 200, 200)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('product-main')
+            ->fit('contain', 600, 600)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('product-thumb')
+            ->fit('crop', 100, 100)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('featured')
+            ->fit('crop', 80, 80)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('cart')
+            ->fit('crop', 60, 60)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('full')
+            ->fit('contain', 1200, 1200)
+            ->format('webp')
+            ->nonQueued();
     }
 
     public function categories()
@@ -110,9 +160,16 @@ class Product extends Model implements HasMedia
     {
         $file = $this->getMedia('photo')->last();
         if ($file) {
-            $file->url       = $file->getUrl();
-            $file->thumbnail = $file->getUrl('thumb');
-            $file->preview   = $file->getUrl('preview');
+            $file->url          = $file->getUrl();
+            $file->thumbnail    = $file->getUrl('thumb');
+            $file->preview      = $file->getUrl('preview');
+            $file->shop_card    = $file->getUrl('shop-card');
+            $file->shop_card_sm = $file->getUrl('shop-card-sm');
+            $file->product_main = $file->getUrl('product-main');
+            $file->product_thumb = $file->getUrl('product-thumb');
+            $file->featured     = $file->getUrl('featured');
+            $file->cart         = $file->getUrl('cart');
+            $file->full         = $file->getUrl('full');
         }
 
         return $file;
@@ -122,9 +179,16 @@ class Product extends Model implements HasMedia
     {
         $files = $this->getMedia('additional_photos');
         $files->each(function ($item) {
-            $item->url       = $item->getUrl();
-            $item->thumbnail = $item->getUrl('thumb');
-            $item->preview   = $item->getUrl('preview');
+            $item->url          = $item->getUrl();
+            $item->thumbnail    = $item->getUrl('thumb');
+            $item->preview      = $item->getUrl('preview');
+            $item->shop_card    = $item->getUrl('shop-card');
+            $item->shop_card_sm = $item->getUrl('shop-card-sm');
+            $item->product_main = $item->getUrl('product-main');
+            $item->product_thumb = $item->getUrl('product-thumb');
+            $item->featured     = $item->getUrl('featured');
+            $item->cart         = $item->getUrl('cart');
+            $item->full         = $item->getUrl('full');
         });
 
         return $files;
@@ -138,6 +202,21 @@ class Product extends Model implements HasMedia
     public function clientPrices()
     {
         return $this->hasMany(ClientPrice::class, 'product_id', 'id');
+    }
+
+    public function priceTiers()
+    {
+        return $this->hasMany(ProductPriceTier::class)->orderBy('min_quantity');
+    }
+
+    public function variations()
+    {
+        return $this->hasMany(ProductVariation::class)->orderBy('sort_order');
+    }
+
+    public function hasVariations()
+    {
+        return $this->variations()->exists();
     }
 
     public function newQuery($excludeDeleted = true)
@@ -161,9 +240,6 @@ class Product extends Model implements HasMedia
             ->withTimestamps();
     }
 
-    /**
-     * Get accessories grouped by their type for display
-     */
     public function getAccessoriesByType()
     {
         return $this->accessories()
@@ -172,10 +248,6 @@ class Product extends Model implements HasMedia
             ->groupBy('accessory_type_id');
     }
 
-    /**
-     * Get the effective price for a specific client
-     * Returns client-specific price if exists, otherwise base_price
-     */
     public function getPriceForClient($clientId = null)
     {
         if ($clientId) {
@@ -187,33 +259,44 @@ class Product extends Model implements HasMedia
         return $this->base_price;
     }
 
-    /**
-     * Check if product has a client-specific price
-     */
+    public function getPriceForQuantity($quantity, $clientId = null)
+    {
+        $tier = $this->priceTiers()
+            ->where('min_quantity', '<=', $quantity)
+            ->where(function ($query) use ($quantity) {
+                $query->whereNull('max_quantity')
+                      ->orWhere('max_quantity', '>=', $quantity);
+            })
+            ->orderBy('min_quantity', 'desc')
+            ->first();
+
+        if ($tier) {
+            return $tier->price;
+        }
+
+        return $this->getPriceForClient($clientId);
+    }
+
+    public function hasPriceTiers()
+    {
+        return $this->priceTiers()->exists();
+    }
+
     public function hasClientPrice($clientId)
     {
         return $this->clientPrices()->where('client_id', $clientId)->exists();
     }
 
-    /**
-     * Accessory type relationship (for accessory products)
-     */
     public function accessoryType()
     {
         return $this->belongsTo(AccessoryType::class, 'accessory_type_id');
     }
 
-    /**
-     * Bundle items - products included in this set/bundle
-     */
     public function bundleItems()
     {
         return $this->hasMany(ProductBundleItem::class, 'bundle_product_id');
     }
 
-    /**
-     * Get bundle items grouped by group_name for display
-     */
     public function getBundleItemsByGroup()
     {
         return $this->bundleItems()
@@ -223,98 +306,80 @@ class Product extends Model implements HasMedia
             ->groupBy('group_name');
     }
 
-    /**
-     * Bundles this product is included in
-     */
     public function includedInBundles()
     {
         return $this->hasMany(ProductBundleItem::class, 'item_product_id');
     }
 
-    /**
-     * Scope for standard products only
-     */
     public function scopeStandard($query)
     {
         return $query->where('product_type', self::TYPE_STANDARD);
     }
 
-    /**
-     * Scope for accessories only
-     */
     public function scopeAccessories($query)
     {
         return $query->where('product_type', self::TYPE_ACCESSORY);
     }
 
-    /**
-     * Scope for sets/bundles only
-     */
+    public function scopeFeatured($query)
+    {
+        return $query->where('featured', true);
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('published', true);
+    }
+
     public function scopeSets($query)
     {
         return $query->where('product_type', self::TYPE_SET);
     }
 
-    /**
-     * Check if this is an accessory
-     */
     public function isAccessory()
     {
         return $this->product_type === self::TYPE_ACCESSORY;
     }
 
-    /**
-     * Check if this is a set/bundle
-     */
     public function isSet()
     {
         return $this->product_type === self::TYPE_SET;
     }
 
-    /**
-     * Calculate the total bundle price for a client
-     * Takes into account per-item pricing and overall bundle pricing rules
-     */
     public function calculateBundlePrice($clientId = null)
     {
         if (!$this->isSet()) {
             return $this->getPriceForClient($clientId);
         }
 
-        // Calculate sum of all bundle items with their individual pricing
         $calculatedTotal = 0;
         foreach ($this->bundleItems as $item) {
             $calculatedTotal += $item->getEffectivePrice($clientId) * $item->quantity;
         }
 
-        // Apply overall bundle pricing rules
         switch ($this->bundle_price_type) {
             case self::BUNDLE_PRICE_FIXED:
                 return $this->bundle_price_override ?? $calculatedTotal;
-            
+
             case self::BUNDLE_PRICE_DISCOUNT_PERCENT:
                 $discount = ($this->bundle_discount ?? 0) / 100;
                 return $calculatedTotal * (1 - $discount);
-            
+
             case self::BUNDLE_PRICE_DISCOUNT_AMOUNT:
                 return max(0, $calculatedTotal - ($this->bundle_discount ?? 0));
-            
+
             case self::BUNDLE_PRICE_CALCULATED:
             default:
                 return $calculatedTotal;
         }
     }
 
-    /**
-     * Get bundle savings amount for display
-     */
     public function getBundleSavings($clientId = null)
     {
         if (!$this->isSet()) {
             return 0;
         }
 
-        // Calculate what items would cost individually at full price
         $fullPrice = 0;
         foreach ($this->bundleItems as $item) {
             $itemProduct = $item->itemProduct;
@@ -325,5 +390,18 @@ class Product extends Model implements HasMedia
 
         $bundlePrice = $this->calculateBundlePrice($clientId);
         return max(0, $fullPrice - $bundlePrice);
+    }
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'product_favorites')->withTimestamps();
+    }
+
+    public function isFavoritedBy($user)
+    {
+        if (!$user) {
+            return false;
+        }
+        return $this->favoritedBy()->where('user_id', $user->id)->exists();
     }
 }
