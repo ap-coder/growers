@@ -179,7 +179,6 @@ class ProductController extends Controller
         foreach ($request->input('accessories', []) as $accessoryId) {
             $accessoriesData[$accessoryId] = [
                 'is_default' => $request->has("accessory_defaults.{$accessoryId}"),
-                'is_required' => $request->has("accessory_required.{$accessoryId}"),
             ];
         }
         $product->accessories()->sync($accessoriesData);

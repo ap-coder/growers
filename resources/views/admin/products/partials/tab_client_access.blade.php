@@ -65,10 +65,10 @@
 
         @foreach($clients as $client)
         <div id="pricing-row-{{ $client->id }}" data-client-id="{{ $client->id }}" class="client-price-row card card-outline card-light mb-3" style="{{ !in_array($client->id, $product->clients->pluck('id')->toArray()) && $product->clients->isNotEmpty() ? 'display:none;' : '' }}">
-            <div class="card-header py-2">
+            <div class="card-header py-2 bg-secondary text-white">
                 <strong>{{ $client->name }}</strong>
                 <span class="float-right">
-                    <small class="text-muted">Base Product (${{ number_format($product->base_price ?? 0, 2) }}):</small>
+                    <small>Base Product (${{ number_format($product->base_price ?? 0, 2) }}):</small>
                     <div class="input-group input-group-sm d-inline-flex" style="width: 100px;">
                         <div class="input-group-prepend"><span class="input-group-text">$</span></div>
                         <input type="number" step="0.01" name="client_prices[{{ $client->id }}][price]" class="form-control" 
@@ -80,14 +80,15 @@
             @if($product->variations->count() > 0)
             <div class="card-body py-2">
                 @foreach($variationsByCategory as $category => $variations)
+                @php
+                    $categoryModel = \App\Models\VariationCategory::find($category);
+                    $categoryName = $categoryModel->name ?? 'Uncategorized';
+                @endphp
                 <div class="table-responsive mb-2">
                     <table class="table table-sm table-bordered mb-0">
                         <thead class="thead-light">
                             <tr>
-                                @php
-                    $categoryModel = \App\Models\VariationCategory::find($category);
-                @endphp
-                <th style="width: 100px;">{{ $categoryModel->name ?? 'Uncategorized' }}</th>
+                                <th style="width: 100px;" class="bg-secondary text-white">{{ $categoryName }}</th>
                                 @foreach($variations as $variation)
                                 <th class="text-center">
                                     {{ $variation->name }}<br>
@@ -98,7 +99,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td class="align-middle"><small class="text-muted">Override</small></td>
+                                <td class="align-middle text-center"><small class="text-muted">Base Price →</small></td>
                                 @foreach($variations as $variation)
                                 <td>
                                     <div class="input-group input-group-sm">

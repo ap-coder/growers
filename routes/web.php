@@ -198,6 +198,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::delete('accessories/destroy', 'AccessoryController@massDestroy')->name('accessories.massDestroy');
     Route::resource('accessories', 'AccessoryController');
 
+    // Temp Media Preview (for Dropzone thumbnails)
+    Route::get('media/temp/{filename}', function ($filename) {
+        $path = storage_path('tmp/uploads/' . $filename);
+        if (!file_exists($path)) {
+            abort(404);
+        }
+        return response()->file($path);
+    })->name('media.temp');
+
     // Reminders
     Route::get('reminders', 'ReminderController@index')->name('reminders.index');
     Route::get('reminders/active', 'ReminderController@getActive')->name('reminders.active');

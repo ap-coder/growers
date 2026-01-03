@@ -58,7 +58,7 @@
             <i class="fas fa-cog mr-1"></i> Manage Categories
         </a>
 
-        <div class="alert alert-info mt-3 mb-0">
+        <div class="alert alert-secondary mt-3 mb-0">
             <i class="fas fa-info-circle mr-1"></i>
             <strong>Tip:</strong> After adding variations here, go to the <strong>Pricing</strong> tab to set SKU, UPC, prices, and quantities for each variation. Uncheck "Active" to hide a variation from customers.
         </div>

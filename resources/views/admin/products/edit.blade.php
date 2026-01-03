@@ -283,6 +283,10 @@
         success: function (file, response) {
             $('form').find('input[name="photo"]').remove();
             $('form').append('<input type="hidden" name="photo" value="' + response.name + '">');
+            // Show thumbnail preview from uploaded file
+            if (response.preview) {
+                this.emit('thumbnail', file, response.preview);
+            }
         },
         removedfile: function (file) {
             file.previewElement.remove();
@@ -321,6 +325,10 @@
         success: function (file, response) {
             $('form').append('<input type="hidden" name="additional_photos[]" value="' + response.name + '">');
             uploadedAdditionalPhotosMap[file.name] = response.name;
+            // Show thumbnail preview from uploaded file
+            if (response.preview) {
+                this.emit('thumbnail', file, response.preview);
+            }
         },
         removedfile: function (file) {
             file.previewElement.remove();

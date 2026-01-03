@@ -40,9 +40,13 @@ trait MediaUploadingTrait
 
         $file->move($path, $name);
 
+        // Build preview URL for Dropzone thumbnail
+        $previewUrl = url('admin/media/temp/' . $name);
+
         return response()->json([
             'name'          => $name,
             'original_name' => $file->getClientOriginalName(),
+            'preview'       => $previewUrl,
         ]);
     }
 }

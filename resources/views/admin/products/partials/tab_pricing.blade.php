@@ -25,10 +25,11 @@
                         @foreach($product->variations as $index => $variation)
                             <tr class="pricing-row" data-index="{{ $index }}">
                                 <td>
-                                    <input type="hidden" name="variations[{{ $index }}][id]" value="{{ $variation->id }}">
-                                    <input type="hidden" name="variations[{{ $index }}][name]" value="{{ $variation->name }}">
+                                    {{-- Note: id, name, variation_category_id, active are in Variations tab --}}
                                     <strong>{{ $variation->name }}</strong>
-                                    @if($variation->description)
+                                    @if($variation->variationCategory)
+                                        <small class="text-muted d-block">{{ $variation->variationCategory->name }}</small>
+                                    @elseif($variation->description)
                                         <small class="text-muted d-block">{{ $variation->description }}</small>
                                     @endif
                                 </td>
@@ -72,7 +73,7 @@
                 </table>
             </div>
 
-            <div class="alert alert-info mt-3 mb-0">
+            <div class="alert alert-secondary mt-3 mb-0">
                 <i class="fas fa-info-circle mr-1"></i>
                 To add or remove variations, go to the <strong>Variations</strong> tab.
             </div>

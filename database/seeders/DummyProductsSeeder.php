@@ -18,6 +18,7 @@ use App\Models\ContentPage;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class DummyProductsSeeder extends Seeder
 {
@@ -409,30 +410,61 @@ class DummyProductsSeeder extends Seeder
     }
     
     /**
-     * Helper to add placeholder image to a product
+     * Helper to add placeholder image to a product using GD
      */
     private static function addPlaceholderImage(Product $product, string $type): void
     {
         try {
             $width = 600;
             $height = 400;
-            $text = $product->name;
-            // Use .png extension to force PNG format (not SVG)
-            $url = "https://placehold.co/{$width}x{$height}/EEE/31343C.png?font=poppins&text=" . urlencode($text);
+            $text = Str::limit($product->name, 30);
             
-            $response = Http::timeout(15)->get($url);
+            // Create image with GD
+            $image = imagecreatetruecolor($width, $height);
+            $bgColor = imagecolorallocate($image, 238, 238, 238); // #EEE
+            $textColor = imagecolorallocate($image, 49, 52, 60); // #31343C
             
-            if ($response->successful()) {
-                Storage::disk('public')->makeDirectory('products');
-                $filename = "products/{$type}_" . uniqid() . '.png';
-                Storage::disk('public')->put($filename, $response->body());
-                $product->addMediaFromDisk($filename, 'public')->toMediaCollection('photo');
-            }
+            imagefill($image, 0, 0, $bgColor);
+            
+            // Add text centered
+            $fontSize = 5; // Built-in font size (1-5)
+            $textWidth = imagefontwidth($fontSize) * strlen($text);
+            $textHeight = imagefontheight($fontSize);
+            $x = ($width - $textWidth) / 2;
+            $y = ($height - $textHeight) / 2;
+            imagestring($image, $fontSize, (int)$x, (int)$y, $text, $textColor);
+            
+            // Save to temp file
+            Storage::disk('public')->makeDirectory('products');
+            $filename = "products/{$type}_" . uniqid() . '.png';
+            $path = Storage::disk('public')->path($filename);
+            imagepng($image, $path);
+            imagedestroy($image);
+            
+            $product->addMediaFromDisk($filename, 'public')->toMediaCollection('photo');
         } catch (\Exception $e) {
             // Silently skip image errors
         }
     }
 
+    /**
+     * Regenerate images for fake products that don't have them
+     */
+    public static function regenerateFakeProductImages(): array
+    {
+        $count = 0;
+        $fakeProducts = Product::where('is_fake', true)->get();
+        
+        foreach ($fakeProducts as $product) {
+            if (!$product->photo) {
+                self::addPlaceholderImage($product, $product->product_type ?? 'product');
+                $count++;
+            }
+        }
+        
+        return ['images_added' => $count];
+    }
+    
     /**
      * Remove fake products only
      */
