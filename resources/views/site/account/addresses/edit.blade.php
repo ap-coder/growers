@@ -1,6 +1,6 @@
 @extends('site.layouts.app')
 
-@section('title', 'Edit Location - Pacific Plant Growers')
+@section('title', 'Edit Address - Pacific Plant Growers')
 
 @section('banner')
 <div class="dz-bnr-inr" style="background-image:url({{ asset('site/images/background/bg1.jpg') }});">
@@ -10,8 +10,8 @@
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}">Home</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('site.account.dashboard') }}">Account</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('site.account.locations') }}">Locations</a></li>
-                    <li class="breadcrumb-item">Edit Location</li>
+                    <li class="breadcrumb-item"><a href="{{ route('site.account.addresses') }}">Addresses</a></li>
+                    <li class="breadcrumb-item">Edit Address</li>
                 </ul>
             </nav>
         </div>
@@ -27,9 +27,9 @@
             
             <section class="col-xl-9 account-wrapper">
                 <div class="account-card">
-                    <h4 class="title mb-4">Edit Location</h4>
+                    <h4 class="title mb-4">Edit Address</h4>
                     
-                    <form action="{{ route('site.account.locations.update', $address) }}" method="POST">
+                    <form action="{{ route('site.account.addresses.update', $address) }}" method="POST">
                         @csrf
                         @method('PUT')
                         
@@ -48,7 +48,7 @@
                             </div>
                             
                             <div class="col-md-6 mb-3">
-                                <label for="label" class="form-label">Location Name/Label</label>
+                                <label for="label" class="form-label">Address Label</label>
                                 <input type="text" class="form-control @error('label') is-invalid @enderror" id="label" name="label" value="{{ old('label', $address->label) }}" placeholder="e.g., Main Warehouse, Store #123">
                                 @error('label')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -162,8 +162,8 @@
                         </div>
                         
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
-                            <a href="{{ route('site.account.locations') }}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Update Address</button>
+                            <a href="{{ route('site.account.addresses') }}" class="btn btn-outline-secondary">Cancel</a>
                         </div>
                     </form>
                 </div>
