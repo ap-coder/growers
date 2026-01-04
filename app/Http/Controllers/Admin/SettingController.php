@@ -159,7 +159,7 @@ class SettingController extends Controller
         try {
             $this->extendTimeout();
             $this->clearCaches();
-            $counts = DummyProductsSeeder::seedDummyProducts(15);
+            $counts = DummyProductsSeeder::seedDummyProducts(30);
             $this->clearCaches();
             $message = "Created: {$counts['products']} products, {$counts['variations']} variations";
             if ($request->ajax()) {
@@ -468,10 +468,10 @@ class SettingController extends Controller
         try {
             $this->extendTimeout();
             $this->clearCaches();
-            
+
             $seeder = new \Database\Seeders\DummyProductCollectionsSeeder();
             $result = $seeder->createDummyCollections();
-            
+
             $this->clearCaches();
 
             if (!$result['success']) {
@@ -501,10 +501,10 @@ class SettingController extends Controller
         try {
             $this->extendTimeout();
             $this->clearCaches();
-            
+
             $seeder = new \Database\Seeders\DummyProductCollectionsSeeder();
             $result = $seeder->removeDummyCollections();
-            
+
             $this->clearCaches();
 
             if ($request->ajax()) {
@@ -559,7 +559,7 @@ class SettingController extends Controller
 
             $this->extendTimeout();
             $this->clearCaches();
-            $output = shell_exec("cd " . base_path() . " && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename=\"[datetime]_squashed_growers_schema.php\" 2>&1");
+            $output = shell_exec("cd " . base_path() . " && php artisan migrate:generate --squash --no-interaction --skip-log --skip-views --skip-proc --table-filename=\"[datetime]_squashed.php\" --ignore=\"personal_access_tokens\" 2>&1");
             $this->clearCaches();
 
             session()->flash('swal_success', 'Migration squashed successfully! ' . $output);
@@ -595,13 +595,13 @@ class SettingController extends Controller
             $message = $exitCode === 0
                 ? "Media regenerated ({$modeText}) successfully!"
                 : 'Failed to regenerate media: ' . $output;
-            
+
             if ($exitCode === 0) {
                 session()->flash('swal_success', $message);
             } else {
                 session()->flash('swal_error', $message);
             }
-            
+
             return response()->json([
                 'success' => $exitCode === 0,
                 'message' => $message,
@@ -642,13 +642,13 @@ class SettingController extends Controller
             $message = $exitCode === 0
                 ? "Media regenerated for {$model} successfully!"
                 : 'Failed to regenerate media: ' . $output;
-            
+
             if ($exitCode === 0) {
                 session()->flash('swal_success', $message);
             } else {
                 session()->flash('swal_error', $message);
             }
-            
+
             return response()->json([
                 'success' => $exitCode === 0,
                 'message' => $message,
@@ -763,6 +763,66 @@ class SettingController extends Controller
             return response()->json(['success' => true, 'message' => 'Setup completed']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => 'Error completing setup: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function createClient(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'store_number' => 'nullable|string|max:50',
+            'contact_name' => 'nullable|string|max:255',
+            'contact_phone' => 'nullable|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
+            'address_line_1' => 'nullable|string|max:255',
+            'address_line_2' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'state' => 'nullable|string|max:50',
+            'postal_code' => 'nullable|string|max:20',
+            'requires_upc' => 'nullable|boolean',
+            'published' => 'nullable|boolean',
+        ]);
+
+        try {
+            // Build address string from components
+            $addressParts = array_filter([
+                $request->input('address_line_1'),
+                $request->input('address_line_2'),
+                $request->input('city'),
+                $request->input('state'),
+                $request->input('postal_code'),
+            ]);
+            $address = implode(', ', $addressParts);
+
+            $client = \App\Models\Client::create([
+                'name' => $request->input('name'),
+                'store_number' => $request->input('store_number'),
+                'contact_name' => $request->input('contact_name'),
+                'contact_phone' => $request->input('contact_phone'),
+                'contact_email' => $request->input('contact_email'),
+                'address' => $address,
+                'requires_upc' => $request->boolean('requires_upc', false),
+                'published' => $request->boolean('published', true),
+            ]);
+
+            // If user_id is provided, assign the client to that user
+            if ($request->filled('user_id')) {
+                $user = \App\Models\User::find($request->input('user_id'));
+                if ($user) {
+                    $user->update(['client_id' => $client->id]);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Client created successfully',
+                'client_id' => $client->id,
+                'client_name' => $client->name,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error creating client: ' . $e->getMessage()], 500);
         }
     }
 }

@@ -144,7 +144,7 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -157,7 +157,7 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -177,43 +177,43 @@ class AccountController extends Controller
         return back()->with('success', 'Company information updated successfully.');
     }
     
-    // Locations (Addresses)
-    public function locations()
+    // Addresses
+    public function addresses()
     {
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
         
-        $addresses = $client->addresses()->orderBy('address_type')->orderBy('is_primary', 'desc')->get();
+        $addresses = $client ? $client->addresses()->orderBy('address_type')->orderBy('is_primary', 'desc')->get() : collect();
         
-        return view('site.account.locations.index', compact('client', 'addresses'));
+        return view('site.account.addresses.index', compact('client', 'addresses'));
     }
     
-    public function createLocation()
+    public function createAddress()
     {
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
         
         $addressTypes = ClientAddress::TYPE_SELECT;
         
-        return view('site.account.locations.create', compact('client', 'addressTypes'));
+        return view('site.account.addresses.create', compact('client', 'addressTypes'));
     }
     
-    public function storeLocation(Request $request)
+    public function storeAddress(Request $request)
     {
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -221,6 +221,7 @@ class AccountController extends Controller
         $request->validate([
             'address_type' => 'required|in:' . implode(',', array_keys(ClientAddress::TYPE_SELECT)),
             'label' => 'nullable|string|max:100',
+            'nickname' => 'nullable|string|max:100',
             'address_line_1' => 'required|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
@@ -231,6 +232,7 @@ class AccountController extends Controller
             'contact_phone' => 'nullable|string|max:20',
             'contact_email' => 'nullable|email|max:255',
             'delivery_notes' => 'nullable|string|max:500',
+            'google_map_link' => 'nullable|url|max:500',
             'is_primary' => 'nullable|boolean',
         ]);
         
@@ -248,38 +250,39 @@ class AccountController extends Controller
         
         ClientAddress::create($data);
         
-        return redirect()->route('site.account.locations')
-            ->with('success', 'Location added successfully.');
+        return redirect()->route('site.account.addresses')
+            ->with('success', 'Address added successfully.');
     }
     
-    public function editLocation(ClientAddress $address)
+    public function editAddress(ClientAddress $address)
     {
         $user = auth()->user();
         $client = $user->client;
         
         if (!$client || $address->client_id !== $client->id) {
-            return redirect()->route('site.account.locations')
-                ->with('error', 'Location not found.');
+            return redirect()->route('site.account.addresses')
+                ->with('error', 'Address not found.');
         }
         
         $addressTypes = ClientAddress::TYPE_SELECT;
         
-        return view('site.account.locations.edit', compact('client', 'address', 'addressTypes'));
+        return view('site.account.addresses.edit', compact('client', 'address', 'addressTypes'));
     }
     
-    public function updateLocation(Request $request, ClientAddress $address)
+    public function updateAddress(Request $request, ClientAddress $address)
     {
         $user = auth()->user();
         $client = $user->client;
         
         if (!$client || $address->client_id !== $client->id) {
-            return redirect()->route('site.account.locations')
-                ->with('error', 'Location not found.');
+            return redirect()->route('site.account.addresses')
+                ->with('error', 'Address not found.');
         }
         
         $request->validate([
             'address_type' => 'required|in:' . implode(',', array_keys(ClientAddress::TYPE_SELECT)),
             'label' => 'nullable|string|max:100',
+            'nickname' => 'nullable|string|max:100',
             'address_line_1' => 'required|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
@@ -290,8 +293,9 @@ class AccountController extends Controller
             'contact_phone' => 'nullable|string|max:20',
             'contact_email' => 'nullable|email|max:255',
             'delivery_notes' => 'nullable|string|max:500',
+            'google_map_link' => 'nullable|url|max:500',
             'is_primary' => 'nullable|boolean',
-        ]);
+        });
         
         $data = $request->all();
         $data['is_primary'] = $request->boolean('is_primary');
@@ -306,34 +310,34 @@ class AccountController extends Controller
         
         $address->update($data);
         
-        return redirect()->route('site.account.locations')
-            ->with('success', 'Location updated successfully.');
+        return redirect()->route('site.account.addresses')
+            ->with('success', 'Address updated successfully.');
     }
     
-    public function deleteLocation(ClientAddress $address)
+    public function deleteAddress(ClientAddress $address)
     {
         $user = auth()->user();
         $client = $user->client;
         
         if (!$client || $address->client_id !== $client->id) {
-            return redirect()->route('site.account.locations')
-                ->with('error', 'Location not found.');
+            return redirect()->route('site.account.addresses')
+                ->with('error', 'Address not found.');
         }
         
         $address->delete();
         
-        return redirect()->route('site.account.locations')
-            ->with('success', 'Location deleted successfully.');
+        return redirect()->route('site.account.addresses')
+            ->with('success', 'Address deleted successfully.');
     }
     
-    public function setPrimaryLocation(ClientAddress $address)
+    public function setPrimaryAddress(ClientAddress $address)
     {
         $user = auth()->user();
         $client = $user->client;
         
         if (!$client || $address->client_id !== $client->id) {
-            return redirect()->route('site.account.locations')
-                ->with('error', 'Location not found.');
+            return redirect()->route('site.account.addresses')
+                ->with('error', 'Address not found.');
         }
         
         // Unset other primaries of same type
@@ -343,7 +347,7 @@ class AccountController extends Controller
         
         $address->update(['is_primary' => true]);
         
-        return redirect()->route('site.account.locations')
-            ->with('success', 'Primary location updated.');
+        return redirect()->route('site.account.addresses')
+            ->with('success', 'Primary address updated.');
     }
 }

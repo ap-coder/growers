@@ -47,6 +47,24 @@
 
     @include('site.layouts.partials.header')
 
+    @if(session()->has('impersonate_original_user_id'))
+    <div class="alert alert-warning mb-0 rounded-0 text-center" style="position: sticky; top: 0; z-index: 1030;">
+        <div class="container">
+            <i class="fas fa-user-secret"></i>
+            <strong>Developer Mode:</strong> You are viewing as <strong>{{ auth()->user()->name }}</strong> ({{ auth()->user()->email }})
+            @if(auth()->user()->client)
+                - Client: <strong>{{ auth()->user()->client->name }}</strong>
+            @endif
+            <form action="{{ route('admin.impersonate.stop') }}" method="POST" class="d-inline ms-3">
+                @csrf
+                <button type="submit" class="btn btn-sm btn-danger">
+                    <i class="fas fa-times"></i> Stop Impersonating
+                </button>
+            </form>
+        </div>
+    </div>
+    @endif
+
     <div class="page-content">
         @yield('banner')
 

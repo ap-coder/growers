@@ -39,14 +39,76 @@
                     <li><a href="{{ route('site.account.profile') }}" class="{{ request()->routeIs('site.account.profile') ? 'active' : '' }}">Profile</a></li>
                     @if(auth()->user()->client)
                     <li><a href="{{ route('site.account.company') }}" class="{{ request()->routeIs('site.account.company') ? 'active' : '' }}">Company Info</a></li>
-                    <li><a href="{{ route('site.account.locations') }}" class="{{ request()->routeIs('site.account.locations*') ? 'active' : '' }}">Locations</a></li>
+                    <li><a href="{{ route('site.account.addresses') }}" class="{{ request()->routeIs('site.account.addresses*') ? 'active' : '' }}">Addresses</a></li>
                     @endif
                 </ul>
                 <div class="nav-title bg-light">HELP</div>
                 <ul class="account-info-list">
                     <li><a href="{{ route('site.how-to-order') }}">How to Order</a></li>
                 </ul>
+                @if(auth()->user()->isWclDeveloper || session()->has('impersonate_original_user_id'))
+                <div class="nav-title bg-light">DEVELOPER TOOLS</div>
+                <ul class="account-info-list">
+                    @if(session()->has('impersonate_original_user_id'))
+                    <li>
+                        <form action="{{ route('admin.impersonate.stop') }}" method="POST" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-sm btn-danger w-100">
+                                <i class="fas fa-user-slash"></i> Stop Impersonating
+                            </button>
+                        </form>
+                    </li>
+                    @else
+                    <li>
+                        <select id="impersonateUserSelect" class="form-select form-select-sm">
+                            <option value="">Switch to User...</option>
+                        </select>
+                    </li>
+                    @endif
+                </ul>
+                @endif
             </div>
         </div>
     </div>
 </aside>
+
+@if(auth()->user()->isWclDeveloper && !session()->has('impersonate_original_user_id'))
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const select = document.getElementById('impersonateUserSelect');
+    if (!select) return;
+    
+    // Load users
+    fetch('{{ route('admin.impersonate.users') }}')
+        .then(response => response.json())
+        .then(users => {
+            users.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.id;
+                option.textContent = `${user.name} (${user.client_name})`;
+                select.appendChild(option);
+            });
+        });
+    
+    // Handle selection
+    select.addEventListener('change', function() {
+        if (this.value) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/users/${this.value}/impersonate`;
+            
+            const csrf = document.createElement('input');
+            csrf.type = 'hidden';
+            csrf.name = '_token';
+            csrf.value = '{{ csrf_token() }}';
+            form.appendChild(csrf);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
+});
+</script>
+@endpush
+@endif

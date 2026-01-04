@@ -19,7 +19,8 @@
                                     <option value="{{ $key }}" {{ $address->address_type == $key ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
-                            <input type="text" name="addresses[{{ $index }}][label]" class="form-control form-control-sm d-inline-block ml-2" style="width: 200px;" placeholder="Label (e.g., Store #123)" value="{{ $address->label }}">
+                            <input type="text" name="addresses[{{ $index }}][label]" class="form-control form-control-sm d-inline-block ml-2" style="width: 150px;" placeholder="Label" value="{{ $address->label }}">
+                            <input type="text" name="addresses[{{ $index }}][nickname]" class="form-control form-control-sm d-inline-block ml-2" style="width: 150px;" placeholder="Nickname" value="{{ $address->nickname }}">
                         </div>
                         <div>
                             <label class="mb-0 mr-3">
@@ -92,16 +93,22 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Delivery Notes</label>
                                     <textarea name="addresses[{{ $index }}][delivery_notes]" class="form-control" rows="2">{{ $address->delivery_notes }}</textarea>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <label>Special Instructions</label>
                                     <textarea name="addresses[{{ $index }}][special_instructions]" class="form-control" rows="2">{{ $address->special_instructions }}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Google Map Link</label>
+                                    <input type="url" name="addresses[{{ $index }}][google_map_link]" class="form-control" value="{{ $address->google_map_link }}" placeholder="https://maps.google.com/...">
                                 </div>
                             </div>
                         </div>
@@ -139,7 +146,8 @@ $(function() {
                         <select name="addresses[${addressIndex}][address_type]" class="form-control form-control-sm d-inline-block w-auto">
                             ${typeOptions}
                         </select>
-                        <input type="text" name="addresses[${addressIndex}][label]" class="form-control form-control-sm d-inline-block ml-2" style="width: 200px;" placeholder="Label (e.g., Store #123)">
+                        <input type="text" name="addresses[${addressIndex}][label]" class="form-control form-control-sm d-inline-block ml-2" style="width: 150px;" placeholder="Label">
+                        <input type="text" name="addresses[${addressIndex}][nickname]" class="form-control form-control-sm d-inline-block ml-2" style="width: 150px;" placeholder="Nickname">
                     </div>
                     <div>
                         <label class="mb-0 mr-3">
@@ -212,16 +220,22 @@ $(function() {
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Delivery Notes</label>
                                 <textarea name="addresses[${addressIndex}][delivery_notes]" class="form-control" rows="2"></textarea>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label>Special Instructions</label>
                                 <textarea name="addresses[${addressIndex}][special_instructions]" class="form-control" rows="2"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Google Map Link</label>
+                                <input type="url" name="addresses[${addressIndex}][google_map_link]" class="form-control" placeholder="https://maps.google.com/...">
                             </div>
                         </div>
                     </div>

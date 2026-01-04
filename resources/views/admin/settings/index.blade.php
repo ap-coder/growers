@@ -7,6 +7,9 @@
             <a class="btn btn-success" href="{{ route('admin.settings.create') }}">
                 <i class="fas fa-plus"></i> Add New Setting
             </a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createClientModal">
+                <i class="fas fa-building"></i> Quick Create Client
+            </button>
         </div>
     </div>
 @endcan
@@ -751,6 +754,195 @@ $(document).ready(function() {
                         button.prop('disabled', false).html(originalText);
                     }
                 });
+            }
+        });
+    });
+});
+</script>
+
+{{-- Quick Create Client Modal --}}
+<div class="modal fade" id="createClientModal" tabindex="-1" role="dialog" aria-labelledby="createClientModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="createClientModalLabel">
+                    <i class="fas fa-building mr-2"></i> Quick Create Client
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="createClientForm">
+                @csrf
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="client_name">Company Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="client_name" name="name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="store_number">Store Number</label>
+                                <input type="text" class="form-control" id="store_number" name="store_number">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-3">
+                    <h6 class="mb-3">Contact Information</h6>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="contact_name">Contact Name</label>
+                                <input type="text" class="form-control" id="contact_name" name="contact_name" value="{{ auth()->user()->name }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="contact_phone">Contact Phone</label>
+                                <input type="text" class="form-control" id="contact_phone" name="contact_phone" value="{{ auth()->user()->phone }}">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="contact_email">Contact Email</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ auth()->user()->email }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-3">
+                    <h6 class="mb-3">Address</h6>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="address_line_1">Address Line 1</label>
+                                <input type="text" class="form-control" id="address_line_1" name="address_line_1">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label for="address_line_2">Address Line 2</label>
+                                <input type="text" class="form-control" id="address_line_2" name="address_line_2">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="city">City</label>
+                                <input type="text" class="form-control" id="city" name="city">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="state">State</label>
+                                <input type="text" class="form-control" id="state" name="state">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="postal_code">ZIP Code</label>
+                                <input type="text" class="form-control" id="postal_code" name="postal_code">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="my-3">
+                    <h6 class="mb-3">Options</h6>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="user_id">Assign to User (Optional)</label>
+                                <select class="form-control" id="user_id" name="user_id">
+                                    <option value="">-- Select User --</option>
+                                    @foreach(\App\Models\User::orderBy('name')->get() as $user)
+                                        <option value="{{ $user->id }}" {{ $user->id == auth()->id() ? 'selected' : '' }}>{{ $user->name }} ({{ $user->email }})</option>
+                                    @endforeach
+                                </select>
+                                <small class="form-text text-muted">Optionally assign this client to a user account</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox mt-4">
+                                    <input type="checkbox" class="custom-control-input" id="requires_upc" name="requires_upc" value="1">
+                                    <label class="custom-control-label" for="requires_upc">Requires UPC Codes</label>
+                                </div>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="published" name="published" value="1" checked>
+                                    <label class="custom-control-label" for="published">Published (Active)</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Create Client
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    $('#createClientForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        const form = $(this);
+        const submitBtn = form.find('button[type="submit"]');
+        const originalText = submitBtn.html();
+        
+        submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+        
+        $.ajax({
+            url: '{{ route("admin.setup-wizard.create-client") }}',
+            method: 'POST',
+            data: form.serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        showConfirmButton: true
+                    }).then(() => {
+                        $('#createClientModal').modal('hide');
+                        form[0].reset();
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: response.message,
+                        icon: 'error'
+                    });
+                    submitBtn.prop('disabled', false).html(originalText);
+                }
+            },
+            error: function(xhr) {
+                let errorMsg = 'An error occurred while creating the client.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+                    errorMsg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
+                }
+                
+                Swal.fire({
+                    title: 'Error',
+                    html: '<div class="alert alert-danger mb-0">' + errorMsg + '</div>',
+                    icon: 'error'
+                });
+                submitBtn.prop('disabled', false).html(originalText);
             }
         });
     });

@@ -13,11 +13,13 @@ class ClientAddress extends Model
 
     public $table = 'client_addresses';
 
+    public const TYPE_LOCATION = 'location';
     public const TYPE_CORPORATE = 'corporate';
     public const TYPE_SHIPPING = 'shipping';
     public const TYPE_BILLING = 'billing';
 
     public const TYPE_SELECT = [
+        self::TYPE_LOCATION => 'Location',
         self::TYPE_CORPORATE => 'Corporate / Main Office',
         self::TYPE_SHIPPING => 'Shipping / Delivery',
         self::TYPE_BILLING => 'Billing',
@@ -33,6 +35,7 @@ class ClientAddress extends Model
         'client_id',
         'address_type',
         'label',
+        'nickname',
         'is_primary',
         'address_line_1',
         'address_line_2',
@@ -45,6 +48,7 @@ class ClientAddress extends Model
         'contact_email',
         'delivery_notes',
         'special_instructions',
+        'google_map_link',
     ];
 
     protected $casts = [
@@ -108,5 +112,10 @@ class ClientAddress extends Model
     public function scopeCorporate($query)
     {
         return $query->where('address_type', self::TYPE_CORPORATE);
+    }
+
+    public function scopeLocation($query)
+    {
+        return $query->where('address_type', self::TYPE_LOCATION);
     }
 }

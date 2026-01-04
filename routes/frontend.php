@@ -21,14 +21,14 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/account/company', 'AccountController@company')->name('account.company');
     Route::put('/account/company', 'AccountController@updateCompany')->name('account.company.update');
     
-    // Locations (Addresses)
-    Route::get('/account/locations', 'AccountController@locations')->name('account.locations');
-    Route::get('/account/locations/create', 'AccountController@createLocation')->name('account.locations.create');
-    Route::post('/account/locations', 'AccountController@storeLocation')->name('account.locations.store');
-    Route::get('/account/locations/{address}/edit', 'AccountController@editLocation')->name('account.locations.edit');
-    Route::put('/account/locations/{address}', 'AccountController@updateLocation')->name('account.locations.update');
-    Route::delete('/account/locations/{address}', 'AccountController@deleteLocation')->name('account.locations.delete');
-    Route::post('/account/locations/{address}/set-primary', 'AccountController@setPrimaryLocation')->name('account.locations.setPrimary');
+    // Addresses
+    Route::get('/account/addresses', 'AccountController@addresses')->name('account.addresses');
+    Route::get('/account/addresses/create', 'AccountController@createAddress')->name('account.addresses.create');
+    Route::post('/account/addresses', 'AccountController@storeAddress')->name('account.addresses.store');
+    Route::get('/account/addresses/{address}/edit', 'AccountController@editAddress')->name('account.addresses.edit');
+    Route::put('/account/addresses/{address}', 'AccountController@updateAddress')->name('account.addresses.update');
+    Route::delete('/account/addresses/{address}', 'AccountController@deleteAddress')->name('account.addresses.delete');
+    Route::post('/account/addresses/{address}/set-primary', 'AccountController@setPrimaryAddress')->name('account.addresses.setPrimary');
     
     // Messages
     Route::get('/account/messages', 'MessageController@index')->name('account.messages.index');

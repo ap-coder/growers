@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('product_accessory', function (Blueprint $table) {
-            $table->boolean('included_in_price')->default(false)->after('is_required');
+        Schema::table('client_addresses', function (Blueprint $table) {
+            $table->string('nickname')->nullable()->after('label');
+            $table->string('google_map_link')->nullable()->after('special_instructions');
         });
     }
 
@@ -21,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('product_accessory', function (Blueprint $table) {
-            $table->dropColumn('included_in_price');
+        Schema::table('client_addresses', function (Blueprint $table) {
+            $table->dropColumn(['nickname', 'google_map_link']);
         });
     }
 };

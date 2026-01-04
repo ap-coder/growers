@@ -548,6 +548,6 @@ class PermissionsTableSeeder extends Seeder
             ],
         ];
 
-        Permission::insert($permissions);
+        Permission::upsert($permissions, ['id'], ['title']);
     }
 }

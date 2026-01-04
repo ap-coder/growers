@@ -33,7 +33,12 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Users
     Route::delete('users/destroy', 'UsersController@massDestroy')->name('users.massDestroy');
+    Route::post('users/{user}/impersonate', 'ImpersonateController@start')->name('users.impersonate');
     Route::resource('users', 'UsersController');
+    
+    // Impersonation
+    Route::post('impersonate/stop', 'ImpersonateController@stop')->name('impersonate.stop');
+    Route::get('impersonate/users', 'ImpersonateController@getUsersForSelect')->name('impersonate.users');
 
     // Audit Logs
     Route::resource('audit-logs', 'AuditLogsController', ['except' => ['create', 'store', 'edit', 'update', 'destroy']]);
@@ -172,6 +177,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('setup-wizard/save-settings', 'SettingController@saveWizardSettings')->name('setup-wizard.save-settings');
     Route::post('setup-wizard/create-page', 'SettingController@createWizardPage')->name('setup-wizard.create-page');
     Route::post('setup-wizard/complete', 'SettingController@completeSetup')->name('setup-wizard.complete');
+    Route::post('setup-wizard/create-client', 'SettingController@createClient')->name('setup-wizard.create-client');
 
     // Order Item
     Route::delete('order-items/destroy', 'OrderItemController@massDestroy')->name('order-items.massDestroy');
