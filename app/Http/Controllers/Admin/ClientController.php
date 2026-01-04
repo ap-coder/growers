@@ -151,6 +151,7 @@ class ClientController extends Controller
             
             $addressData['client_id'] = $client->id;
             $addressData['is_primary'] = isset($addressData['is_primary']) ? 1 : 0;
+            $addressData['is_fake'] = isset($addressData['is_fake']) ? 1 : 0;
             
             if (!empty($addressData['id'])) {
                 // Update existing

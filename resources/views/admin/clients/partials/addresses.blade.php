@@ -26,6 +26,9 @@
                             <label class="mb-0 mr-3">
                                 <input type="checkbox" name="addresses[{{ $index }}][is_primary]" value="1" {{ $address->is_primary ? 'checked' : '' }}> Primary
                             </label>
+                            <label class="mb-0 mr-3">
+                                <input type="checkbox" name="addresses[{{ $index }}][is_fake]" value="1" {{ $address->is_fake ? 'checked' : '' }}> Fake/Demo
+                            </label>
                             <button type="button" class="btn btn-sm btn-danger remove-address-btn">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -152,6 +155,9 @@ $(function() {
                     <div>
                         <label class="mb-0 mr-3">
                             <input type="checkbox" name="addresses[${addressIndex}][is_primary]" value="1"> Primary
+                        </label>
+                        <label class="mb-0 mr-3">
+                            <input type="checkbox" name="addresses[${addressIndex}][is_fake]" value="1"> Fake/Demo
                         </label>
                         <button type="button" class="btn btn-sm btn-danger remove-address-btn">
                             <i class="fas fa-trash"></i>

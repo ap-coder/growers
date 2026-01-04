@@ -144,7 +144,7 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -157,7 +157,7 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -183,12 +183,12 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
         
-        $addresses = $client->addresses()->orderBy('address_type')->orderBy('is_primary', 'desc')->get();
+        $addresses = $client ? $client->addresses()->orderBy('address_type')->orderBy('is_primary', 'desc')->get() : collect();
         
         return view('site.account.addresses.index', compact('client', 'addresses'));
     }
@@ -198,7 +198,7 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -213,7 +213,7 @@ class AccountController extends Controller
         $user = auth()->user();
         $client = $user->client;
         
-        if (!$client) {
+        if (!$client && !$user->isAdmin && !$user->isWclDeveloper) {
             return redirect()->route('site.account.dashboard')
                 ->with('error', 'No company associated with your account.');
         }
@@ -221,6 +221,7 @@ class AccountController extends Controller
         $request->validate([
             'address_type' => 'required|in:' . implode(',', array_keys(ClientAddress::TYPE_SELECT)),
             'label' => 'nullable|string|max:100',
+            'nickname' => 'nullable|string|max:100',
             'address_line_1' => 'required|string|max:255',
             'address_line_2' => 'nullable|string|max:255',
             'city' => 'required|string|max:100',
@@ -231,6 +232,7 @@ class AccountController extends Controller
             'contact_phone' => 'nullable|string|max:20',
             'contact_email' => 'nullable|email|max:255',
             'delivery_notes' => 'nullable|string|max:500',
+            'google_map_link' => 'nullable|url|max:500',
             'is_primary' => 'nullable|boolean',
         ]);
         
@@ -293,7 +295,7 @@ class AccountController extends Controller
             'delivery_notes' => 'nullable|string|max:500',
             'google_map_link' => 'nullable|url|max:500',
             'is_primary' => 'nullable|boolean',
-        ]);
+        });
         
         $data = $request->all();
         $data['is_primary'] = $request->boolean('is_primary');

@@ -135,6 +135,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('clients/{client}/create-user', 'ClientController@createUser')->name('clients.createUser');
     Route::post('clients/{client}/remove-user', 'ClientController@removeUser')->name('clients.removeUser');
 
+    // Client Addresses
+    Route::delete('client-addresses/destroy', 'ClientAddressController@massDestroy')->name('client-addresses.massDestroy');
+    Route::resource('client-addresses', 'ClientAddressController');
+
     // Client Price
     Route::delete('client-prices/destroy', 'ClientPriceController@massDestroy')->name('client-prices.massDestroy');
     Route::post('client-prices/media', 'ClientPriceController@storeMedia')->name('client-prices.storeMedia');

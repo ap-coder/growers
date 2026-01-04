@@ -37,6 +37,7 @@ class ClientAddress extends Model
         'label',
         'nickname',
         'is_primary',
+        'is_fake',
         'address_line_1',
         'address_line_2',
         'city',
@@ -53,6 +54,7 @@ class ClientAddress extends Model
 
     protected $casts = [
         'is_primary' => 'boolean',
+        'is_fake' => 'boolean',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

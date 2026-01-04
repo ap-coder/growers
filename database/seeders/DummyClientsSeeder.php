@@ -52,12 +52,14 @@ class DummyClientsSeeder extends Seeder
             ClientAddress::factory()
                 ->corporate()
                 ->primary()
+                ->fake()
                 ->create(['client_id' => $client->id]);
             
             // Create 1-2 shipping addresses
             $shippingCount = rand(1, 2);
             $shippingAddresses = ClientAddress::factory()
                 ->shipping()
+                ->fake()
                 ->count($shippingCount)
                 ->create(['client_id' => $client->id]);
             
@@ -70,6 +72,7 @@ class DummyClientsSeeder extends Seeder
             ClientAddress::factory()
                 ->billing()
                 ->primary()
+                ->fake()
                 ->create(['client_id' => $client->id]);
         }
         

@@ -29,7 +29,9 @@ class ClientAddressFactory extends Factory
         return [
             'address_type' => $this->faker->randomElement(array_keys(ClientAddress::TYPE_SELECT)),
             'label' => null,
+            'nickname' => null,
             'is_primary' => false,
+            'is_fake' => false,
             'address_line_1' => $this->faker->streetAddress(),
             'address_line_2' => $this->faker->optional(0.3)->secondaryAddress(),
             'city' => $location['city'],
@@ -40,6 +42,7 @@ class ClientAddressFactory extends Factory
             'contact_phone' => $this->faker->optional(0.7)->phoneNumber(),
             'contact_email' => $this->faker->optional(0.5)->email(),
             'delivery_notes' => $this->faker->optional(0.4)->sentence(),
+            'google_map_link' => null,
         ];
     }
 
@@ -79,6 +82,13 @@ class ClientAddressFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'is_primary' => true,
+        ]);
+    }
+
+    public function fake(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_fake' => true,
         ]);
     }
 }
