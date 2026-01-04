@@ -1,6 +1,6 @@
 @can('developer_access')
-    <li class="nav-item has-treeview {{ request()->is("admin/clients*") ? "menu-open" : "" }} {{ request()->is("admin/client-prices*") ? "menu-open" : "" }} {{ request()->is("admin/order-items*") ? "menu-open" : "" }}">
-        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/clients*") ? "active" : "" }} {{ request()->is("admin/client-prices*") ? "active" : "" }} {{ request()->is("admin/order-items*") ? "active" : "" }}" href="#">
+    <li class="nav-item has-treeview {{ request()->is("admin/clients*") ? "menu-open" : "" }} {{ request()->is("admin/client-addresses*") ? "menu-open" : "" }} {{ request()->is("admin/client-prices*") ? "menu-open" : "" }} {{ request()->is("admin/order-items*") ? "menu-open" : "" }}">
+        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/clients*") ? "active" : "" }} {{ request()->is("admin/client-addresses*") ? "active" : "" }} {{ request()->is("admin/client-prices*") ? "active" : "" }} {{ request()->is("admin/order-items*") ? "active" : "" }}" href="#">
             <i class="fa-fw nav-icon fas fa-user-tie"></i>
             <p>
                 Client Manager
@@ -13,6 +13,14 @@
                     <a href="{{ route("admin.clients.index") }}" class="nav-link {{ request()->is("admin/clients") || request()->is("admin/clients/*") ? "active" : "" }}">
                         <i class="fa-fw nav-icon far fa-user"></i>
                         <p>{{ trans('cruds.client.title') }}</p>
+                    </a>
+                </li>
+            @endcan
+            @can('client_access')
+                <li class="nav-item">
+                    <a href="{{ route("admin.client-addresses.index") }}" class="nav-link {{ request()->is("admin/client-addresses") || request()->is("admin/client-addresses/*") ? "active" : "" }}">
+                        <i class="fa-fw nav-icon fas fa-map-marker-alt"></i>
+                        <p>Client Addresses</p>
                     </a>
                 </li>
             @endcan
