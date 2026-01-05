@@ -155,15 +155,15 @@
                                 <p class="text-muted small mb-2">Add products incrementally. Categories/tags created once.</p>
                                 <form action="{{ route('admin.settings.seedDummyProducts') }}" method="POST" class="dummy-add-form mb-1" data-type="products">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> +15 Products</button>
+                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> Products</button>
                                 </form>
                                 <form action="{{ route('admin.settings.seedDummyAccessories') }}" method="POST" class="dummy-add-form mb-1" data-type="accessories">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> +5 Accessories</button>
+                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> 5 Accessories</button>
                                 </form>
                                 <form action="{{ route('admin.settings.seedDummyBundles') }}" method="POST" class="dummy-add-form mb-1" data-type="bundles">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> +1 Bundle/Set</button>
+                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> 1 Bundle/Set</button>
                                 </form>
                                 <form action="{{ route('admin.settings.seedDummyVariations') }}" method="POST" class="dummy-add-form mb-2" data-type="variations">
                                     @csrf
@@ -459,7 +459,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- Media Regenerate All --}}
             <div class="col-md-3">
                 <div class="card card-outline card-dark h-100">
@@ -478,7 +478,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- Media Regenerate Missing --}}
             <div class="col-md-3">
                 <div class="card card-outline card-dark h-100">
@@ -497,7 +497,7 @@
                     </div>
                 </div>
             </div>
-            
+
             {{-- Telescope --}}
             <div class="col-md-3">
                 <div class="card card-outline card-dark h-100">
@@ -519,7 +519,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="row mt-3">
             {{-- Media Regen by Model --}}
             <div class="col-md-3">
@@ -539,7 +539,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-3">
                 <div class="card card-outline card-secondary h-100">
                     <div class="card-header">
@@ -557,7 +557,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-3">
                 <div class="card card-outline card-secondary h-100">
                     <div class="card-header">
@@ -575,7 +575,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-3">
                 <div class="card card-outline card-secondary h-100">
                     <div class="card-header">
@@ -613,7 +613,7 @@ $(document).ready(function() {
         var originalText = button.html();
         var dataType = form.data('type') || 'data';
         var details = form.data('details') || 'Sample data for testing';
-        
+
         Swal.fire({
             title: 'Create Dummy ' + dataType.charAt(0).toUpperCase() + dataType.slice(1) + '?',
             html: '<p class="mb-2">This will generate:</p><p class="text-muted small text-left">' + details + '</p>',
@@ -625,7 +625,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Creating...');
-                
+
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -655,7 +655,7 @@ $(document).ready(function() {
             }
         });
     });
-    
+
     // Handle WCL Developer Tools AJAX forms
     $('.wcl-ajax-form').on('submit', function(e) {
         e.preventDefault();
@@ -663,9 +663,9 @@ $(document).ready(function() {
         var url = form.attr('action');
         var button = form.find('button[type="submit"]');
         var originalText = button.html();
-        
+
         button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Processing...');
-        
+
         $.ajax({
             url: url,
             type: 'POST',
@@ -706,7 +706,7 @@ $(document).ready(function() {
             }
         });
     });
-    
+
     // Handle REMOVE dummy data forms - require confirmation
     $('.dummy-remove-form').on('submit', function(e) {
         e.preventDefault();
@@ -715,7 +715,7 @@ $(document).ready(function() {
         var button = form.find('button[type="submit"]');
         var originalText = button.html();
         var dataType = form.data('type') || 'data';
-        
+
         Swal.fire({
             title: 'Remove Dummy ' + dataType.charAt(0).toUpperCase() + dataType.slice(1) + '?',
             html: '<p class="text-danger"><i class="fas fa-exclamation-triangle mr-1"></i> This will permanently delete all dummy ' + dataType + '.</p><p class="small text-muted">This action cannot be undone.</p>',
@@ -727,7 +727,7 @@ $(document).ready(function() {
         }).then((result) => {
             if (result.isConfirmed) {
                 button.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-1"></i> Removing...');
-                
+
                 $.ajax({
                     url: url,
                     type: 'POST',
@@ -789,10 +789,10 @@ $(document).ready(function() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr class="my-3">
                     <h6 class="mb-3">Contact Information</h6>
-                    
+
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -813,10 +813,10 @@ $(document).ready(function() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr class="my-3">
                     <h6 class="mb-3">Address</h6>
-                    
+
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
@@ -849,10 +849,10 @@ $(document).ready(function() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <hr class="my-3">
                     <h6 class="mb-3">Options</h6>
-                    
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
@@ -897,13 +897,13 @@ $(document).ready(function() {
 $(document).ready(function() {
     $('#createClientForm').on('submit', function(e) {
         e.preventDefault();
-        
+
         const form = $(this);
         const submitBtn = form.find('button[type="submit"]');
         const originalText = submitBtn.html();
-        
+
         submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Creating...');
-        
+
         $.ajax({
             url: '{{ route("admin.setup-wizard.create-client") }}',
             method: 'POST',
@@ -936,7 +936,7 @@ $(document).ready(function() {
                 } else if (xhr.responseJSON && xhr.responseJSON.errors) {
                     errorMsg = Object.values(xhr.responseJSON.errors).flat().join('<br>');
                 }
-                
+
                 Swal.fire({
                     title: 'Error',
                     html: '<div class="alert alert-danger mb-0">' + errorMsg + '</div>',

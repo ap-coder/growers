@@ -2,7 +2,7 @@
 
 // Legacy frontend routes - redirect to site routes
 Route::group(['as' => 'frontend.', 'middleware' => ['web', 'auth']], function () {
-    Route::get('/home', function() { return redirect()->route('site.account.dashboard'); })->name('home');
+    Route::get('/account', function() { return redirect()->route('site.account.dashboard'); })->name('home');
     Route::get('/products', function() { return redirect()->route('site.shop.index'); })->name('products.index');
     Route::get('/products/{product}', function($product) { return redirect()->route('site.shop.product', $product); })->name('products.show');
 });
@@ -10,12 +10,14 @@ Route::group(['as' => 'frontend.', 'middleware' => ['web', 'auth']], function ()
 // Site routes (client-facing frontend)
 Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'auth']], function () {
     // Account
-    Route::get('/account', 'AccountController@dashboard')->name('account.dashboard');
+    Route::get('/account/dashboard', 'AccountController@dashboard')->name('account.dashboard');
     Route::get('/account/profile', 'AccountController@profile')->name('account.profile');
-    Route::put('/account/profile', 'AccountController@updateProfile')->name('account.profile.update');
-    Route::put('/account/password', 'AccountController@updatePassword')->name('account.password.update');
+    Route::post('/account/profile', 'AccountController@updateProfile')->name('account.profile.update');
+    Route::post('/account/password', 'AccountController@updatePassword')->name('account.password.update');
     Route::get('/account/orders', 'AccountController@orders')->name('account.orders');
-    Route::get('/account/orders/{id}', 'AccountController@orderShow')->name('account.orders.show');
+    Route::get('/account/order-history', 'AccountController@orderHistory')->name('account.order-history');
+    Route::get('/account/orders/{id}', 'AccountController@orderShow')->name('account.order-details');
+    Route::get('/account/orders/{id}/invoice', 'AccountController@downloadInvoice')->name('order.invoice.download');
     
     // Company Info
     Route::get('/account/company', 'AccountController@company')->name('account.company');
@@ -54,9 +56,14 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::post('/wishlist/toggle', 'WishlistController@toggle')->name('wishlist.toggle');
     Route::get('/account/wishlist', 'WishlistController@index')->name('account.wishlist');
     
+    // Cart
+    Route::get('/cart', 'CartController@index')->name('cart.index')->withoutMiddleware('auth');
+    Route::post('/cart/add', 'CartController@add')->name('cart.add')->withoutMiddleware('auth');
+    Route::post('/cart/update', 'CartController@update')->name('cart.update')->withoutMiddleware('auth');
+    Route::get('/cart/remove/{cartId}', 'CartController@remove')->name('cart.remove')->withoutMiddleware('auth');
+    Route::get('/cart/remove-product/{productId}', 'CartController@removeProduct')->name('cart.remove.product')->withoutMiddleware('auth');
+    Route::get('/cart/clear', 'CartController@clear')->name('cart.clear')->withoutMiddleware('auth');
+    
     // Pages
     Route::get('/how-to-order', 'AccountController@howToOrder')->name('how-to-order');
-    
-    // Cart (placeholder)
-    Route::get('/cart', function() { return view('site.cart.index'); })->name('cart');
 });

@@ -90,8 +90,8 @@
     ajax: "{{ route('admin.clients.index') }}",
     columns: [
       { data: 'placeholder', name: 'placeholder' },
-{ data: 'id', name: 'id' },
-{ data: 'published', name: 'published' },
+{ data: 'id', name: 'id', visible: false },
+{ data: 'published', name: 'published', visible: false },
 { data: 'name', name: 'name' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],

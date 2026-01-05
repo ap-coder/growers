@@ -34,7 +34,7 @@
                                     $hasChildren = $menuItems->where('parent', $item->id)->count() > 0;
                                 @endphp
                                 <li class="{{ $hasChildren ? 'sub-menu-down' : '' }}">
-                                    <a href="{{ $item->link ?: '#' }}">
+                                    <a href="{{ $item->link ? (str_starts_with($item->link, 'http') ? $item->link : url($item->link)) : '#' }}">
                                         @if($item->menu_icon_class)
                                             <i class="{{ $item->menu_icon_class }}"></i>
                                         @endif
@@ -46,7 +46,7 @@
                                         <ul class="sub-menu">
                                             @foreach($menuItems->where('parent', $item->id) as $child)
                                                 <li>
-                                                    <a href="{{ $child->link ?: '#' }}">
+                                                    <a href="{{ $child->link ? (str_starts_with($child->link, 'http') ? $child->link : url($child->link)) : '#' }}">
                                                         @if($child->menu_icon_class)
                                                             <i class="{{ $child->menu_icon_class }}"></i>
                                                         @endif
@@ -105,7 +105,7 @@
                             @endauth
                             
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('site.cart') }}">
+                                <a class="nav-link" href="{{ route('site.cart.index') }}">
                                     <i class="flaticon flaticon-shopping-cart-1"></i>
                                     <span class="badge badge-circle">{{ session('cart_count', 0) }}</span>
                                 </a>

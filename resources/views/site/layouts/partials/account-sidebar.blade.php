@@ -24,7 +24,8 @@
                 <div class="nav-title bg-light">DASHBOARD</div>
                 <ul>
                     <li><a href="{{ route('site.account.dashboard') }}" class="{{ request()->routeIs('site.account.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-                    <li><a href="{{ route('site.account.orders') }}" class="{{ request()->routeIs('site.account.orders*') ? 'active' : '' }}">Orders</a></li>
+                    <li><a href="{{ route('site.account.orders') }}" class="{{ request()->routeIs('site.account.orders') ? 'active' : '' }}">Orders</a></li>
+                    <li><a href="{{ route('site.account.order-history') }}" class="{{ request()->routeIs('site.account.order-history') ? 'active' : '' }}">Order History</a></li>
                     <li>
                         <a href="{{ route('site.account.messages.index') }}" class="{{ request()->routeIs('site.account.messages*') ? 'active' : '' }}">
                             Messages
@@ -33,10 +34,10 @@
                             @endif
                         </a>
                     </li>
+                    <li><a href="{{ route('site.account.profile') }}" class="{{ request()->routeIs('site.account.profile') ? 'active' : '' }}">Profile</a></li>
                 </ul>
                 <div class="nav-title bg-light">ACCOUNT SETTINGS</div>
                 <ul class="account-info-list">
-                    <li><a href="{{ route('site.account.profile') }}" class="{{ request()->routeIs('site.account.profile') ? 'active' : '' }}">Profile</a></li>
                     @if(auth()->user()->client)
                     <li><a href="{{ route('site.account.company') }}" class="{{ request()->routeIs('site.account.company') ? 'active' : '' }}">Company Info</a></li>
                     <li><a href="{{ route('site.account.addresses') }}" class="{{ request()->routeIs('site.account.addresses*') ? 'active' : '' }}">Addresses</a></li>

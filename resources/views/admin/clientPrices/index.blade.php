@@ -38,6 +38,15 @@
                         {{ trans('cruds.clientPrice.fields.sku') }}
                     </th>
                     <th>
+                        MPN
+                    </th>
+                    <th>
+                        GTIN
+                    </th>
+                    <th>
+                        UPC
+                    </th>
+                    <th>
                         {{ trans('cruds.clientPrice.fields.qb_1') }}
                     </th>
                     <th>
@@ -45,6 +54,9 @@
                     </th>
                     <th>
                         {{ trans('cruds.clientPrice.fields.client') }}
+                    </th>
+                    <th>
+                        Product
                     </th>
                     <th>
                         &nbsp;
@@ -102,13 +114,17 @@
     ajax: "{{ route('admin.client-prices.index') }}",
     columns: [
       { data: 'placeholder', name: 'placeholder' },
-{ data: 'id', name: 'id' },
-{ data: 'published', name: 'published' },
+{ data: 'id', name: 'id', visible: false },
+{ data: 'published', name: 'published', visible: false },
 { data: 'price', name: 'price' },
 { data: 'sku', name: 'sku' },
-{ data: 'qb_1', name: 'qb_1' },
-{ data: 'qb_2', name: 'qb_2' },
+{ data: 'mpn', name: 'mpn', visible: false },
+{ data: 'gtin', name: 'gtin', visible: false },
+{ data: 'upc', name: 'upc' },
+{ data: 'qb_1', name: 'qb_1', visible: false },
+{ data: 'qb_2', name: 'qb_2', visible: false },
 { data: 'client_name', name: 'client.name' },
+{ data: 'product_name', name: 'product.name' },
 { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

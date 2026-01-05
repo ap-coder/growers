@@ -54,10 +54,12 @@ class ClientController extends Controller
                 return '<input type="checkbox" disabled ' . ($row->published ? 'checked' : null) . '>';
             });
             $table->editColumn('name', function ($row) {
-                return $row->name ? $row->name : '';
+                $name = $row->name ? $row->name : '';
+                $url = route('admin.clients.edit', $row->id);
+                return $name ? '<a href="' . $url . '">' . $name . '</a>' : '';
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'published']);
+            $table->rawColumns(['actions', 'placeholder', 'name', 'published']);
 
             return $table->make(true);
         }

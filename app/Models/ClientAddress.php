@@ -25,6 +25,13 @@ class ClientAddress extends Model
         self::TYPE_BILLING => 'Billing',
     ];
 
+    public const ADDRESS_TYPE_SELECT = [
+        'location'  => 'Location',
+        'corporate' => 'Corporate / Main Office',
+        'shipping'  => 'Shipping / Delivery',
+        'billing'   => 'Billing',
+    ];
+
     protected $dates = [
         'created_at',
         'updated_at',

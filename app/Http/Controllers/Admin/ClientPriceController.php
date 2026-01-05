@@ -25,7 +25,7 @@ class ClientPriceController extends Controller
         abort_if(Gate::denies('client_price_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->ajax()) {
-            $query = ClientPrice::with(['client', 'team'])->select(sprintf('%s.*', (new ClientPrice)->table));
+            $query = ClientPrice::with(['client', 'product', 'team'])->select(sprintf('%s.*', (new ClientPrice)->table));
             $table = Datatables::of($query);
 
             $table->addColumn('placeholder', '&nbsp;');
@@ -56,7 +56,18 @@ class ClientPriceController extends Controller
                 return $row->price ? $row->price : '';
             });
             $table->editColumn('sku', function ($row) {
-                return $row->sku ? $row->sku : '';
+                $sku = $row->sku ? $row->sku : '';
+                $url = route('admin.client-prices.edit', $row->id);
+                return $sku ? '<a href="' . $url . '">' . $sku . '</a>' : '';
+            });
+            $table->editColumn('mpn', function ($row) {
+                return $row->mpn ? $row->mpn : '';
+            });
+            $table->editColumn('gtin', function ($row) {
+                return $row->gtin ? $row->gtin : '';
+            });
+            $table->editColumn('upc', function ($row) {
+                return $row->upc ? $row->upc : '';
             });
             $table->editColumn('qb_1', function ($row) {
                 return $row->qb_1 ? $row->qb_1 : '';
@@ -67,8 +78,11 @@ class ClientPriceController extends Controller
             $table->addColumn('client_name', function ($row) {
                 return $row->client ? $row->client->name : '';
             });
+            $table->addColumn('product_name', function ($row) {
+                return $row->product ? $row->product->name : '';
+            });
 
-            $table->rawColumns(['actions', 'placeholder', 'published', 'client']);
+            $table->rawColumns(['actions', 'placeholder', 'sku', 'published', 'client']);
 
             return $table->make(true);
         }

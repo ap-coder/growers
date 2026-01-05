@@ -546,6 +546,26 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => 134,
                 'title' => 'collection_access',
             ],
+            [
+                'id'    => 135,
+                'title' => 'client_address_create',
+            ],
+            [
+                'id'    => 136,
+                'title' => 'client_address_edit',
+            ],
+            [
+                'id'    => 137,
+                'title' => 'client_address_show',
+            ],
+            [
+                'id'    => 138,
+                'title' => 'client_address_delete',
+            ],
+            [
+                'id'    => 139,
+                'title' => 'client_address_access',
+            ],
         ];
 
         Permission::upsert($permissions, ['id'], ['title']);

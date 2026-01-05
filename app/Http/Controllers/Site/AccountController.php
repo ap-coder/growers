@@ -10,6 +10,7 @@ use App\Models\ClientAddress;
 use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AccountController extends Controller
 {
@@ -80,6 +81,19 @@ class AccountController extends Controller
         return view('site.account.orders', compact('orders'));
     }
     
+    public function orderHistory()
+    {
+        $user = auth()->user();
+        $clientId = $user->client_id ?? null;
+        
+        $orders = Order::where('client_id', $clientId)
+            ->with('orderItems')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+        
+        return view('site.account.order-history', compact('orders'));
+    }
+    
     public function orderShow($id)
     {
         $user = auth()->user();
@@ -90,6 +104,20 @@ class AccountController extends Controller
             ->findOrFail($id);
         
         return view('site.account.order-details', compact('order'));
+    }
+    
+    public function downloadInvoice($id)
+    {
+        $user = auth()->user();
+        $clientId = $user->client_id ?? null;
+        
+        $order = Order::where('client_id', $clientId)
+            ->with(['orderItems', 'orderItems.product', 'client'])
+            ->findOrFail($id);
+        
+        $pdf = Pdf::loadView('site.invoices.invoice', compact('order'));
+        
+        return $pdf->download('invoice-' . $order->number . '.pdf');
     }
     
     public function howToOrder()

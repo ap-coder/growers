@@ -103,10 +103,10 @@
       { data: 'client_name', name: 'client.name' },
       { data: 'address_type', name: 'address_type' },
       { data: 'label', name: 'label' },
-      { data: 'nickname', name: 'nickname' },
+      { data: 'nickname', name: 'nickname', visible: false },
       { data: 'full_address', name: 'full_address' },
-      { data: 'is_primary', name: 'is_primary' },
-      { data: 'is_fake', name: 'is_fake' },
+      { data: 'is_primary', name: 'is_primary', visible: false },
+      { data: 'is_fake', name: 'is_fake', visible: false },
       { data: 'actions', name: '{{ trans('global.actions') }}' }
     ],
     orderCellsTop: true,

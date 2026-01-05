@@ -59,7 +59,9 @@ class ClientAddressController extends Controller
             });
 
             $table->editColumn('full_address', function ($row) {
-                return $row->full_address ? $row->full_address : '';
+                $address = $row->full_address ? $row->full_address : '';
+                $url = route('admin.client-addresses.edit', $row->id);
+                return $address ? '<a href="' . $url . '">' . $address . '</a>' : '';
             });
 
             $table->editColumn('is_primary', function ($row) {
@@ -70,7 +72,7 @@ class ClientAddressController extends Controller
                 return '<input type="checkbox" disabled ' . ($row->is_fake ? 'checked' : '') . '>';
             });
 
-            $table->rawColumns(['actions', 'placeholder', 'is_primary', 'is_fake']);
+            $table->rawColumns(['actions', 'placeholder', 'client_name', 'full_address', 'is_primary', 'is_fake']);
 
             return $table->make(true);
         }
@@ -82,7 +84,7 @@ class ClientAddressController extends Controller
     {
         abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $clients = Client::pluck('name', 'id');
         $addressTypes = ClientAddress::TYPE_SELECT;
 
         return view('admin.client-addresses.create', compact('clients', 'addressTypes'));
@@ -134,7 +136,7 @@ class ClientAddressController extends Controller
     {
         abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
+        $clients = Client::pluck('name', 'id');
         $addressTypes = ClientAddress::TYPE_SELECT;
 
         $clientAddress->load('client');

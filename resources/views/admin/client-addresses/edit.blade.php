@@ -10,41 +10,79 @@
         <form method="POST" action="{{ route("admin.client-addresses.update", [$clientAddress->id]) }}" enctype="multipart/form-data">
             @method('PUT')
             @csrf
-            
-            <div class="form-group">
-                <label for="client_id">Client <span class="text-danger">*</span></label>
-                <select class="form-control select2 {{ $errors->has('client_id') ? 'is-invalid' : '' }}" name="client_id" id="client_id" required>
-                    @foreach($clients as $id => $entry)
-                        <option value="{{ $id }}" {{ (old('client_id') ? old('client_id') : $clientAddress->client_id) == $id ? 'selected' : '' }}>{{ $entry }}</option>
-                    @endforeach
-                </select>
-                @if($errors->has('client_id'))
-                    <span class="text-danger">{{ $errors->first('client_id') }}</span>
-                @endif
+
+            {{-- Display Options --}}
+            <div class="card card-outline card-secondary mb-3">
+                <div class="card-header py-2 d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="fas fa-cog mr-1"></i> Address Options</h6>
+                    @if($clientAddress->is_fake)
+                        <span class="badge badge-info"><i class="fas fa-info-circle mr-1"></i> Demo Data</span>
+                    @endif
+                </div>
+                <div class="card-body py-2">
+
+                    <div class="row mb-2">
+                        <div class="col-md-2">
+                            <div class="icheck-success">
+                                <input type="hidden" name="is_primary" value="0">
+                                <input type="checkbox" name="is_primary" id="is_primary" value="1" {{ old('is_primary', $clientAddress->is_primary) == 1 ? 'checked' : '' }}>
+                                <label for="is_primary">Primary Address</label>
+                            </div>
+
+                        </div>
+                        <div class="col-md-2">
+                            <div class="icheck-warning">
+                                <input type="hidden" name="is_fake" value="0">
+                                <input type="checkbox" name="is_fake" id="is_fake" value="1" {{ old('is_fake', $clientAddress->is_fake) == 1 ? 'checked' : '' }}>
+                                <label for="is_fake">Fake/Demo</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
             </div>
 
+            <hr />
+            {{-- Top Row: Client, Type, Label, Nickname --}}
+            <div class="row mb-3">
+                <div class="col-md-4 form-group">
+                    <label for="client_id">{{ trans('cruds.clientAddress.fields.client') }}</label>
+                    <select class="form-control select2 {{ $errors->has('client') ? 'is-invalid' : '' }}" name="client_id" id="client_id">
+                        @foreach($clients as $id => $entry)
+                            <option value="{{ $id }}" {{ (old('client_id') ? old('client_id') : $clientAddress->client->id ?? '') == $id ? 'selected' : '' }}>{{ $entry }}</option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('client'))
+                        <span class="text-danger">{{ $errors->first('client') }}</span>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.clientAddress.fields.client_helper') }}</span>
+                </div>
+
+                <div class="col-md-4 form-group">
+                    <label>{{ trans('cruds.clientAddress.fields.address_type') }}</label>
+                    <select class="form-control {{ $errors->has('address_type') ? 'is-invalid' : '' }}" name="address_type" id="address_type">
+                        <option value disabled {{ old('address_type', null) === null ? 'selected' : '' }}>{{ trans('global.pleaseSelect') }}</option>
+                        @foreach(App\Models\ClientAddress::ADDRESS_TYPE_SELECT as $key => $label)
+                            <option value="{{ $key }}" {{ old('address_type', $clientAddress->address_type) === (string) $key ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @if($errors->has('address_type'))
+                        <span class="text-danger">{{ $errors->first('address_type') }}</span>
+                    @endif
+                    <span class="help-block">{{ trans('cruds.clientAddress.fields.address_type_helper') }}</span>
+                </div>
+
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
-                        <label for="address_type">Address Type <span class="text-danger">*</span></label>
-                        <select class="form-control select2 {{ $errors->has('address_type') ? 'is-invalid' : '' }}" name="address_type" id="address_type" required>
-                            <option value="">{{ trans('global.pleaseSelect') }}</option>
-                            @foreach($addressTypes as $key => $label)
-                                <option value="{{ $key }}" {{ (old('address_type') ? old('address_type') : $clientAddress->address_type) == $key ? 'selected' : '' }}>{{ $label }}</option>
-                            @endforeach
-                        </select>
-                        @if($errors->has('address_type'))
-                            <span class="text-danger">{{ $errors->first('address_type') }}</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
                         <label for="label">Label</label>
-                        <input class="form-control {{ $errors->has('label') ? 'is-invalid' : '' }}" type="text" name="label" id="label" value="{{ old('label', $clientAddress->label) }}" placeholder="e.g., Main Office, Store #123">
+                        <input class="form-control {{ $errors->has('label') ? 'is-invalid' : '' }}" type="text" name="label" id="label" value="{{ old('label', $clientAddress->label) }}" placeholder="Main Office">
                         @if($errors->has('label'))
                             <span class="text-danger">{{ $errors->first('label') }}</span>
                         @endif
+                        <span class="help-block">e.g., Store #123</span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -54,6 +92,7 @@
                         @if($errors->has('nickname'))
                             <span class="text-danger">{{ $errors->first('nickname') }}</span>
                         @endif
+                        <span class="help-block">Short reference name</span>
                     </div>
                 </div>
             </div>
@@ -149,7 +188,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="form-group">
                         <label for="delivery_notes">Delivery Notes</label>
                         <textarea class="form-control {{ $errors->has('delivery_notes') ? 'is-invalid' : '' }}" name="delivery_notes" id="delivery_notes" rows="3">{{ old('delivery_notes', $clientAddress->delivery_notes) }}</textarea>
@@ -158,7 +197,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-8">
                     <div class="form-group">
                         <label for="special_instructions">Special Instructions</label>
                         <textarea class="form-control {{ $errors->has('special_instructions') ? 'is-invalid' : '' }}" name="special_instructions" id="special_instructions" rows="3">{{ old('special_instructions', $clientAddress->special_instructions) }}</textarea>
@@ -175,37 +214,6 @@
                 @if($errors->has('google_map_link'))
                     <span class="text-danger">{{ $errors->first('google_map_link') }}</span>
                 @endif
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="form-check {{ $errors->has('is_primary') ? 'is-invalid' : '' }}">
-                            <input type="hidden" name="is_primary" value="0">
-                            <input class="form-check-input" type="checkbox" name="is_primary" id="is_primary" value="1" {{ old('is_primary', $clientAddress->is_primary) == 1 ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_primary">
-                                Set as Primary Address
-                            </label>
-                        </div>
-                        @if($errors->has('is_primary'))
-                            <span class="text-danger">{{ $errors->first('is_primary') }}</span>
-                        @endif
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <div class="form-check {{ $errors->has('is_fake') ? 'is-invalid' : '' }}">
-                            <input type="hidden" name="is_fake" value="0">
-                            <input class="form-check-input" type="checkbox" name="is_fake" id="is_fake" value="1" {{ old('is_fake', $clientAddress->is_fake) == 1 ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_fake">
-                                Mark as Fake/Demo Address
-                            </label>
-                        </div>
-                        @if($errors->has('is_fake'))
-                            <span class="text-danger">{{ $errors->first('is_fake') }}</span>
-                        @endif
-                    </div>
-                </div>
             </div>
 
             <div class="form-group">
