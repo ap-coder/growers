@@ -237,14 +237,79 @@ function addAllToCart(productId) {
         return;
     }
     
-    // TODO: Implement actual cart functionality
-    console.log('Adding to cart:', items);
-    Swal.fire({
-        title: 'Added to Cart!',
-        text: items.length + ' item(s) added to cart.',
-        icon: 'success',
-        timer: 2000,
-        showConfirmButton: false
+    // Prepare variations array for cart
+    var variations = items.filter(item => item.variation_id).map(item => ({
+        variation_id: item.variation_id,
+        quantity: item.quantity
+    }));
+    
+    if (variations.length === 0) {
+        Swal.fire({
+            title: 'No Variations Selected',
+            text: 'Please select at least one product variation.',
+            icon: 'warning'
+        });
+        return;
+    }
+    
+    // Send to cart
+    fetch('{{ route("site.cart.add") }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            variations: variations
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart count in header
+            var cartBadge = document.querySelector('.badge.badge-circle');
+            if (cartBadge && data.cart_count) {
+                cartBadge.textContent = data.cart_count;
+            }
+            
+            // Show success message with option to view cart
+            Swal.fire({
+                title: 'Added to Cart!',
+                text: variations.length + ' item(s) added to cart.',
+                icon: 'success',
+                showCancelButton: true,
+                confirmButtonText: 'View Cart',
+                cancelButtonText: 'Continue Shopping',
+                timer: 3000
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '{{ route("site.cart.index") }}';
+                }
+            });
+            
+            // Reset quantities
+            document.querySelectorAll('.variation-qty-input').forEach(input => input.value = 0);
+            document.querySelectorAll('.tier-qty-input').forEach(input => input.value = 0);
+            var baseInput = document.getElementById('base-product-qty');
+            if (baseInput) baseInput.value = 1;
+            updateRunningTotal();
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: data.message || 'Failed to add items to cart.',
+                icon: 'error'
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Something went wrong. Please try again.',
+            icon: 'error'
+        });
     });
 }
 
