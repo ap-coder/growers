@@ -30,7 +30,7 @@
                     @foreach($cart as $productId => $items)
                         @php
                             $firstItem = $items->first();
-                            $product = \App\Models\Product::find($productId);
+                            $product = $firstItem->product;
                             $productTotal = 0;
                             $placeholder = 'https://placehold.co/80x80/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name ?? 'Product');
                         @endphp

@@ -1,6 +1,6 @@
 @can('order_management_access')
-    <li class="nav-item has-treeview {{ request()->is("admin/orders*") ? "menu-open" : "" }}">
-                        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/orders*") ? "active" : "" }}" href="#">
+    <li class="nav-item has-treeview {{ request()->is("admin/orders*") || request()->is("admin/invoices*") ? "menu-open" : "" }}">
+                        <a class="nav-link nav-dropdown-toggle {{ request()->is("admin/orders*") || request()->is("admin/invoices*") ? "active" : "" }}" href="#">
                             <i class="fa-fw nav-icon fas fa-credit-card">
 
                             </i>
@@ -18,6 +18,18 @@
                                         </i>
                                         <p>
                                             {{ trans('cruds.order.title') }}
+                                        </p>
+                                    </a>
+                                </li>
+                            @endcan
+                            @can('order_access')
+                                <li class="nav-item">
+                                    <a href="{{ route("admin.invoices.index") }}" class="nav-link {{ request()->is("admin/invoices") || request()->is("admin/invoices/*") ? "active" : "" }}">
+                                        <i class="fa-fw nav-icon fas fa-file-invoice">
+
+                                        </i>
+                                        <p>
+                                            Invoices
                                         </p>
                                     </a>
                                 </li>

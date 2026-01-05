@@ -56,7 +56,6 @@ class ProductFactory extends Factory
             'base_cost' => $baseCost,
             'sku' => strtoupper($this->faker->unique()->bothify('???-###')),
             'upc_code' => $this->faker->unique()->ean13(),
-            'qb_1' => 'QB-' . $this->faker->unique()->numberBetween(1000, 9999),
             'quantity' => $this->faker->numberBetween(0, 500),
             'published' => true,
             'featured' => $this->faker->boolean(20),
