@@ -52,6 +52,7 @@ class Order extends Model
         'updated_at',
         'deleted_at',
         'team_id',
+        'created_by_id',
     ];
 
     protected function serializeDate(DateTimeInterface $date)
@@ -72,5 +73,10 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'items_id');
+    }
+
+    public function created_by()
+    {
+        return $this->belongsTo(User::class, 'created_by_id');
     }
 }

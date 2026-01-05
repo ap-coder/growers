@@ -128,7 +128,7 @@ class OrderController extends Controller
     {
         abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $order->load('client', 'team', 'orderItems.product');
+        $order->load('client', 'team', 'orderItems.product', 'created_by');
 
         return view('admin.orders.packing-slip', compact('order'));
     }

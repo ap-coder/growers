@@ -441,13 +441,22 @@ class DummyProductsSeeder extends Seeder
                 }
             }
 
-            if ($clients->count() > 0 && rand(1, 100) <= 40) {
-                $numClientPrices = rand(1, min(3, $clients->count()));
+            if ($clients->count() > 0 && rand(1, 100) <= 60) {
+                $numClientPrices = rand(1, min(4, $clients->count()));
                 $randomClients = $clients->random($numClientPrices);
                 foreach ($randomClients as $client) {
                     ClientPrice::firstOrCreate(
                         ['product_id' => $product->id, 'client_id' => $client->id],
-                        ['price' => $product->base_price * (rand(80, 95) / 100)]
+                        [
+                            'price' => $product->base_price * (rand(80, 95) / 100),
+                            'published' => true,
+                            'sku' => $product->sku ? $client->store_number . '-' . $product->sku : null,
+                            'mpn' => $product->sku ? 'MPN-' . $product->sku : null,
+                            'gtin' => $product->upc_code ? str_pad(rand(1000000000000, 9999999999999), 13, '0', STR_PAD_LEFT) : null,
+                            'upc' => $product->upc_code,
+                            'qb_1' => $product->qb_1,
+                            'qb_2' => $product->qb_2,
+                        ]
                     );
                 }
             }

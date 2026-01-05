@@ -127,7 +127,8 @@
             <div class="header">{{ $order->client->name ?? 'No Client' }} {{ $order->client->store_number ? '#' . $order->client->store_number : '' }}</div>
             <div class="sub-header">
                 <div class="info-row"><span class="info-label">Date of Order:</span> {{ $order->created_at->format('m/d/Y') }}</div>
-                <div class="info-row"><span class="info-label">Order Placed By:</span> {{ $order->ordered_by_name ?? 'N/A' }} {{ $order->ordered_by_phone ? '- ' . $order->ordered_by_phone : '' }}</div>
+                <div class="info-row"><span class="info-label">Order Placed By:</span> {{ $order->created_by->name ?? 'N/A' }}</div>
+                <div class="info-row"><span class="info-label">Phone:</span> {{ $order->created_by->phone ?? 'N/A' }}</div>
                 <div class="info-row"><span class="info-label">Delivery Date:</span> {{ $order->delivery_date ? \Carbon\Carbon::parse($order->delivery_date)->format('l m/d/Y') : 'N/A' }}</div>
                 @if($order->delivery_details)
                 <div class="info-row"><span class="info-label">Delivery Details:</span> {{ $order->delivery_details }}</div>
@@ -170,6 +171,13 @@
                 @endforeach
             </div>
 
+            @if($order->delivery_details)
+                <div class="special-box">
+                    <div class="special-title">DELIVERY DETAILS</div>
+                    <div>{{ $order->delivery_details }}</div>
+                </div>
+            @endif
+
             @if($order->special_request)
                 <div class="special-box">
                     <div class="special-title">SPECIAL INSTRUCTIONS</div>
@@ -198,11 +206,11 @@
                     </thead>
                     <tbody>
                         @foreach($order->orderItems->sortBy(function($item) {
-                            return $item->product->upc_code ?? 'zzz';
+                            return $item->product->qb_1 ?? 'zzz';
                         }) as $item)
                             <tr>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->product->upc_code ?? '-' }}</td>
+                                <td>{{ $item->product->qb_1 ?? '-' }}</td>
                                 <td>{{ $item->product->name ?? 'Unknown' }}</td>
                             </tr>
                         @endforeach
