@@ -374,7 +374,7 @@ class SettingController extends Controller
             $this->clearCaches();
             $counts = DummyProductsSeeder::removeDummyProducts();
             $this->clearCaches();
-            $message = "Removed: {$counts['products']} products, {$counts['variations']} variations, {$counts['orders']} orders, {$counts['order_items']} order items, {$counts['categories']} categories, {$counts['tags']} tags, {$counts['accessories']} accessories";
+            $message = "Removed: {$counts['products']} products, {$counts['variations']} variations, {$counts['categories']} categories, {$counts['tags']} tags, {$counts['accessories']} accessories";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
             }

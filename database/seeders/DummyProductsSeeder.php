@@ -795,17 +795,7 @@ class DummyProductsSeeder extends Seeder
             'accessories' => 0,
             'accessory_types' => 0,
             'variation_categories' => 0,
-            'orders' => 0,
-            'order_items' => 0,
         ];
-
-        // Remove dummy orders and their items first
-        $fakeOrders = Order::where('is_fake', true)->get();
-        foreach ($fakeOrders as $order) {
-            $counts['order_items'] += $order->orderItems()->delete();
-            $order->delete();
-            $counts['orders']++;
-        }
 
         $fakeProducts = Product::where('is_fake', true)->get();
         foreach ($fakeProducts as $product) {
@@ -930,7 +920,6 @@ class DummyProductsSeeder extends Seeder
                 'shipping_cost' => rand(0, 1) ? rand(10, 50) : 0,
                 'created_at' => $orderDate,
                 'team_id' => $client->team_id,
-                'is_fake' => true,
             ]);
 
             $counts['orders']++;
@@ -953,10 +942,8 @@ class DummyProductsSeeder extends Seeder
                     'items_id' => $order->id,
                     'product_id' => $product->id,
                     'sku' => $variation->sku,
-                    'gtin' => fake()->unique()->ean13(),
-                    'mpn' => 'MPN-' . strtoupper(fake()->unique()->bothify('??###')),
-                    'qb_1' => fake()->unique()->numberBetween(100, 999),
-                    'qb_2' => fake()->unique()->numberBetween(1000, 9999),
+                    'gtin' => $product->gtin,
+                    'mpn' => $product->mpn,
                     'price' => $price,
                     'quantity' => $quantity,
                     'total_price' => $totalPrice,

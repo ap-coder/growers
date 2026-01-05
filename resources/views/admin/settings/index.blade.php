@@ -153,9 +153,7 @@
                             </div>
                             <div class="card-body">
                                 @php
-                                    $dummyProducts = \App\Models\Product::where('is_fake', true)->where('product_type', 'standard')->count();
-                                    $dummyBundles = \App\Models\Product::where('is_fake', true)->where('product_type', 'set')->count();
-                                    $dummyAccessories = \App\Models\Product::where('is_fake', true)->where('product_type', 'accessory')->count();
+                                    $dummyProducts = \App\Models\Product::where('is_fake', true)->count();
                                     $dummyVariations = \App\Models\ProductVariation::where('is_fake', true)->count();
                                     $dummyPriceTiers = \App\Models\ProductPriceTier::where('is_fake', true)->count();
                                     $dummyCategories = \App\Models\ProductCategory::where('is_fake', true)->count();
@@ -166,7 +164,7 @@
                                     $dummyFaqCats = \App\Models\FaqCategory::where('is_fake', true)->count();
                                     $dummyFaqs = \App\Models\FaqQuestion::where('is_fake', true)->count();
                                     $dummyPages = \App\Models\ContentPage::where('is_fake', true)->count();
-                                    $totalDummy = $dummyProducts + $dummyBundles + $dummyAccessories + $dummyVariations + $dummyPriceTiers + $dummyCategories + $dummyTags + $dummyCollections + $dummyClients + $dummyAddresses + $dummyFaqCats + $dummyFaqs + $dummyPages;
+                                    $totalDummy = $dummyProducts + $dummyVariations + $dummyPriceTiers + $dummyCategories + $dummyTags + $dummyCollections + $dummyClients + $dummyAddresses + $dummyFaqCats + $dummyFaqs + $dummyPages;
                                 @endphp
                                 <div class="row">
                                     <div class="col-6">
@@ -174,14 +172,6 @@
                                             <tr>
                                                 <td class="text-muted">Products:</td>
                                                 <td class="text-right"><strong>{{ $dummyProducts }}</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-muted">Bundles:</td>
-                                                <td class="text-right"><strong>{{ $dummyBundles }}</strong></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-muted">Accessories:</td>
-                                                <td class="text-right"><strong>{{ $dummyAccessories }}</strong></td>
                                             </tr>
                                             <tr>
                                                 <td class="text-muted">Variations:</td>

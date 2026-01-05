@@ -55,80 +55,74 @@
                         <h4 class="title mb-3">Billing Details</h4>
                     </div>
                     
-                    @php
-                        $user = auth()->user();
-                        $client = $user->client ?? null;
-                        $defaultAddress = $client?->addresses()->where('is_default', true)->first() ?? $client?->addresses()->first();
-                    @endphp
-                    
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">First Name *</label>
-                            <input name="first_name" required class="form-control" placeholder="First Name" value="{{ old('first_name', $user->first_name ?? '') }}">
+                            <input name="first_name" required class="form-control" placeholder="First Name" value="{{ old('first_name', auth()->user()->first_name ?? '') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">Last Name *</label>
-                            <input name="last_name" required class="form-control" placeholder="Last Name" value="{{ old('last_name', $user->last_name ?? '') }}">
+                            <input name="last_name" required class="form-control" placeholder="Last Name" value="{{ old('last_name', auth()->user()->last_name ?? '') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">Email *</label>
-                            <input name="email" type="email" required class="form-control" placeholder="Email Address" value="{{ old('email', $user->email ?? '') }}">
+                            <input name="email" type="email" required class="form-control" placeholder="Email Address" value="{{ old('email', auth()->user()->email ?? '') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">Phone Number *</label>
-                            <input name="phone" type="tel" required class="form-control" placeholder="Phone Number" value="{{ old('phone', $defaultAddress->phone ?? $client->phone ?? $user->phone ?? '') }}">
+                            <input name="phone" type="tel" required class="form-control" placeholder="Phone Number" value="{{ old('phone', auth()->user()->phone ?? '') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-12">
                         <div class="form-group m-b15">
                             <label class="label-title">Company name (optional)</label>
-                            <input name="company" class="form-control" placeholder="Company Name" value="{{ old('company', $client->name ?? '') }}">
+                            <input name="company" class="form-control" placeholder="Company Name" value="{{ old('company') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-12">
                         <div class="form-group m-b15">
                             <label class="label-title">Street address *</label>
-                            <input name="address_line1" required class="form-control m-b15" placeholder="House number and street name" value="{{ old('address_line1', $defaultAddress->address_line1 ?? '') }}">
-                            <input name="address_line2" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)" value="{{ old('address_line2', $defaultAddress->address_line2 ?? '') }}">
+                            <input name="address_line1" required class="form-control m-b15" placeholder="House number and street name" value="{{ old('address_line1') }}">
+                            <input name="address_line2" class="form-control" placeholder="Apartment, suite, unit, etc. (optional)" value="{{ old('address_line2') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">City *</label>
-                            <input name="city" required class="form-control" placeholder="City" value="{{ old('city', $defaultAddress->city ?? '') }}">
+                            <input name="city" required class="form-control" placeholder="City" value="{{ old('city') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">State *</label>
-                            <input name="state" required class="form-control" placeholder="State" value="{{ old('state', $defaultAddress->state ?? '') }}">
+                            <input name="state" required class="form-control" placeholder="State" value="{{ old('state') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">Zip Code *</label>
-                            <input name="zip_code" required class="form-control" placeholder="Zip Code" value="{{ old('zip_code', $defaultAddress->zip_code ?? '') }}">
+                            <input name="zip_code" required class="form-control" placeholder="Zip Code" value="{{ old('zip_code') }}">
                         </div>
                     </div>
                     
                     <div class="col-md-6">
                         <div class="form-group m-b15">
                             <label class="label-title">Country *</label>
-                            <input name="country" required class="form-control" placeholder="Country" value="{{ old('country', $defaultAddress->country ?? 'United States') }}">
+                            <input name="country" required class="form-control" placeholder="Country" value="{{ old('country', 'United States') }}">
                         </div>
                     </div>
                     
@@ -168,25 +162,45 @@
                     
                     @foreach($cart as $productId => $items)
                         @php
-                            $product = $items->first()->product;
-                            $productTotal = 0;
+                            $product = \App\Models\Product::find($productId);
+                            $itemCount = count($items);
+                            $placeholder = 'https://placehold.co/200x200/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name ?? 'Product');
                         @endphp
-                        <div class="mb-3 pb-3 border-bottom">
-                            <h6 class="mb-2"><strong>{{ $product->name ?? 'Product' }}</strong></h6>
-                            @foreach($items as $item)
-                                @php
-                                    $lineTotal = $item->quantity * $item->price;
-                                    $productTotal += $lineTotal;
-                                    $cartTotal += $lineTotal;
-                                @endphp
-                                <div class="d-flex justify-content-between small mb-1">
-                                    <span>{{ $item->quantity }}x {{ $item->variation->name ?? $item->variation_name }}</span>
-                                    <span>${{ number_format($lineTotal, 2) }}</span>
-                                </div>
-                            @endforeach
-                            <div class="d-flex justify-content-between mt-2 pt-2 border-top">
-                                <strong class="small">Product Total:</strong>
-                                <strong class="text-primary">${{ number_format($productTotal, 2) }}</strong>
+                        <div class="cart-item style-1 mb-3">
+                            <div class="dz-media">
+                                @if($product && !$product->is_fake && $product->photo)
+                                    <img src="{{ $product->photo->url }}" alt="{{ $product->name }}">
+                                @else
+                                    <img src="{{ $placeholder }}" alt="{{ $product->name ?? 'Product' }}">
+                                @endif
+                            </div>
+                            <div class="dz-content">
+                                <h6 class="title mb-1">{{ $product->name ?? 'Product' }}</h6>
+                                @if($itemCount > 3)
+                                    <div class="row small">
+                                        @foreach($items as $item)
+                                            @php
+                                                $lineTotal = $item->quantity * $item->price;
+                                                $cartTotal += $lineTotal;
+                                            @endphp
+                                            <div class="col-6 mb-1">
+                                                <div>{{ $item->variation->name ?? $item->variation_name }}</div>
+                                                <div>${{ number_format($item->price, 2) }} x {{ $item->quantity }}</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    @foreach($items as $item)
+                                        @php
+                                            $lineTotal = $item->quantity * $item->price;
+                                            $cartTotal += $lineTotal;
+                                        @endphp
+                                        <div class="small mb-1">
+                                            <div>{{ $item->variation->name ?? $item->variation_name }}</div>
+                                            <div>${{ number_format($item->price, 2) }} x {{ $item->quantity }}</div>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                     @endforeach
