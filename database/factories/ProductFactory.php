@@ -47,6 +47,9 @@ class ProductFactory extends Factory
         $fullPrice = round($basePrice * $this->faker->randomFloat(2, 1.15, 1.40), 2); // Full price 15-40% higher
         $baseCost = round($basePrice * $this->faker->randomFloat(2, 0.40, 0.65), 2); // Cost 35-60% of base price
         
+        $sku = strtoupper($this->faker->unique()->bothify('???-###'));
+        $upc = $this->faker->unique()->ean13();
+        
         return [
             'name' => $name,
             'description' => $this->generateDescription($category),
@@ -54,9 +57,12 @@ class ProductFactory extends Factory
             'base_price' => $basePrice,
             'full_price' => $fullPrice,
             'base_cost' => $baseCost,
-            'sku' => strtoupper($this->faker->unique()->bothify('???-###')),
-            'upc_code' => $this->faker->unique()->ean13(),
-            'qb_1' => 'QB-' . $this->faker->unique()->numberBetween(1000, 9999),
+            'sku' => $sku,
+            'mpn' => 'MPN-' . $sku,
+            'gtin' => str_pad(rand(1000000000000, 9999999999999), 13, '0', STR_PAD_LEFT),
+            'upc_code' => $upc,
+            'qb_1' => strtoupper($this->faker->unique()->bothify('???')),
+            'qb_2' => strtoupper($this->faker->unique()->bothify('####')),
             'quantity' => $this->faker->numberBetween(0, 500),
             'published' => true,
             'featured' => $this->faker->boolean(20),
