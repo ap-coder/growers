@@ -78,6 +78,8 @@ class Product extends Model implements HasMedia
         'bundle_price_override',
         'bundle_discount',
         'sku',
+        'mpn',
+        'gtin',
         'upc_code',
         'qb_1',
         'qb_2',
