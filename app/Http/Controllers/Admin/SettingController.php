@@ -152,6 +152,61 @@ class SettingController extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
+    public function seedAllDummyProducts(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            $this->extendTimeout();
+            $this->clearCaches();
+            
+            $totalProducts = 0;
+            $totalVariations = 0;
+            
+            // Generate products (includes variations and price tiers)
+            try {
+                $productCounts = DummyProductsSeeder::seedDummyProducts(30);
+                $totalProducts += $productCounts['products'] ?? 0;
+                $totalVariations += $productCounts['variations'] ?? 0;
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating products: ' . $e->getMessage());
+            }
+            
+            // Generate accessories
+            try {
+                $accessoryCounts = DummyProductsSeeder::seedDummyAccessoryProducts(5);
+                $totalProducts += $accessoryCounts['products'] ?? 0;
+                $totalVariations += $accessoryCounts['variations'] ?? 0;
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating accessories: ' . $e->getMessage());
+            }
+            
+            // Generate bundles
+            try {
+                $bundleCounts = DummyProductsSeeder::seedDummyBundleProducts(1);
+                $totalProducts += $bundleCounts['products'] ?? 0;
+                $totalVariations += $bundleCounts['variations'] ?? 0;
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating bundles: ' . $e->getMessage());
+            }
+            
+            $this->clearCaches();
+            
+            $message = "Created complete catalog: {$totalProducts} products, {$totalVariations} variations";
+            
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => $message]);
+            }
+            return redirect()->route('admin.settings.index')->with('message', $message);
+        } catch (\Exception $e) {
+            $error = 'Error creating all dummy products: ' . $e->getMessage();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $error], 500);
+            }
+            return redirect()->route('admin.settings.index')->with('error', $error);
+        }
+    }
+
     public function seedDummyProducts(Request $request)
     {
         abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -168,6 +223,72 @@ class SettingController extends Controller
             return redirect()->route('admin.settings.index')->with('message', $message);
         } catch (\Exception $e) {
             $error = 'Error creating dummy products: ' . $e->getMessage();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $error], 500);
+            }
+            return redirect()->route('admin.settings.index')->with('error', $error);
+        }
+    }
+    
+    public function seedDummyPriceTiers(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            $this->extendTimeout();
+            $this->clearCaches();
+            $counts = DummyProductsSeeder::fillMissingPriceTiers();
+            $this->clearCaches();
+            $message = "Added price tiers to {$counts['products']} products ({$counts['tiers']} tiers total)";
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => $message]);
+            }
+            return redirect()->route('admin.settings.index')->with('message', $message);
+        } catch (\Exception $e) {
+            $error = 'Error creating price tiers: ' . $e->getMessage();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $error], 500);
+            }
+            return redirect()->route('admin.settings.index')->with('error', $error);
+        }
+    }
+    
+    public function seedDummyCart(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            $counts = DummyProductsSeeder::seedDummyCart();
+            $message = "Added {$counts['items']} items to cart";
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => $message]);
+            }
+            return redirect()->route('admin.settings.index')->with('message', $message);
+        } catch (\Exception $e) {
+            $error = 'Error adding items to cart: ' . $e->getMessage();
+            if ($request->ajax()) {
+                return response()->json(['success' => false, 'message' => $error], 500);
+            }
+            return redirect()->route('admin.settings.index')->with('error', $error);
+        }
+    }
+    
+    public function seedDummyOrders(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            $this->extendTimeout();
+            $this->clearCaches();
+            $counts = DummyProductsSeeder::seedDummyOrders();
+            $this->clearCaches();
+            $message = "Created {$counts['orders']} orders with {$counts['items']} items";
+            if ($request->ajax()) {
+                return response()->json(['success' => true, 'message' => $message]);
+            }
+            return redirect()->route('admin.settings.index')->with('message', $message);
+        } catch (\Exception $e) {
+            $error = 'Error creating dummy orders: ' . $e->getMessage();
             if ($request->ajax()) {
                 return response()->json(['success' => false, 'message' => $error], 500);
             }
@@ -253,7 +374,7 @@ class SettingController extends Controller
             $this->clearCaches();
             $counts = DummyProductsSeeder::removeDummyProducts();
             $this->clearCaches();
-            $message = "Removed: {$counts['products']} products, {$counts['variations']} variations, {$counts['categories']} categories, {$counts['tags']} tags";
+            $message = "Removed: {$counts['products']} products, {$counts['variations']} variations, {$counts['categories']} categories, {$counts['tags']} tags, {$counts['accessories']} accessories";
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
             }

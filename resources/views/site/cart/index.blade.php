@@ -32,17 +32,20 @@
                             $firstItem = $items->first();
                             $product = \App\Models\Product::find($productId);
                             $productTotal = 0;
+                            $placeholder = 'https://placehold.co/80x80/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name ?? 'Product');
                         @endphp
                         
                         <div class="cart-product-group mb-4">
                             <div class="d-flex align-items-start mb-3">
-                                @if($product && $product->getFirstMediaUrl('photo'))
-                                    <img src="{{ $product->getFirstMediaUrl('photo') }}" alt="{{ $product->name }}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px;">
+                                @if($product && !$product->is_fake && $product->photo)
+                                    <img src="{{ $product->photo->url }}" alt="{{ $product->name }}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px; border: 1px solid #ddd;">
+                                @else
+                                    <img src="{{ $placeholder }}" alt="{{ $product->name ?? 'Product' }}" style="width: 80px; height: 80px; object-fit: cover; margin-right: 15px; border: 1px solid #ddd;">
                                 @endif
                                 <div>
                                     <h5 class="mb-1">{{ $product->name ?? 'Product' }}</h5>
                                     @if($product && $product->sku)
-                                        <small class="text-muted">Product SKU: {{ $product->sku }}</small>
+                                        <small>Product SKU: {{ $product->sku }}</small>
                                     @endif
                                 </div>
                                 <a href="{{ route('site.cart.remove.product', $productId) }}" class="ms-auto text-danger" title="Remove Product">
@@ -65,22 +68,25 @@
                                             @php
                                                 $lineTotal = $item->quantity * $item->price;
                                                 $productTotal += $lineTotal;
+                                                $qty = $item->quantity ?? 1;
                                             @endphp
-                                            <tr>
+                                            <tr class="small">
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <input type="number" 
                                                                class="form-control form-control-sm cart-qty-update" 
-                                                               value="{{ $item->quantity }}" 
-                                                               min="0"
+                                                               value="{{ intval($qty) }}" 
+                                                               min="1"
                                                                data-cart-id="{{ $item->id }}"
-                                                               style="width: 60px;">
+                                                               autocomplete="off"
+                                                               style="width: 60px; text-align: center;">
+                                                        <span class="ms-2 text-muted small">({{ $qty }})</span>
                                                     </div>
                                                 </td>
                                                 <td>
                                                     <strong>{{ $item->variation->name ?? $item->variation_name }}</strong>
                                                     @if($item->sku)
-                                                        <small class="text-muted d-block">SKU: {{ $item->sku }}</small>
+                                                        <small class="d-block">SKU: {{ $item->sku }}</small>
                                                     @endif
                                                 </td>
                                                 <td class="text-end">${{ number_format($item->price, 2) }}</td>
@@ -159,7 +165,7 @@
                             </tbody>
                         </table>
                         
-                        <a href="{{ route('site.checkout') }}" class="btn btn-secondary w-100 btn-lg">PROCEED TO CHECKOUT</a>
+                        <a href="{{ route('site.checkout') }}" target="_blank" class="btn btn-secondary w-100 btn-lg">PROCEED TO CHECKOUT</a>
                         
                         <div class="text-center mt-3">
                             <small class="text-muted">Secure Checkout</small>
@@ -175,6 +181,14 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Ensure quantity values are set on page load
+    $('.cart-qty-update').each(function() {
+        const qty = $(this).data('quantity');
+        if (qty && !$(this).val()) {
+            $(this).val(qty);
+        }
+    });
+    
     // Update cart quantity
     $('.cart-qty-update').on('change', function() {
         const qty = $(this).val();

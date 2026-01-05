@@ -147,28 +147,146 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
+                        <div class="card card-outline card-warning h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-database mr-2"></i> Dummy Data Counts</h6>
+                            </div>
+                            <div class="card-body">
+                                @php
+                                    $dummyProducts = \App\Models\Product::where('is_fake', true)->count();
+                                    $dummyVariations = \App\Models\ProductVariation::where('is_fake', true)->count();
+                                    $dummyPriceTiers = \App\Models\ProductPriceTier::where('is_fake', true)->count();
+                                    $dummyCategories = \App\Models\ProductCategory::where('is_fake', true)->count();
+                                    $dummyTags = \App\Models\ProductTag::where('is_fake', true)->count();
+                                    $dummyCollections = \App\Models\ProductCollection::where('is_fake', true)->count();
+                                    $dummyClients = \App\Models\Client::where('is_fake', true)->count();
+                                    $dummyAddresses = \App\Models\ClientAddress::where('is_fake', true)->count();
+                                    $dummyFaqCats = \App\Models\FaqCategory::where('is_fake', true)->count();
+                                    $dummyFaqs = \App\Models\FaqQuestion::where('is_fake', true)->count();
+                                    $dummyPages = \App\Models\ContentPage::where('is_fake', true)->count();
+                                    $totalDummy = $dummyProducts + $dummyVariations + $dummyPriceTiers + $dummyCategories + $dummyTags + $dummyCollections + $dummyClients + $dummyAddresses + $dummyFaqCats + $dummyFaqs + $dummyPages;
+                                @endphp
+                                <div class="row">
+                                    <div class="col-6">
+                                        <table class="table table-sm table-borderless mb-0 small">
+                                            <tr>
+                                                <td class="text-muted">Products:</td>
+                                                <td class="text-right"><strong>{{ $dummyProducts }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Variations:</td>
+                                                <td class="text-right"><strong>{{ $dummyVariations }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Price Tiers:</td>
+                                                <td class="text-right"><strong>{{ $dummyPriceTiers }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Categories:</td>
+                                                <td class="text-right"><strong>{{ $dummyCategories }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Tags:</td>
+                                                <td class="text-right"><strong>{{ $dummyTags }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Collections:</td>
+                                                <td class="text-right"><strong>{{ $dummyCollections }}</strong></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-6">
+                                        <table class="table table-sm table-borderless mb-0 small">
+                                            <tr>
+                                                <td class="text-muted">Clients:</td>
+                                                <td class="text-right"><strong>{{ $dummyClients }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Addresses:</td>
+                                                <td class="text-right"><strong>{{ $dummyAddresses }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">FAQ Cats:</td>
+                                                <td class="text-right"><strong>{{ $dummyFaqCats }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">FAQs:</td>
+                                                <td class="text-right"><strong>{{ $dummyFaqs }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Pages:</td>
+                                                <td class="text-right"><strong>{{ $dummyPages }}</strong></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="border-top pt-2 mt-2">
+                                    <table class="table table-sm table-borderless mb-0 small">
+                                        <tr>
+                                            <td><strong>Total Dummy:</strong></td>
+                                            <td class="text-right"><strong>{{ $totalDummy }}</strong></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
                         <div class="card card-outline card-info h-100">
                             <div class="card-header">
                                 <h6 class="mb-0"><i class="fas fa-box mr-2"></i> Dummy Products</h6>
                             </div>
                             <div class="card-body">
                                 <p class="text-muted small mb-2">Add products incrementally. Categories/tags created once.</p>
-                                <form action="{{ route('admin.settings.seedDummyProducts') }}" method="POST" class="dummy-add-form mb-1" data-type="products">
+                                <form action="{{ route('admin.settings.seedAllDummyProducts') }}" method="POST" class="dummy-add-form mb-2" data-type="all products" data-details="Generate complete product catalog: 30 products, 5 accessories, 1 bundle, with variations and price tiers">
                                     @csrf
-                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> Products</button>
+                                    <button type="submit" class="btn btn-success btn-sm btn-block"><i class="fas fa-magic mr-1"></i> Generate All Products</button>
                                 </form>
-                                <form action="{{ route('admin.settings.seedDummyAccessories') }}" method="POST" class="dummy-add-form mb-1" data-type="accessories">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> 5 Accessories</button>
-                                </form>
-                                <form action="{{ route('admin.settings.seedDummyBundles') }}" method="POST" class="dummy-add-form mb-1" data-type="bundles">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> 1 Bundle/Set</button>
-                                </form>
-                                <form action="{{ route('admin.settings.seedDummyVariations') }}" method="POST" class="dummy-add-form mb-2" data-type="variations">
-                                    @csrf
-                                    <button type="submit" class="btn btn-outline-info btn-sm btn-block"><i class="fas fa-layer-group mr-1"></i> Fill Variations</button>
-                                </form>
+                                <hr class="my-2">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <form action="{{ route('admin.settings.seedDummyProducts') }}" method="POST" class="dummy-add-form mb-1" data-type="products">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> Products</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <form action="{{ route('admin.settings.seedDummyAccessories') }}" method="POST" class="dummy-add-form mb-1" data-type="accessories">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> Accessories</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <form action="{{ route('admin.settings.seedDummyBundles') }}" method="POST" class="dummy-add-form mb-1" data-type="bundles">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-success btn-sm btn-block"><i class="fas fa-plus mr-1"></i> Bundle</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <form action="{{ route('admin.settings.seedDummyVariations') }}" method="POST" class="dummy-add-form mb-1" data-type="variations">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-info btn-sm btn-block"><i class="fas fa-layer-group mr-1"></i> Variations</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <form action="{{ route('admin.settings.seedDummyPriceTiers') }}" method="POST" class="dummy-add-form mb-1" data-type="price tiers">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-info btn-sm btn-block"><i class="fas fa-dollar-sign mr-1"></i> Price Tiers</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <form action="{{ route('admin.settings.seedDummyCart') }}" method="POST" class="dummy-add-form mb-1" data-type="cart items">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-warning btn-sm btn-block"><i class="fas fa-shopping-cart mr-1"></i> Add Cart</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-12">
+                                        <form action="{{ route('admin.settings.seedDummyOrders') }}" method="POST" class="dummy-add-form mb-2" data-type="orders">
+                                            @csrf
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm btn-block"><i class="fas fa-receipt mr-1"></i> Create Orders</button>
+                                        </form>
+                                    </div>
+                                </div>
                                 <a href="{{ route('admin.products.index') }}" target="_blank" class="btn btn-outline-primary btn-sm btn-block mb-1"><i class="fas fa-eye mr-1"></i> View</a>
                                 <form action="{{ route('admin.settings.removeDummyProducts') }}" method="POST" class="dummy-remove-form" data-type="all products">
                                     @csrf
@@ -360,68 +478,15 @@
                                     </tr>
                                     <tr>
                                         <td class="text-muted">Products:</td>
-                                        <td><strong>{{ \App\Models\Product::count() }}</strong></td>
+                                        <td><strong>{{ \App\Models\Product::where('is_fake', false)->orWhereNull('is_fake')->count() }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td class="text-muted">Clients:</td>
-                                        <td><strong>{{ \App\Models\Client::count() }}</strong></td>
+                                        <td><strong>{{ \App\Models\Client::where('is_fake', false)->orWhereNull('is_fake')->count() }}</strong></td>
                                     </tr>
                                     <tr>
                                         <td class="text-muted">Orders:</td>
                                         <td><strong>{{ \App\Models\Order::count() }}</strong></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card card-outline card-warning h-100">
-                            <div class="card-header">
-                                <h6 class="mb-0"><i class="fas fa-database mr-2"></i> Dummy Data Counts</h6>
-                            </div>
-                            <div class="card-body">
-                                @php
-                                    $dummyProducts = \App\Models\Product::where('is_fake', true)->count();
-                                    $dummyCategories = \App\Models\ProductCategory::where('is_fake', true)->count();
-                                    $dummyTags = \App\Models\ProductTag::where('is_fake', true)->count();
-                                    $dummyClients = \App\Models\Client::where('is_fake', true)->count();
-                                    $dummyFaqCats = \App\Models\FaqCategory::where('is_fake', true)->count();
-                                    $dummyFaqs = \App\Models\FaqQuestion::where('is_fake', true)->count();
-                                    $dummyPages = \App\Models\ContentPage::where('is_fake', true)->count();
-                                    $totalDummy = $dummyProducts + $dummyCategories + $dummyTags + $dummyClients + $dummyFaqCats + $dummyFaqs + $dummyPages;
-                                @endphp
-                                <table class="table table-sm table-borderless mb-0 small">
-                                    <tr>
-                                        <td class="text-muted">Products:</td>
-                                        <td><span class="badge badge-{{ $dummyProducts > 0 ? 'info' : 'secondary' }}">{{ $dummyProducts }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted">Categories:</td>
-                                        <td><span class="badge badge-{{ $dummyCategories > 0 ? 'info' : 'secondary' }}">{{ $dummyCategories }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted">Tags:</td>
-                                        <td><span class="badge badge-{{ $dummyTags > 0 ? 'info' : 'secondary' }}">{{ $dummyTags }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted">Clients:</td>
-                                        <td><span class="badge badge-{{ $dummyClients > 0 ? 'info' : 'secondary' }}">{{ $dummyClients }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted">FAQ Categories:</td>
-                                        <td><span class="badge badge-{{ $dummyFaqCats > 0 ? 'info' : 'secondary' }}">{{ $dummyFaqCats }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted">FAQ Questions:</td>
-                                        <td><span class="badge badge-{{ $dummyFaqs > 0 ? 'info' : 'secondary' }}">{{ $dummyFaqs }}</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="text-muted">Pages:</td>
-                                        <td><span class="badge badge-{{ $dummyPages > 0 ? 'info' : 'secondary' }}">{{ $dummyPages }}</span></td>
-                                    </tr>
-                                    <tr class="border-top">
-                                        <td><strong>Total Dummy:</strong></td>
-                                        <td><span class="badge badge-{{ $totalDummy > 0 ? 'warning' : 'success' }}">{{ $totalDummy }}</span></td>
                                     </tr>
                                 </table>
                             </div>
@@ -630,19 +695,28 @@ $(document).ready(function() {
                     url: url,
                     type: 'POST',
                     data: form.serialize(),
+                    timeout: 300000, // 5 minutes timeout for long-running operations
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(response) {
+                        button.prop('disabled', false).html(originalText);
                         Swal.fire({
                             title: '<i class="fas fa-check-circle text-success"></i> Complete!',
                             html: '<div class="alert alert-success mb-0"><strong>' + (response.message || 'Dummy ' + dataType + ' created successfully!') + '</strong></div>',
                             icon: null,
                             showConfirmButton: true,
-                            confirmButtonText: 'OK'
+                            confirmButtonText: 'OK',
+                            allowOutsideClick: false
                         }).then(() => {
                             window.location.reload();
                         });
                     },
                     error: function(xhr) {
                         var errorMsg = xhr.responseJSON?.message || xhr.responseJSON?.error || 'An error occurred';
+                        if (xhr.statusText === 'timeout') {
+                            errorMsg = 'Request timed out. The operation may still be running in the background. Please refresh the page to check if the data was created.';
+                        }
                         Swal.fire({
                             title: '<i class="fas fa-times-circle text-danger"></i> Error!',
                             html: '<div class="alert alert-danger mb-0">' + errorMsg + '</div>',
@@ -670,6 +744,9 @@ $(document).ready(function() {
             url: url,
             type: 'POST',
             data: form.serialize(),
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
             success: function(response) {
                 if (response.success === false) {
                     Swal.fire({
@@ -732,6 +809,9 @@ $(document).ready(function() {
                     url: url,
                     type: 'POST',
                     data: form.serialize(),
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
                     success: function(response) {
                         Swal.fire({
                             title: '<i class="fas fa-check-circle text-success"></i> Removed!',

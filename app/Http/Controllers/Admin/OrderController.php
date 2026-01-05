@@ -124,6 +124,24 @@ class OrderController extends Controller
         return view('admin.orders.print', compact('order'));
     }
 
+    public function packingSlip(Order $order)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $order->load('client', 'team', 'orderItems.product');
+
+        return view('admin.orders.packing-slip', compact('order'));
+    }
+
+    public function invoice(Order $order)
+    {
+        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $order->load('client', 'team', 'orderItems.product');
+
+        return view('admin.orders.invoice', compact('order'));
+    }
+
     public function destroy(Order $order)
     {
         abort_if(Gate::denies('order_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');

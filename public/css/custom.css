@@ -29,3 +29,7 @@ table.dataTable thead .sorting_desc { background-image: none; }
 div.dt-button-collection { padding: 0; }
 .buttons-columnVisibility { display: block; }
 .buttons-columnVisibility.active { background-color: rgba(128, 128, 128, 0.1); font-weight: bolder; }
+[class*="bold"] {font-weight: 700!important;font-style: normal!important;}
+.table .badge {
+    border-radius: 0!important;
+}

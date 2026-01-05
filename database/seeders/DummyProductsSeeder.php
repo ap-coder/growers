@@ -16,6 +16,9 @@ use App\Models\VariationCategory;
 use App\Models\FaqCategory;
 use App\Models\FaqQuestion;
 use App\Models\ContentPage;
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +26,174 @@ use Illuminate\Support\Str;
 
 class DummyProductsSeeder extends Seeder
 {
+    private static function generateDemoContent(Product $product): void
+    {
+        $productName = $product->name;
+
+        $description = '<div class="row  g-3 m-b30 align-items-center">' .
+            '<div class="col-xl-4 col-lg-6 col-md-12 col-sm-12 ">' .
+                '<div class="description style-1">' .
+                    '<h2 class="sub-title">The Quality &amp; Style</h2>' .
+                    '<h2 class="title">Premium Quality Indoor Plants</h2>' .
+                    '<p class="font-wight-500">Pacific Plant Growers has been supplying premium indoor plants to grocery stores and flower shops for over 20 years. Our ' . $productName . ' is carefully grown and nurtured to ensure it arrives in peak condition, ready to delight your customers with its vibrant foliage and healthy appearance.</p>' .
+                '</div>' .
+            '</div>' .
+            '<div class="col-xl-4 col-lg-3 col-md-6 col-sm-6 ">' .
+                '<div class="related-img dz-media">' .
+                    '<img src="/site/images/feature/product-feature-4/1.png" alt="/">' .
+                '</div>' .
+            '</div>' .
+            '<div class="col-xl-4 col-lg-3 col-md-6 col-sm-6">' .
+                '<div class="related-img dz-media">' .
+                    '<img src="/site/images/feature/product-feature-4/2.png" alt="/">' .
+                '</div>' .
+            '</div>' .
+        '</div>' .
+        '<div class="row g-lg-4 g-3">' .
+            '<div class="col-xl-3 col-md-6 col-sm-12 ">' .
+                '<div class="icon-bx-wraper style-6 m-b15">' .
+                    '<div class="icon-bx">' .
+                        '<i class="flaticon flaticon-chat-8"></i>' .
+                    '</div>' .
+                    '<div class="icon-content">' .
+                        '<h3 class="dz-title">Eco Friendly Product</h3>' .
+                    '</div>' .
+                '</div>' .
+            '</div>' .
+            '<div class="col-xl-3 col-md-6 col-sm-12 ">' .
+                '<div class="icon-bx-wraper style-6 m-b15">' .
+                    '<div class="icon-bx">' .
+                        '<i class="flaticon flaticon-paper"></i>' .
+                    '</div>' .
+                    '<div class="icon-content">' .
+                        '<h3 class="dz-title">Easy To Clean And Maintain</h3>' .
+                    '</div>' .
+                '</div>' .
+            '</div>' .
+            '<div class="col-xl-3 col-md-6 col-sm-12">' .
+                '<div class="icon-bx-wraper style-6 m-b15">' .
+                    '<div class="icon-bx">' .
+                        '<i class="flaticon flaticon-cardboard-box"></i>' .
+                    '</div>' .
+                    '<div class="icon-content">' .
+                        '<h3 class="dz-title">Premium Finish Quality</h3>' .
+                    '</div>' .
+                '</div>' .
+            '</div>' .
+            '<div class="col-xl-3 col-md-6 col-sm-12">' .
+                '<div class="icon-bx-wraper style-6 m-b15 border-0">' .
+                    '<div class="icon-bx">' .
+                        '<i class="flaticon flaticon-delivery-status"></i>' .
+                    '</div>' .
+                    '<div class="icon-content">' .
+                        '<h3 class="dz-title">Moisture Proof Product</h3>' .
+                    '</div>' .
+                '</div>' .
+            '</div>' .
+        '</div>' .
+        '<img src="/site/images/background/bg4.jpg" alt="">';
+
+        $additionalInfo = '<div class="detail-bx text-center">' .
+            '<h5 class="title">Additional Information</h5>' .
+            '<p class="para-text">' .
+                'Pacific Plant Growers has been supplying premium indoor plants to retailers for over 20 years. Our ' . $productName . ' represents our commitment to quality, freshness, and customer satisfaction. Each plant is carefully grown and nurtured in our greenhouses to ensure it arrives in peak condition, ready to delight your customers. We specialize in providing healthy, vibrant plants that are perfect for grocery stores, flower shops, and garden centers throughout the region.' .
+            '</p>' .
+            '<ul class="feature-detail justify-content-center">' .
+                '<li>' .
+                    '<i class="icon feather icon-check"></i>' .
+                    '<h5>Technical Details</h5>' .
+                '</li>' .
+                '<li>' .
+                    '<i class="icon feather icon-check"></i>' .
+                    '<h5>Additional Information</h5>' .
+                '</li>' .
+                '<li>' .
+                    '<i class="icon feather icon-check"></i>' .
+                    '<h5> Feedback </h5>' .
+                '</li>' .
+            '</ul>' .
+        '</div>' .
+        '<div class="table-responsive">' .
+            '<table class="table check-tbl">' .
+                '<tbody>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Product ID</td>' .
+                        '<td class="product-item-name">PPG-' . strtoupper(str_replace(' ', '-', $productName)) . '</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Grower</td>' .
+                        '<td class="product-item-name">Pacific Plant Growers</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Origin</td>' .
+                        '<td class="product-item-name">United States</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Growing Method</td>' .
+                        '<td class="product-item-name">Greenhouse Grown</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Pot Size</td>' .
+                        '<td class="product-item-name">4 inch / 6 inch / 8 inch</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Care Level</td>' .
+                        '<td class="product-item-name">Easy to Moderate</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Light Requirements</td>' .
+                        '<td class="product-item-name">Bright Indirect Light</td>' .
+                    '</tr>' .
+                    '<tr>' .
+                        '<td class="product-item-name">Category</td>' .
+                        '<td class="product-item-name">Indoor Plant</td>' .
+                    '</tr>' .
+                '</tbody>' .
+            '</table>' .
+        '</div>';
+
+        $shippingReturn = '<div class="detail-bx text-center">' .
+            '<h5 class="title">Shipping Policy</h5>' .
+            '<p class="para-text">' .
+                'We deliver fresh, healthy plants directly to your store location. All plants are carefully packaged to ensure they arrive in excellent condition. Our delivery schedules are coordinated with your receiving department for maximum convenience. We understand the importance of timely delivery for perishable products, and our logistics team works diligently to ensure your ' . $productName . ' arrives ready for immediate display and sale to your customers.' .
+            '</p>' .
+            '<h5 class="title">Returns Policy</h5>' .
+            '<p class="para-text">' .
+                'We stand behind the quality of our plants. If you receive a plant that does not meet our quality standards, please contact us within 48 hours of delivery. We will work with you to resolve any issues promptly, whether through replacement or credit. Your satisfaction is our priority, and we are committed to ensuring every ' . $productName . ' you receive meets the high standards Pacific Plant Growers is known for throughout the industry.' .
+            '</p>' .
+            '<ul class="feature-detail justify-content-center">' .
+                '<li>' .
+                    '<i class="icon feather icon-check"></i>' .
+                    '<h5>7 Days Replacement only</h5>' .
+                '</li>' .
+                '<li>' .
+                    '<i class="icon feather icon-check"></i>' .
+                    '<h5>7 Days Refund for accidental orders only</h5>' .
+                '</li>' .
+                '<li>' .
+                    '<i class="icon feather icon-check"></i>' .
+                    '<h5>3 days refund only</h5>' .
+                '</li>' .
+            '</ul>' .
+        '</div>';
+
+        $excerpts = [
+            'Premium quality ' . $productName . ' perfect for retail display. Healthy, vibrant plants that your customers will love.',
+            'Fresh, beautiful ' . $productName . ' from Pacific Plant Growers. Easy care and excellent for grocery stores and flower shops.',
+            'Wholesale ' . $productName . ' with consistent quality and reliable delivery. Perfect addition to your plant department.',
+            'Attractive ' . $productName . ' ideal for retail sales. Low maintenance and customer-friendly care requirements.'
+        ];
+
+        $randomExcerpt = $excerpts[array_rand($excerpts)];
+
+        $product->update([
+            'excerpt' => $randomExcerpt,
+            'description' => $description,
+            'additional_info' => $additionalInfo,
+            'shipping_return' => $shippingReturn,
+        ]);
+    }
+
     private function downloadPlaceholderImage(string $type = 'plant', string $text = null): ?string
     {
         try {
@@ -30,9 +201,9 @@ class DummyProductsSeeder extends Seeder
             $height = 400;
             $text = $text ?? ucfirst($type);
             $url = "https://placehold.co/{$width}x{$height}/EEE/31343C?font=poppins&text=" . urlencode($text);
-            
+
             $response = Http::timeout(15)->get($url);
-            
+
             if ($response->successful()) {
                 Storage::disk('public')->makeDirectory('products');
                 $filename = "products/{$type}_" . uniqid() . '.png';
@@ -44,30 +215,24 @@ class DummyProductsSeeder extends Seeder
                 $this->command->warn("  Could not download image: " . $e->getMessage());
             }
         }
-        
+
         return null;
     }
 
     public function run(): void
     {
         $this->command->info('Creating dummy data using factories...');
-        
+
         $result = self::seedDummyProducts();
         $this->command->info("  Created {$result['products']} products, {$result['variations']} variations");
-        
+
         $this->command->info('Dummy products created successfully!');
     }
-    
-    /**
-     * Ensure categories and tags exist (called by other seed methods)
-     */
+
     private static function ensureCategoriesAndTags(): array
     {
-        // Create fake categories (only once) - Plant wholesaler focused
         $categoryNames = [
-            // Plant categories
             'Tropical Plants', 'Succulents', 'Foliage Plants', 'Flowering Plants', 'Outdoor Plants',
-            // Container/accessory categories
             'Baskets', 'Ceramics', 'Tins', 'Planters', 'Supplies'
         ];
         $categories = [];
@@ -77,8 +242,7 @@ class DummyProductsSeeder extends Seeder
                 ['is_fake' => true, 'published' => true]
             );
         }
-        
-        // Create fake tags (only once)
+
         $tagNames = ['Seasonal', 'Valentines', 'Spring', 'Summer', 'Fall', 'Christmas', 'Mothers Day', 'Easter', 'Best Seller'];
         $tags = [];
         foreach ($tagNames as $name) {
@@ -87,13 +251,87 @@ class DummyProductsSeeder extends Seeder
                 ['is_fake' => true]
             );
         }
-        
+
         return ['categories' => $categories, 'tags' => $tags];
     }
-    
-    /**
-     * Ensure accessory types and items exist
-     */
+
+    private static function ensureSharedPriceTiers(): array
+    {
+        $tierGroup = 'Volume Discounts';
+
+        $tiers = [
+            [
+                'name' => 'Regular',
+                'min_quantity' => 1,
+                'max_quantity' => 24,
+                'discount_percent' => 0,
+                'sort_order' => 1,
+            ],
+            [
+                'name' => 'Bulk',
+                'min_quantity' => 25,
+                'max_quantity' => 49,
+                'discount_percent' => 10,
+                'sort_order' => 2,
+            ],
+            [
+                'name' => 'Volume',
+                'min_quantity' => 50,
+                'max_quantity' => 99,
+                'discount_percent' => 15,
+                'sort_order' => 3,
+            ],
+            [
+                'name' => 'Wholesale',
+                'min_quantity' => 100,
+                'max_quantity' => null,
+                'discount_percent' => 20,
+                'sort_order' => 4,
+            ],
+        ];
+
+        return ['tier_group' => $tierGroup, 'tiers' => $tiers];
+    }
+
+    private static function ensureSharedVariations(): array
+    {
+        $variationSets = [
+            'Size' => [
+                'Small' => 'Compact size, perfect for small spaces',
+                'Medium' => 'Standard size for most applications',
+                'Large' => 'Generous size for maximum impact',
+                'Extra Large' => 'Our largest option for statement pieces',
+            ],
+            'Pot Size' => [
+                '4"' => '4 inch pot, ideal for windowsills',
+                '6"' => '6 inch pot, great for desks and tables',
+                '8"' => '8 inch pot, perfect floor accent',
+                '10"' => '10 inch pot, impressive floor display',
+            ],
+            'Color' => [
+                'Red' => 'Vibrant red variety',
+                'Pink' => 'Soft pink coloring',
+                'White' => 'Classic white variety',
+                'Mixed' => 'Assorted color mix',
+            ],
+            'Grade' => [
+                'Standard' => 'Quality standard grade',
+                'Premium' => 'Hand-selected premium quality',
+                'Select' => 'Top-tier select grade',
+            ],
+        ];
+
+        $categories = [];
+        foreach (array_keys($variationSets) as $categoryName) {
+            $categories[$categoryName] = VariationCategory::firstOrCreate(
+                ['name' => $categoryName],
+                ['published' => true, 'is_fake' => true]
+            );
+        }
+
+        return ['categories' => $categories, 'variations' => $variationSets];
+    }
+
     private static function ensureAccessoryItems(): array
     {
         $accessoryTypes = [
@@ -102,7 +340,7 @@ class DummyProductsSeeder extends Seeder
             'Picks' => AccessoryType::firstOrCreate(['name' => 'Picks'], ['published' => true, 'sort_order' => 3, 'is_fake' => true]),
             'Bows' => AccessoryType::firstOrCreate(['name' => 'Bows'], ['published' => true, 'sort_order' => 4, 'is_fake' => true]),
         ];
-        
+
         $accessoryItems = [];
         $accessoryNames = [
             'Card Holders' => ['Gold Card Holder', 'Silver Card Holder', 'Bronze Card Holder'],
@@ -124,43 +362,42 @@ class DummyProductsSeeder extends Seeder
                 );
             }
         }
-        
+
         return ['types' => $accessoryTypes, 'items' => $accessoryItems];
     }
-    
-    /**
-     * Seed standard products (15 at a time)
-     */
+
     public static function seedDummyProducts(int $count = 15): array
     {
-        set_time_limit(120); // Allow up to 2 minutes for seeding with images
-        
+        set_time_limit(120);
+
         $data = self::ensureCategoriesAndTags();
         $categories = $data['categories'];
         $tags = $data['tags'];
         $accessoryData = self::ensureAccessoryItems();
         $accessoryItems = $accessoryData['items'];
-        $clients = Client::all();
-        
+
+        $clients = Client::where('name', '!=', 'We Code Laravel')->get();
+
+        $priceTierData = self::ensureSharedPriceTiers();
+        $variationData = self::ensureSharedVariations();
+
         $products = Product::factory()->count($count)->create();
         $variationCount = 0;
-        
+
         foreach ($products as $product) {
-            // Attach 1-2 random categories (always)
             $categoryArray = array_values($categories);
             $numCategories = rand(1, min(2, count($categoryArray)));
             $randomCategories = collect($categoryArray)->random($numCategories);
             $product->categories()->syncWithoutDetaching($randomCategories->pluck('id')->toArray());
-            
-            // Attach 1-3 random clients (always, if clients exist) and set client_access to 'selected'
+
+            $product->update(['client_access' => 'all']);
+
             if ($clients->count() > 0) {
                 $numClients = rand(1, min(3, $clients->count()));
                 $randomClients = $clients->random($numClients);
                 $product->clients()->syncWithoutDetaching($randomClients->pluck('id')->toArray());
-                $product->update(['client_access' => 'selected']);
             }
-            
-            // Attach 0-3 random tags
+
             $numTags = rand(0, 3);
             if ($numTags > 0) {
                 $randomTags = array_rand($tags, min($numTags, count($tags)));
@@ -168,57 +405,23 @@ class DummyProductsSeeder extends Seeder
                 $tagIds = array_map(fn($key) => $tags[$key]->id, $randomTags);
                 $product->tags()->attach($tagIds);
             }
-            
-            // ALWAYS add 3 variation categories with 2-4 variations each
-            $variationSets = [
-                'Size' => [
-                    'Small' => 'Compact size, perfect for small spaces',
-                    'Medium' => 'Standard size for most applications',
-                    'Large' => 'Generous size for maximum impact',
-                    'Extra Large' => 'Our largest option for statement pieces',
-                ],
-                'Pot Size' => [
-                    '4"' => '4 inch pot, ideal for windowsills',
-                    '6"' => '6 inch pot, great for desks and tables',
-                    '8"' => '8 inch pot, perfect floor accent',
-                    '10"' => '10 inch pot, impressive floor display',
-                ],
-                'Color' => [
-                    'Red' => 'Vibrant red variety',
-                    'Pink' => 'Soft pink coloring',
-                    'White' => 'Classic white variety',
-                    'Mixed' => 'Assorted color mix',
-                ],
-                'Grade' => [
-                    'Standard' => 'Quality standard grade',
-                    'Premium' => 'Hand-selected premium quality',
-                    'Select' => 'Top-tier select grade',
-                ],
-            ];
-            
-            // Pick 3 random variation categories
-            $categoryNames = array_keys($variationSets);
+
+            $categoryNames = array_keys($variationData['variations']);
             shuffle($categoryNames);
             $selectedCategories = array_slice($categoryNames, 0, 3);
-            
+
             $sortOrder = 1;
             foreach ($selectedCategories as $categoryName) {
-                $variationsForCategory = $variationSets[$categoryName];
-                
-                // Get or create the variation category
-                $variationCategory = VariationCategory::firstOrCreate(
-                    ['name' => $categoryName],
-                    ['published' => true, 'is_fake' => true]
-                );
-                
-                // Select 2-4 random variations from this category
+                $variationsForCategory = $variationData['variations'][$categoryName];
+                $variationCategory = $variationData['categories'][$categoryName];
+
                 $numVariations = rand(2, min(4, count($variationsForCategory)));
                 $selectedKeys = array_rand($variationsForCategory, $numVariations);
                 if (!is_array($selectedKeys)) $selectedKeys = [$selectedKeys];
-                
+
                 foreach ($selectedKeys as $varName) {
                     $varDescription = $variationsForCategory[$varName];
-                    $varBasePrice = $product->base_price + (rand(-200, 500) / 100);
+                    $varBasePrice = $product->base_price + (rand(-1000, 2000) / 100);
                     $varFullPrice = round($varBasePrice * (1 + rand(15, 40) / 100), 2);
                     ProductVariation::create([
                         'product_id' => $product->id,
@@ -237,8 +440,7 @@ class DummyProductsSeeder extends Seeder
                     $variationCount++;
                 }
             }
-            
-            // Add client-specific prices to ~40% of products
+
             if ($clients->count() > 0 && rand(1, 100) <= 40) {
                 $numClientPrices = rand(1, min(3, $clients->count()));
                 $randomClients = $clients->random($numClientPrices);
@@ -249,176 +451,123 @@ class DummyProductsSeeder extends Seeder
                     );
                 }
             }
-            
-            // ALWAYS add quantity price tiers with at least 3 options
+
             $basePrice = $product->base_price;
-            $tierGroups = ['Standard Pricing', 'Volume Discounts', 'Wholesale Tiers', 'Bulk Pricing'];
-            $tierGroup = $tierGroups[array_rand($tierGroups)];
-            
-            // Tier 1: 1-24 at base price
-            ProductPriceTier::create([
-                'product_id' => $product->id,
-                'tier_group' => $tierGroup,
-                'min_quantity' => 1,
-                'max_quantity' => 24,
-                'price' => $basePrice,
-                'discount_percent' => null,
-                'label' => 'Regular',
-                'sort_order' => 1,
-                'is_fake' => true,
-            ]);
-            
-            // Tier 2: 25-49 at 5-10% off
-            $discount2 = rand(5, 10);
-            ProductPriceTier::create([
-                'product_id' => $product->id,
-                'tier_group' => $tierGroup,
-                'min_quantity' => 25,
-                'max_quantity' => 49,
-                'price' => round($basePrice * (1 - $discount2 / 100), 2),
-                'discount_percent' => $discount2,
-                'label' => 'Bulk',
-                'sort_order' => 2,
-                'is_fake' => true,
-            ]);
-            
-            // Tier 3: 50-99 at 10-15% off
-            $discount3 = rand(10, 15);
-            ProductPriceTier::create([
-                'product_id' => $product->id,
-                'tier_group' => $tierGroup,
-                'min_quantity' => 50,
-                'max_quantity' => 99,
-                'price' => round($basePrice * (1 - $discount3 / 100), 2),
-                'discount_percent' => $discount3,
-                'label' => 'Volume',
-                'sort_order' => 3,
-                'is_fake' => true,
-            ]);
-            
-            // Tier 4: 100+ at 15-25% off (randomly add this tier)
-            if (rand(1, 100) <= 70) {
-                $discount4 = rand(15, 25);
+            $tierGroup = $priceTierData['tier_group'];
+
+            foreach ($priceTierData['tiers'] as $tierTemplate) {
+                $discountPercent = $tierTemplate['discount_percent'];
+                $price = $discountPercent > 0
+                    ? round($basePrice * (1 - $discountPercent / 100), 2)
+                    : $basePrice;
+
                 ProductPriceTier::create([
                     'product_id' => $product->id,
                     'tier_group' => $tierGroup,
-                    'min_quantity' => 100,
-                    'max_quantity' => null,
-                    'price' => round($basePrice * (1 - $discount4 / 100), 2),
-                    'discount_percent' => $discount4,
-                    'label' => 'Wholesale',
-                    'sort_order' => 4,
+                    'min_quantity' => $tierTemplate['min_quantity'],
+                    'max_quantity' => $tierTemplate['max_quantity'],
+                    'price' => $price,
+                    'discount_percent' => $discountPercent > 0 ? $discountPercent : null,
+                    'label' => $tierTemplate['name'],
+                    'sort_order' => $tierTemplate['sort_order'],
                     'is_fake' => true,
                 ]);
             }
-            
-            // ALWAYS attach accessories: 1-3 accessory types with 2-6 options each
+
             if (count($accessoryItems) > 0) {
                 $product->update(['show_accessories' => true]);
-                
-                // Group accessories by type
+
                 $accessoriesByType = collect($accessoryItems)->groupBy('accessory_type_id');
                 $typeIds = $accessoriesByType->keys()->toArray();
                 shuffle($typeIds);
-                
-                // Pick 1-3 random accessory types
+
                 $numTypes = rand(1, min(3, count($typeIds)));
                 $selectedTypeIds = array_slice($typeIds, 0, $numTypes);
-                
+
                 foreach ($selectedTypeIds as $typeId) {
                     $typeAccessories = $accessoriesByType[$typeId]->toArray();
-                    
-                    // Pick 2-6 accessories from this type
+
                     $numToAdd = rand(2, min(6, count($typeAccessories)));
                     shuffle($typeAccessories);
                     $selectedAccessories = array_slice($typeAccessories, 0, $numToAdd);
-                    
+
                     foreach ($selectedAccessories as $accessory) {
                         $product->accessories()->syncWithoutDetaching([
                             $accessory['id'] => [
                                 'is_default' => rand(1, 100) <= 20,
                                 'is_required' => rand(1, 100) <= 10,
-                                'included_in_price' => rand(1, 100) <= 25, // 25% chance of being included
+                                'included_in_price' => rand(1, 100) <= 25,
                             ]
                         ]);
                     }
                 }
             }
-            
-            // Add placeholder image
+
+            self::generateDemoContent($product);
+
             self::addPlaceholderImage($product, 'product');
         }
-        
+
         return ['products' => $products->count(), 'variations' => $variationCount];
     }
-    
-    /**
-     * Seed accessory products (5 at a time)
-     */
+
     public static function seedDummyAccessoryProducts(int $count = 5): array
     {
         set_time_limit(120);
-        
+
         $data = self::ensureCategoriesAndTags();
         $categories = $data['categories'];
         $accessoryData = self::ensureAccessoryItems();
         $accessoryTypes = $accessoryData['types'];
-        
+
         $accessories = Product::factory()->accessory()->count($count)->create();
         $accessoryTypeArray = array_values($accessoryTypes);
         $categoryArray = array_values($categories);
-        
+
         foreach ($accessories as $accessory) {
-            // Assign random accessory type
             $randomType = $accessoryTypeArray[array_rand($accessoryTypeArray)];
             $accessory->update([
                 'accessory_type_id' => $randomType->id
             ]);
-            
-            // Assign random category
+
             $randomCategory = $categoryArray[array_rand($categoryArray)];
             $accessory->categories()->attach($randomCategory->id);
-            
+
             self::addPlaceholderImage($accessory, 'accessory');
         }
-        
+
         return ['accessories' => $accessories->count()];
     }
-    
-    /**
-     * Seed bundle/set products (1 at a time)
-     */
+
     public static function seedDummyBundles(int $count = 1): array
     {
         set_time_limit(120);
-        
+
         $data = self::ensureCategoriesAndTags();
         $categories = $data['categories'];
         $bundleCount = 0;
         $itemCount = 0;
         $variationCount = 0;
-        
-        // Get existing standard products to add to bundles
+
         $existingProducts = Product::where('product_type', 'standard')->where('is_fake', true)->get();
-        
+
         $variationNames = ['Small', 'Medium', 'Large', 'Extra Large'];
-        
+
         for ($i = 0; $i < $count; $i++) {
             $bundle = Product::factory()->asSet()->create([
                 'name' => 'Gift Set #' . (Product::where('product_type', 'set')->count() + 1),
                 'description' => 'A complete gift arrangement set with basket and accessories.',
             ]);
-            
+
             $randomCategory = $categories[array_rand($categories)];
             $bundle->categories()->attach($randomCategory->id);
-            
+
             self::addPlaceholderImage($bundle, 'bundle');
-            
-            // Add variations to the bundle (e.g., Small Set, Medium Set, Large Set)
+
             $numVariations = rand(2, 4);
             $selectedVariations = array_rand(array_flip($variationNames), $numVariations);
             if (!is_array($selectedVariations)) $selectedVariations = [$selectedVariations];
-            
+
             $sortOrder = 1;
             foreach ($selectedVariations as $varName) {
                 $varBasePrice = $bundle->base_price + (rand(-500, 1000) / 100);
@@ -437,8 +586,7 @@ class DummyProductsSeeder extends Seeder
                 ]);
                 $variationCount++;
             }
-            
-            // Add 2-4 products to the bundle
+
             if ($existingProducts->count() >= 2) {
                 $bundleItems = $existingProducts->random(min(rand(2, 4), $existingProducts->count()));
                 $sortOrder = 1;
@@ -458,29 +606,25 @@ class DummyProductsSeeder extends Seeder
             }
             $bundleCount++;
         }
-        
+
         return ['bundles' => $bundleCount, 'bundle_items' => $itemCount, 'variations' => $variationCount];
     }
-    
-    /**
-     * Add more variations to existing products without variations
-     * Includes standard products and sets/bundles
-     */
+
     public static function seedMoreVariations(): array
     {
         $productsWithoutVariations = Product::where('is_fake', true)
             ->whereIn('product_type', ['standard', 'set'])
             ->whereDoesntHave('variations')
             ->get();
-        
+
         $variationCount = 0;
         $variationNames = ['Small', 'Medium', 'Large', 'Extra Large', '4"', '6"', '8"', '10"'];
-        
+
         foreach ($productsWithoutVariations as $product) {
             $numVariations = rand(2, 4);
             $selectedVariations = array_rand(array_flip($variationNames), $numVariations);
             if (!is_array($selectedVariations)) $selectedVariations = [$selectedVariations];
-            
+
             $sortOrder = 1;
             foreach ($selectedVariations as $varName) {
                 $varBasePrice = $product->base_price + (rand(-200, 500) / 100);
@@ -500,135 +644,334 @@ class DummyProductsSeeder extends Seeder
                 $variationCount++;
             }
         }
-        
+
         return ['products_updated' => $productsWithoutVariations->count(), 'variations' => $variationCount];
     }
-    
-    /**
-     * Helper to add placeholder image to a product using GD
-     */
+
     private static function addPlaceholderImage(Product $product, string $type): void
     {
         try {
+            if (!function_exists('imagecreatetruecolor')) {
+                \Log::warning('GD library not available for image generation');
+                return;
+            }
+
             $width = 600;
             $height = 400;
             $text = Str::limit($product->name, 30);
-            
-            // Create image with GD
+
             $image = imagecreatetruecolor($width, $height);
-            $bgColor = imagecolorallocate($image, 238, 238, 238); // #EEE
-            $textColor = imagecolorallocate($image, 49, 52, 60); // #31343C
-            
+            if (!$image) {
+                \Log::error('Failed to create image with GD');
+                return;
+            }
+
+            $bgColor = imagecolorallocate($image, 238, 238, 238);
+            $textColor = imagecolorallocate($image, 49, 52, 60);
+
             imagefill($image, 0, 0, $bgColor);
-            
-            // Add text centered
-            $fontSize = 5; // Built-in font size (1-5)
+
+            $fontSize = 5;
             $textWidth = imagefontwidth($fontSize) * strlen($text);
             $textHeight = imagefontheight($fontSize);
             $x = ($width - $textWidth) / 2;
             $y = ($height - $textHeight) / 2;
             imagestring($image, $fontSize, (int)$x, (int)$y, $text, $textColor);
-            
-            // Save to temp file
+
             Storage::disk('public')->makeDirectory('products');
             $filename = "products/{$type}_" . uniqid() . '.png';
             $path = Storage::disk('public')->path($filename);
-            imagepng($image, $path);
+
+            if (!imagepng($image, $path)) {
+                imagedestroy($image);
+                \Log::error("Failed to save image to: {$path}");
+                return;
+            }
+
             imagedestroy($image);
-            
+
             $product->addMediaFromDisk($filename, 'public')->toMediaCollection('photo');
         } catch (\Exception $e) {
-            // Silently skip image errors
+            \Log::error('Error generating placeholder image: ' . $e->getMessage());
         }
     }
 
-    /**
-     * Regenerate images for fake products that don't have them
-     */
     public static function regenerateFakeProductImages(): array
     {
         $count = 0;
         $fakeProducts = Product::where('is_fake', true)->get();
-        
+
         foreach ($fakeProducts as $product) {
             if (!$product->photo) {
                 self::addPlaceholderImage($product, $product->product_type ?? 'product');
                 $count++;
             }
         }
-        
+
         return ['images_added' => $count];
     }
-    
-    /**
-     * Remove fake products only
-     */
+
+    public static function fillMissingPriceTiers(): array
+    {
+        $counts = ['products' => 0, 'tiers' => 0];
+
+        $products = Product::whereDoesntHave('priceTiers')->get();
+
+        foreach ($products as $product) {
+            $basePrice = $product->base_price;
+            $tierGroups = ['Standard Pricing', 'Volume Discounts', 'Wholesale Tiers', 'Bulk Pricing'];
+            $tierGroup = $tierGroups[array_rand($tierGroups)];
+
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'tier_group' => $tierGroup,
+                'min_quantity' => 1,
+                'max_quantity' => 24,
+                'price' => $basePrice,
+                'discount_percent' => null,
+                'label' => 'Regular',
+                'sort_order' => 1,
+                'is_fake' => $product->is_fake ?? false,
+            ]);
+            $counts['tiers']++;
+
+            $discount2 = rand(5, 10);
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'tier_group' => $tierGroup,
+                'min_quantity' => 25,
+                'max_quantity' => 49,
+                'price' => round($basePrice * (1 - $discount2 / 100), 2),
+                'discount_percent' => $discount2,
+                'label' => 'Bulk',
+                'sort_order' => 2,
+                'is_fake' => $product->is_fake ?? false,
+            ]);
+            $counts['tiers']++;
+
+            $discount3 = rand(10, 15);
+            ProductPriceTier::create([
+                'product_id' => $product->id,
+                'tier_group' => $tierGroup,
+                'min_quantity' => 50,
+                'max_quantity' => 99,
+                'price' => round($basePrice * (1 - $discount3 / 100), 2),
+                'discount_percent' => $discount3,
+                'label' => 'Volume',
+                'sort_order' => 3,
+                'is_fake' => $product->is_fake ?? false,
+            ]);
+            $counts['tiers']++;
+
+            if (rand(1, 100) <= 70) {
+                $discount4 = rand(15, 25);
+                ProductPriceTier::create([
+                    'product_id' => $product->id,
+                    'tier_group' => $tierGroup,
+                    'min_quantity' => 100,
+                    'max_quantity' => null,
+                    'price' => round($basePrice * (1 - $discount4 / 100), 2),
+                    'discount_percent' => $discount4,
+                    'label' => 'Wholesale',
+                    'sort_order' => 4,
+                    'is_fake' => $product->is_fake ?? false,
+                ]);
+                $counts['tiers']++;
+            }
+
+            $counts['products']++;
+        }
+
+        return $counts;
+    }
+
     public static function removeDummyProducts(): array
     {
         $counts = [
             'products' => 0,
+            'variations' => 0,
             'categories' => 0,
             'tags' => 0,
-            'variations' => 0,
-            'price_tiers' => 0,
             'accessories' => 0,
             'accessory_types' => 0,
             'variation_categories' => 0,
         ];
-        
-        // Remove fake products and their relationships
+
         $fakeProducts = Product::where('is_fake', true)->get();
         foreach ($fakeProducts as $product) {
             $product->categories()->detach();
             $product->tags()->detach();
+            $product->clients()->detach();
             $product->accessories()->detach();
+
             $product->clientPrices()->delete();
             $counts['variations'] += $product->variations()->delete();
-            if (method_exists($product, 'priceTiers')) {
-                $product->priceTiers()->delete();
-            }
+            $product->priceTiers()->delete();
             ProductBundleItem::where('bundle_product_id', $product->id)->delete();
             ProductBundleItem::where('item_product_id', $product->id)->delete();
+
             $product->clearMediaCollection('photo');
-            $product->forceDelete();
+
+            $product->delete();
             $counts['products']++;
         }
-        
-        // Remove fake categories
+
         $counts['categories'] = ProductCategory::where('is_fake', true)->delete();
-        
-        // Remove fake tags
+
         $counts['tags'] = ProductTag::where('is_fake', true)->delete();
-        
-        // Remove fake price tiers (orphaned ones not attached to fake products)
-        $counts['price_tiers'] = ProductPriceTier::where('is_fake', true)->delete();
-        
-        // Remove fake accessories
+
         $counts['accessories'] = Accessory::where('is_fake', true)->forceDelete();
-        
-        // Remove fake accessory types
+
         $counts['accessory_types'] = AccessoryType::where('is_fake', true)->forceDelete();
-        
-        // Remove fake variation categories
+
         $counts['variation_categories'] = VariationCategory::where('is_fake', true)->forceDelete();
-        
+
         return $counts;
     }
-    
-    /**
-     * Seed dummy FAQs
-     */
+
+    public static function seedDummyCart(): array
+    {
+        $counts = ['items' => 0];
+
+        $products = Product::has('variations')->inRandomOrder()->limit(rand(3, 6))->get();
+
+        if ($products->isEmpty()) {
+            return $counts;
+        }
+
+        $userId = auth()->id();
+        $sessionId = session()->getId();
+
+        if ($userId) {
+            Cart::where('user_id', $userId)->delete();
+        } else {
+            Cart::where('session_id', $sessionId)->delete();
+        }
+
+        foreach ($products as $product) {
+            $variations = $product->variations()->inRandomOrder()->limit(rand(1, 3))->get();
+
+            foreach ($variations as $variation) {
+                $quantity = rand(1, 10);
+
+                $clientId = auth()->check() ? auth()->user()->client_id : null;
+                $price = $variation->getPriceForClient($clientId);
+
+                Cart::create([
+                    'user_id' => $userId,
+                    'session_id' => $userId ? null : $sessionId,
+                    'product_id' => $product->id,
+                    'variation_id' => $variation->id,
+                    'variation_name' => $variation->name,
+                    'sku' => $variation->sku,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                ]);
+
+                $counts['items']++;
+            }
+        }
+
+        session(['cart_count' => $counts['items']]);
+
+        return $counts;
+    }
+
+    public static function seedDummyOrders(): array
+    {
+        $counts = ['orders' => 0, 'items' => 0];
+
+        $clients = Client::where('is_fake', true)->get();
+        if ($clients->isEmpty()) {
+            $clients = Client::limit(3)->get();
+        }
+
+        if ($clients->isEmpty()) {
+            return $counts;
+        }
+
+        $products = Product::has('variations')->inRandomOrder()->limit(20)->get();
+
+        if ($products->isEmpty()) {
+            return $counts;
+        }
+
+        $statuses = ['new', 'processing', 'Fullfilled', 'Delivery'];
+
+        $orderCount = rand(3, 5);
+
+        for ($i = 0; $i < $orderCount; $i++) {
+            $client = $clients->random();
+            $orderDate = now()->subDays(rand(1, 30));
+
+            $lastOrder = Order::orderBy('number', 'desc')->first();
+            $nextNumber = $lastOrder ? ($lastOrder->number + 1) : 1000;
+
+            $order = Order::create([
+                'client_id' => $client->id,
+                'number' => $nextNumber,
+                'status' => $statuses[array_rand($statuses)],
+                'delivery_date' => $orderDate->copy()->addDays(rand(3, 10)),
+                'estimated_delivery' => $orderDate->copy()->addDays(rand(3, 10)),
+                'special_request' => rand(0, 1) ? 'Please deliver to back entrance' : null,
+                'internal_notes' => rand(0, 1) ? 'Customer prefers morning delivery' : null,
+                'ordered_by_name' => $client->name,
+                'ordered_by_phone' => $client->phone,
+                'shipping_cost' => rand(0, 1) ? rand(10, 50) : 0,
+                'created_at' => $orderDate,
+                'team_id' => $client->team_id,
+            ]);
+
+            $counts['orders']++;
+
+            $itemCount = rand(3, 8);
+            $orderTotal = 0;
+
+            for ($j = 0; $j < $itemCount; $j++) {
+                $product = $products->random();
+                $variation = $product->variations()->inRandomOrder()->first();
+
+                if (!$variation) continue;
+
+                $quantity = rand(5, 50);
+                $price = $variation->getPriceForClient($client->id);
+                $totalPrice = $quantity * $price;
+                $orderTotal += $totalPrice;
+
+                OrderItem::create([
+                    'items_id' => $order->id,
+                    'product_id' => $product->id,
+                    'sku' => $variation->sku,
+                    'gtin' => $product->gtin,
+                    'mpn' => $product->mpn,
+                    'price' => $price,
+                    'quantity' => $quantity,
+                    'total_price' => $totalPrice,
+                    'team_id' => $client->team_id,
+                ]);
+
+                $counts['items']++;
+            }
+
+            $order->update([
+                'order_total' => $orderTotal,
+                'total_price' => $orderTotal + ($order->shipping_cost ?? 0),
+            ]);
+        }
+
+        return $counts;
+    }
+
     public static function seedDummyFaqs(): array
     {
         $counts = ['faq_categories' => 0, 'faq_questions' => 0, 'skipped' => 0, 'existing_fake' => 0];
-        
-        // Check if dummy FAQs already exist
+
         $existingFakeCount = FaqCategory::where('is_fake', true)->count();
         if ($existingFakeCount > 0) {
             $counts['existing_fake'] = $existingFakeCount;
             return $counts;
         }
-        
+
         $faqData = [
             'Ordering' => [
                 'How do I place an order?' => 'You can place orders through our online ordering system. Simply browse our products, add items to your cart, and proceed to checkout. For wholesale accounts, please log in to access your special pricing.',
@@ -646,22 +989,21 @@ class DummyProductsSeeder extends Seeder
                 'Do you offer bulk discounts?' => 'Yes, we offer volume discounts for wholesale customers. Please contact our sales team for pricing on large orders.',
             ],
         ];
-        
+
         foreach ($faqData as $categoryName => $questions) {
-            // Check if category already exists
             $existingCategory = FaqCategory::where('category', $categoryName)->first();
             if ($existingCategory) {
                 $counts['skipped']++;
                 continue;
             }
-            
+
             $category = FaqCategory::create([
                 'category' => $categoryName,
                 'is_fake' => true,
                 'published' => true,
             ]);
             $counts['faq_categories']++;
-            
+
             foreach ($questions as $question => $answer) {
                 FaqQuestion::create([
                     'category_id' => $category->id,
@@ -673,43 +1015,34 @@ class DummyProductsSeeder extends Seeder
                 $counts['faq_questions']++;
             }
         }
-        
+
         return $counts;
     }
 
-    /**
-     * Remove fake FAQs only
-     */
     public static function removeDummyFaqs(): array
     {
         $counts = [
             'faq_categories' => 0,
             'faq_questions' => 0,
         ];
-        
-        // Remove fake FAQ questions first (foreign key constraint)
+
         $counts['faq_questions'] = FaqQuestion::where('is_fake', true)->delete();
-        
-        // Remove fake FAQ categories
+
         $counts['faq_categories'] = FaqCategory::where('is_fake', true)->delete();
-        
+
         return $counts;
     }
-    
-    /**
-     * Seed dummy content pages
-     */
+
     public static function seedDummyPages(): array
     {
         $counts = ['created' => 0, 'skipped' => 0, 'existing_fake' => 0];
-        
-        // Check if dummy pages already exist
+
         $existingFakeCount = ContentPage::where('is_fake', true)->count();
         if ($existingFakeCount > 0) {
             $counts['existing_fake'] = $existingFakeCount;
             return $counts;
         }
-        
+
         $pages = [
             [
                 'title' => 'About Us',
@@ -740,28 +1073,24 @@ class DummyProductsSeeder extends Seeder
                 'excerpt' => 'Get in touch with our sales and customer service teams.',
             ],
         ];
-        
+
         foreach ($pages as $pageData) {
-            // Check if page with this slug already exists
             $existingPage = ContentPage::where('slug', $pageData['slug'])->first();
             if ($existingPage) {
                 $counts['skipped']++;
                 continue;
             }
-            
+
             ContentPage::create(array_merge($pageData, [
                 'is_fake' => true,
                 'published' => true,
             ]));
             $counts['created']++;
         }
-        
+
         return $counts;
     }
 
-    /**
-     * Remove fake content pages only
-     */
     public static function removeDummyPages(): int
     {
         return ContentPage::where('is_fake', true)->delete();

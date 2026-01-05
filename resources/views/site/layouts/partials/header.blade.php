@@ -105,7 +105,7 @@
                             @endauth
                             
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('site.cart.index') }}">
+                                <a class="nav-link" href="{{ route('site.cart.index') }}" target="_blank">
                                     <i class="flaticon flaticon-shopping-cart-1"></i>
                                     <span class="badge badge-circle">{{ session('cart_count', 0) }}</span>
                                 </a>

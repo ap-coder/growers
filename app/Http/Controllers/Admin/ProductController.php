@@ -61,22 +61,22 @@ class ProductController extends Controller
             });
             $table->editColumn('name', function ($row) {
                 if ($row->name) {
-                    return sprintf('<a href="%s">%s</a>', route('admin.products.edit', $row->id), $row->name);
+                    return sprintf('<a class="bold" href="%s">%s</a>', route('admin.products.edit', $row->id), $row->name);
                 }
                 return '';
             });
             $table->editColumn('product_type', function ($row) {
                 $types = [
-                    'standard' => '<span class="badge badge-primary">Standard</span>',
-                    'accessory' => '<span class="badge badge-info">Accessory</span>',
-                    'set' => '<span class="badge badge-success">Set/Bundle</span>',
+                    'standard' => '<span class="bold">Standard</span>',
+                    'accessory' => '<span class="bold">Accessory</span>',
+                    'set' => '<span class="bold">Set/Bundle</span>',
                 ];
-                return $types[$row->product_type] ?? '<span class="badge badge-secondary">' . ucfirst($row->product_type ?? 'standard') . '</span>';
+                return $types[$row->product_type] ?? '<span class="bold">' . ucfirst($row->product_type ?? 'standard') . '</span>';
             });
             $table->editColumn('category', function ($row) {
                 $labels = [];
                 foreach ($row->categories as $category) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $category->name);
+                    $labels[] = sprintf('<span class="bold">%s</span>', $category->name);
                 }
 
                 return implode(' ', $labels);
@@ -98,7 +98,7 @@ class ProductController extends Controller
             $table->editColumn('clients', function ($row) {
                 $labels = [];
                 foreach ($row->clients as $client) {
-                    $labels[] = sprintf('<span class="label label-info label-many">%s</span>', $client->name);
+                    $labels[] = sprintf('<span class="badge badge-info label-many">%s</span>', $client->name);
                 }
 
                 return implode(' ', $labels);
@@ -112,7 +112,7 @@ class ProductController extends Controller
         // Define columns and default visibility
         $columns = ['id', 'published', 'name', 'product_type', 'category', 'photo', 'clients'];
         $defaultVisible = ['name', 'product_type', 'category', 'photo', 'clients'];
-        
+
         return view('admin.products.index', compact('columns', 'defaultVisible'));
     }
 
@@ -263,7 +263,7 @@ class ProductController extends Controller
         if ($request->input('redirect_back') == '1') {
             return redirect()->route('admin.products.edit', $product->id)->with('message', 'Product saved successfully.');
         }
-        
+
         // Clear tab session when going back to index
         session()->forget('product_active_tab');
         return redirect()->route('admin.products.index');
@@ -276,20 +276,20 @@ class ProductController extends Controller
     {
         // Delete existing bundle items
         $product->bundleItems()->delete();
-        
+
         $sortOrder = 0;
         foreach ($bundleGroups as $group) {
             $groupName = $group['name'] ?? 'Default';
-            
+
             if (!isset($group['items'])) {
                 continue;
             }
-            
+
             foreach ($group['items'] as $item) {
                 if (empty($item['product_id'])) {
                     continue;
                 }
-                
+
                 ProductBundleItem::create([
                     'bundle_product_id' => $product->id,
                     'item_product_id' => $item['product_id'],
@@ -313,13 +313,13 @@ class ProductController extends Controller
     {
         // Delete existing price tiers
         $product->priceTiers()->delete();
-        
+
         $sortOrder = 0;
         foreach ($priceTiers as $tier) {
             if (empty($tier['min_quantity']) || empty($tier['price'])) {
                 continue;
             }
-            
+
             ProductPriceTier::create([
                 'product_id' => $product->id,
                 'tier_group' => $tier['tier_group'] ?? null,
@@ -341,15 +341,15 @@ class ProductController extends Controller
         $existingIds = [];
         $sortOrder = 0;
         $totalQuantity = 0;
-        
+
         foreach ($variations as $variation) {
             if (empty($variation['name'])) {
                 continue;
             }
-            
+
             $qty = !empty($variation['quantity']) ? (int)$variation['quantity'] : 0;
             $totalQuantity += $qty;
-            
+
             $data = [
                 'product_id' => $product->id,
                 'variation_category_id' => !empty($variation['variation_category_id']) ? $variation['variation_category_id'] : null,
@@ -367,7 +367,7 @@ class ProductController extends Controller
                 'sort_order' => $sortOrder++,
                 'active' => isset($variation['active']) ? (bool)$variation['active'] : true,
             ];
-            
+
             if (!empty($variation['id'])) {
                 // Update existing
                 $productVariation = ProductVariation::find($variation['id']);
@@ -381,10 +381,10 @@ class ProductController extends Controller
                 $existingIds[] = $productVariation->id;
             }
         }
-        
+
         // Delete variations that were removed
         $product->variations()->whereNotIn('id', $existingIds)->delete();
-        
+
         // Update product total quantity from variations
         if (count($existingIds) > 0) {
             $product->update(['quantity' => $totalQuantity]);

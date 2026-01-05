@@ -15,21 +15,25 @@ class ShopController extends Controller
     {
         $user = auth()->user();
         $clientId = $user?->client_id;
+        $isAdmin = $user && $user->is_admin;
 
         $query = Product::where('published', 1)
             ->where('product_type', 'standard');
 
-        // Filter by client access (only if user has a client_id)
-        if ($clientId) {
-            $query->whereHas('clients', function ($q) use ($clientId) {
-                $q->where('client_id', $clientId);
-            });
-        }
-        // If no client_id, show products that either have no client restrictions OR are fake (for testing)
-        elseif (!$clientId) {
-            $query->where(function($q) {
-                $q->whereDoesntHave('clients')
-                  ->orWhere('is_fake', true);
+        // Admins see all published products, others see based on client access
+        if (!$isAdmin) {
+            $query->where(function($q) use ($clientId) {
+                // Always show products with client_access = 'all'
+                $q->where('client_access', 'all')
+                  // Or products with no client restrictions
+                  ->orWhereDoesntHave('clients');
+                  
+                // Or if user has client_id, show products assigned to that client
+                if ($clientId) {
+                    $q->orWhereHas('clients', function ($subQ) use ($clientId) {
+                        $subQ->where('client_id', $clientId);
+                    });
+                }
             });
         }
 
@@ -73,11 +77,21 @@ class ShopController extends Controller
         $featuredQuery = Product::where('published', 1)
             ->where('featured', 1)
             ->where('product_type', 'standard');
-        if ($clientId) {
-            $featuredQuery->whereHas('clients', function ($q) use ($clientId) {
-                $q->where('client_id', $clientId);
+        
+        // Admins see all featured products, others see based on client access
+        if (!$isAdmin) {
+            $featuredQuery->where(function($q) use ($clientId) {
+                $q->where('client_access', 'all')
+                  ->orWhereDoesntHave('clients');
+                  
+                if ($clientId) {
+                    $q->orWhereHas('clients', function ($subQ) use ($clientId) {
+                        $subQ->where('client_id', $clientId);
+                    });
+                }
             });
         }
+        
         $featuredProducts = $featuredQuery->limit(3)->get();
 
         // Get shop layout from settings

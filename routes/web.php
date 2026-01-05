@@ -122,6 +122,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     // Order
     Route::delete('orders/destroy', 'OrderController@massDestroy')->name('orders.massDestroy');
     Route::get('orders/{order}/print', 'OrderController@print')->name('orders.print');
+    Route::get('orders/{order}/packing-slip', 'OrderController@packingSlip')->name('orders.packingSlip');
+    Route::get('orders/{order}/invoice', 'OrderController@invoice')->name('orders.invoice');
     Route::resource('orders', 'OrderController');
 
     // Client
@@ -154,10 +156,14 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Setting
     Route::delete('settings/destroy', 'SettingController@massDestroy')->name('settings.massDestroy');
+    Route::post('settings/seed-all-dummy-products', 'SettingController@seedAllDummyProducts')->name('settings.seedAllDummyProducts');
     Route::post('settings/seed-dummy-products', 'SettingController@seedDummyProducts')->name('settings.seedDummyProducts');
     Route::post('settings/seed-dummy-accessories', 'SettingController@seedDummyAccessories')->name('settings.seedDummyAccessories');
     Route::post('settings/seed-dummy-bundles', 'SettingController@seedDummyBundles')->name('settings.seedDummyBundles');
     Route::post('settings/seed-dummy-variations', 'SettingController@seedDummyVariations')->name('settings.seedDummyVariations');
+    Route::post('settings/seed-dummy-price-tiers', 'SettingController@seedDummyPriceTiers')->name('settings.seedDummyPriceTiers');
+    Route::post('settings/seed-dummy-cart', 'SettingController@seedDummyCart')->name('settings.seedDummyCart');
+    Route::post('settings/seed-dummy-orders', 'SettingController@seedDummyOrders')->name('settings.seedDummyOrders');
     Route::post('settings/remove-dummy-products', 'SettingController@removeDummyProducts')->name('settings.removeDummyProducts');
     Route::post('settings/seed-dummy-clients', 'SettingController@seedDummyClients')->name('settings.seedDummyClients');
     Route::post('settings/remove-dummy-clients', 'SettingController@removeDummyClients')->name('settings.removeDummyClients');

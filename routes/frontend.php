@@ -63,6 +63,7 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     Route::get('/cart/remove/{cartId}', 'CartController@remove')->name('cart.remove')->withoutMiddleware('auth');
     Route::get('/cart/remove-product/{productId}', 'CartController@removeProduct')->name('cart.remove.product')->withoutMiddleware('auth');
     Route::get('/cart/clear', 'CartController@clear')->name('cart.clear')->withoutMiddleware('auth');
+    Route::get('/checkout', 'CartController@checkout')->name('checkout')->withoutMiddleware('auth');
     
     // Pages
     Route::get('/how-to-order', 'AccountController@howToOrder')->name('how-to-order');

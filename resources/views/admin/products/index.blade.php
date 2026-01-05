@@ -115,11 +115,11 @@
                         }
                         if ("{{ $column }}" === "product_type" && data) {
                             let types = {
-                                'standard': '<span class="badge badge-primary">Standard</span>',
-                                'accessory': '<span class="badge badge-info">Accessory</span>',
-                                'set': '<span class="badge badge-success">Set/Bundle</span>'
+                                'standard': 'Standard',
+                                'accessory': 'Accessory',
+                                'set': 'Set/Bundle'
                             };
-                            return types[data] || '<span class="badge badge-secondary">' + data + '</span>';
+                            return types[data] || data;
                         }
                         return data ?? '';
                     }

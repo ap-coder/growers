@@ -23,6 +23,21 @@
 #pills-tabContent .shop-card .dz-content { text-align: center; background-color: #fff; padding: 15px 0; width: 80% !important; margin: auto; }
 .variation-item .variation-qty input[type="number"] { border-radius: 0 !important; }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+[class*="bold"] {
+    font-weight: 700!important;
+    font-style: normal!important;
+}
+
 /*.debug::before {*/
 /*    content: attr(class);*/
 /*    position: absolute;*/

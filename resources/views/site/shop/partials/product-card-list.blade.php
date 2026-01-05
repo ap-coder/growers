@@ -30,7 +30,7 @@
                         <span class="d-md-block d-none">View</span>
                     </a>
                     <div class="bookmark-btn style-1">
-                        <input class="form-check-input" type="checkbox" id="favoriteCheck{{ $product->id }}" {{ $isFavorited ? 'checked' : '' }} data-url="{{ route('site.favorites.toggle', $product) }}">
+                        <input class="form-check-input" type="checkbox" id="favoriteCheck{{ $product->id }}" {{ $isFavorited ? 'checked' : '' }} data-url="{{ route('site.wishlist.toggle', $product) }}">
                         <label class="form-check-label" for="favoriteCheck{{ $product->id }}"><i class="flaticon flaticon-heart-3"></i></label>
                     </div>
                 </div>

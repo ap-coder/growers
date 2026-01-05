@@ -11,6 +11,12 @@
     <a class="btn btn-info" href="{{ route('admin.orders.print', $order->id) }}" target="_blank">
         <i class="fa fa-print"></i> Print Order Ticket
     </a>
+    <a class="btn btn-success" href="{{ route('admin.orders.packingSlip', $order->id) }}" target="_blank">
+        <i class="fa fa-file-text"></i> Download Packing Slip
+    </a>
+    <a class="btn btn-warning" href="{{ route('admin.orders.invoice', $order->id) }}" target="_blank">
+        <i class="fa fa-file-invoice"></i> Download Invoice
+    </a>
 </div>
 
 <div class="row">

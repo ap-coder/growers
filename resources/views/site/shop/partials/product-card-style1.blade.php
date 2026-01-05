@@ -1,14 +1,15 @@
 @php
     $price = $product->getPriceForClient($clientId ?? null);
+    $placeholder = 'https://placehold.co/400x400/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name);
 @endphp
 <div class="col-lg-4 col-md-6 col-sm-6 m-b30">
     <div class="dz-product-box style-1">
         <div class="dz-media">
             <a href="{{ route('site.shop.product', $product) }}">
-                @if($product->photo)
-                    <img src="{{ $product->photo->url }}" alt="{{ $product->name }}">
+                @if($product->is_fake || !$product->photo)
+                    <img src="{{ $placeholder }}" alt="{{ $product->name }}">
                 @else
-                    <img src="{{ asset('site/images/shop/product/1.png') }}" alt="{{ $product->name }}">
+                    <img src="{{ $product->photo->url }}" alt="{{ $product->name }}">
                 @endif
             </a>
             @if($product->featured)

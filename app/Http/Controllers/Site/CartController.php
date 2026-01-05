@@ -216,4 +216,18 @@ class CartController extends Controller
             }
         }
     }
+    
+    /**
+     * Display the checkout page
+     */
+    public function checkout()
+    {
+        $cart = $this->getCart();
+        
+        if ($cart->isEmpty()) {
+            return redirect()->route('site.cart.index')->with('error', 'Your cart is empty');
+        }
+        
+        return view('site.cart.checkout', compact('cart'));
+    }
 }
