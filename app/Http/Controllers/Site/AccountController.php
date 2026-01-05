@@ -193,14 +193,21 @@ class AccountController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'store_number' => 'nullable|string|max:50',
+            'address' => 'nullable|string',
             'contact_name' => 'nullable|string|max:255',
             'contact_phone' => 'nullable|string|max:20',
             'contact_email' => 'nullable|email|max:255',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
         
         $client->update($request->only([
-            'name', 'store_number', 'contact_name', 'contact_phone', 'contact_email'
+            'name', 'store_number', 'address', 'contact_name', 'contact_phone', 'contact_email'
         ]));
+        
+        if ($request->hasFile('logo')) {
+            $client->clearMediaCollection('logo');
+            $client->addMediaFromRequest('logo')->toMediaCollection('logo');
+        }
         
         return back()->with('success', 'Company information updated successfully.');
     }

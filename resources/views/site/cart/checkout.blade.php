@@ -164,19 +164,24 @@
                         @php
                             $product = $items->first()->product;
                             $productTotal = 0;
+                            $groupedItems = $items->groupBy(function($item) {
+                                return $item->variation->category ?? $item->variation->variation_category->name ?? 'Standard';
+                            });
                         @endphp
                         <div class="mb-3 pb-3 border-bottom">
                             <h6 class="mb-2"><strong>{{ $product->name ?? 'Product' }}</strong></h6>
-                            @foreach($items as $item)
-                                @php
-                                    $lineTotal = $item->quantity * $item->price;
-                                    $productTotal += $lineTotal;
-                                    $cartTotal += $lineTotal;
-                                @endphp
-                                <div class="d-flex justify-content-between small mb-1">
-                                    <span>{{ $item->quantity }} | {{ $item->variation->name ?? $item->variation_name }}</span>
-                                    <span>${{ number_format($item->price, 2) }} x {{ $item->quantity }}</span>
-                                </div>
+                            @foreach($groupedItems as $category => $categoryItems)
+                                <div class="small mb-1"><em>{{ $category }}</em></div>
+                                @foreach($categoryItems as $item)
+                                    @php
+                                        $lineTotal = $item->quantity * $item->price;
+                                        $productTotal += $lineTotal;
+                                        $cartTotal += $lineTotal;
+                                    @endphp
+                                    <div class="small mb-1 ms-2">
+                                        {{ $item->variation->name ?? $item->variation_name }} - Qty: {{ $item->quantity }} @ ${{ number_format($item->price, 2) }}
+                                    </div>
+                                @endforeach
                             @endforeach
                             <div class="d-flex justify-content-between mt-2 pt-2 border-top">
                                 <strong class="small">Product Total:</strong>

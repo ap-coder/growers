@@ -42,7 +42,7 @@
                     </div>
                     @endif
                     
-                    <form action="{{ route('site.account.company.update') }}" method="POST">
+                    <form action="{{ route('site.account.company.update') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
@@ -59,6 +59,32 @@
                                 <label for="store_number" class="form-label">Store/Account Number</label>
                                 <input type="text" class="form-control @error('store_number') is-invalid @enderror" id="store_number" name="store_number" value="{{ old('store_number', $client->store_number) }}">
                                 @error('store_number')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3">{{ old('address', $client->address) }}</textarea>
+                                @error('address')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="logo" class="form-label">Company Logo</label>
+                                @if($client->logo)
+                                <div class="mb-2">
+                                    <img src="{{ $client->logo->url }}" alt="Company Logo" style="max-width: 200px; max-height: 100px;">
+                                </div>
+                                @endif
+                                <input type="file" class="form-control @error('logo') is-invalid @enderror" id="logo" name="logo" accept="image/*">
+                                <small class="text-muted">Upload a new logo to replace the current one</small>
+                                @error('logo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
