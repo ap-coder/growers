@@ -72,16 +72,13 @@
                                             @endphp
                                             <tr class="small">
                                                 <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <input type="number" 
-                                                               class="form-control form-control-sm cart-qty-update" 
-                                                               value="{{ intval($qty) }}" 
-                                                               min="1"
-                                                               data-cart-id="{{ $item->id }}"
-                                                               autocomplete="off"
-                                                               style="width: 60px; text-align: center;">
-                                                        <span class="ms-2 text-muted small">({{ $qty }})</span>
-                                                    </div>
+                                                    <input type="number" 
+                                                           class="form-control form-control-sm cart-qty-update" 
+                                                           value="{{ intval($qty) }}" 
+                                                           min="1"
+                                                           data-cart-id="{{ $item->id }}"
+                                                           autocomplete="off"
+                                                           style="width: 60px; text-align: center;">
                                                 </td>
                                                 <td>
                                                     <strong>{{ $item->variation->name ?? $item->variation_name }}</strong>

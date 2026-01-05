@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('client_addresses', function (Blueprint $table) {
-            $table->string('nickname')->nullable()->after('label');
-            $table->string('google_map_link')->nullable()->after('special_instructions');
-        });
+        if (Schema::hasTable('client_addresses')) {
+            Schema::table('client_addresses', function (Blueprint $table) {
+                if (!Schema::hasColumn('client_addresses', 'nickname')) {
+                    $table->string('nickname')->nullable()->after('label');
+                }
+                if (!Schema::hasColumn('client_addresses', 'google_map_link')) {
+                    $table->string('google_map_link')->nullable()->after('special_instructions');
+                }
+            });
+        }
     }
 
     /**

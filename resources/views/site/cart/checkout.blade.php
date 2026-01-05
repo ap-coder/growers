@@ -162,45 +162,25 @@
                     
                     @foreach($cart as $productId => $items)
                         @php
-                            $product = \App\Models\Product::find($productId);
-                            $itemCount = count($items);
-                            $placeholder = 'https://placehold.co/200x200/EEE/31343C/webp?font=oswald&text=' . urlencode($product->name ?? 'Product');
+                            $product = $items->first()->product;
+                            $productTotal = 0;
                         @endphp
-                        <div class="cart-item style-1 mb-3">
-                            <div class="dz-media">
-                                @if($product && !$product->is_fake && $product->photo)
-                                    <img src="{{ $product->photo->url }}" alt="{{ $product->name }}">
-                                @else
-                                    <img src="{{ $placeholder }}" alt="{{ $product->name ?? 'Product' }}">
-                                @endif
-                            </div>
-                            <div class="dz-content">
-                                <h6 class="title mb-1">{{ $product->name ?? 'Product' }}</h6>
-                                @if($itemCount > 3)
-                                    <div class="row small">
-                                        @foreach($items as $item)
-                                            @php
-                                                $lineTotal = $item->quantity * $item->price;
-                                                $cartTotal += $lineTotal;
-                                            @endphp
-                                            <div class="col-6 mb-1">
-                                                <div>{{ $item->variation->name ?? $item->variation_name }}</div>
-                                                <div>${{ number_format($item->price, 2) }} x {{ $item->quantity }}</div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    @foreach($items as $item)
-                                        @php
-                                            $lineTotal = $item->quantity * $item->price;
-                                            $cartTotal += $lineTotal;
-                                        @endphp
-                                        <div class="small mb-1">
-                                            <div>{{ $item->variation->name ?? $item->variation_name }}</div>
-                                            <div>${{ number_format($item->price, 2) }} x {{ $item->quantity }}</div>
-                                        </div>
-                                    @endforeach
-                                @endif
+                        <div class="mb-3 pb-3 border-bottom">
+                            <h6 class="mb-2"><strong>{{ $product->name ?? 'Product' }}</strong></h6>
+                            @foreach($items as $item)
+                                @php
+                                    $lineTotal = $item->quantity * $item->price;
+                                    $productTotal += $lineTotal;
+                                    $cartTotal += $lineTotal;
+                                @endphp
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span>{{ $item->quantity }} | {{ $item->variation->name ?? $item->variation_name }}</span>
+                                    <span>${{ number_format($item->price, 2) }} x {{ $item->quantity }}</span>
+                                </div>
+                            @endforeach
+                            <div class="d-flex justify-content-between mt-2 pt-2 border-top">
+                                <strong class="small">Product Total:</strong>
+                                <strong class="text-primary">${{ number_format($productTotal, 2) }}</strong>
                             </div>
                         </div>
                     @endforeach

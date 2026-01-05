@@ -11,9 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('client_addresses', function (Blueprint $table) {
-            $table->boolean('is_fake')->default(false)->after('is_primary');
-        });
+        if (Schema::hasTable('client_addresses')) {
+            Schema::table('client_addresses', function (Blueprint $table) {
+                if (!Schema::hasColumn('client_addresses', 'is_fake')) {
+                    $table->boolean('is_fake')->default(false)->after('is_primary');
+                }
+            });
+        }
     }
 
     /**

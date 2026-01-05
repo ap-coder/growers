@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('accessories', function (Blueprint $table) {
@@ -79,12 +76,29 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('carts', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->string('session_id')->nullable();
+            $table->unsignedBigInteger('product_id');
+            $table->unsignedBigInteger('variation_id');
+            $table->integer('quantity')->default(1);
+            $table->decimal('price', 10);
+            $table->string('sku')->nullable();
+            $table->string('variation_name');
+            $table->timestamps();
+
+            $table->index(['user_id', 'product_id', 'variation_id']);
+            $table->index('session_id');
+        });
+
         Schema::create('client_addresses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('client_id');
             $table->string('address_type');
             $table->string('label')->nullable();
             $table->boolean('is_primary')->default(false);
+            $table->boolean('is_fake')->default(false);
             $table->string('address_line_1');
             $table->string('address_line_2')->nullable();
             $table->string('city');
@@ -332,6 +346,41 @@ return new class extends Migration
             $table->softDeletes();
         });
 
+        Schema::create('products', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->boolean('published')->nullable()->default(false);
+            $table->boolean('is_fake')->default(false);
+            $table->boolean('featured')->nullable()->default(false);
+            $table->string('layout')->default('default');
+            $table->string('name')->nullable();
+            $table->string('slug')->nullable();
+            $table->string('product_type')->default('standard')->index();
+            $table->unsignedBigInteger('accessory_type_id')->nullable()->index('products_accessory_type_id_foreign');
+            $table->integer('sort_order')->default(0);
+            $table->longText('description')->nullable();
+            $table->text('excerpt')->nullable();
+            $table->longText('additional_info')->nullable();
+            $table->longText('shipping_return')->nullable();
+            $table->decimal('base_price', 10)->nullable();
+            $table->decimal('full_price', 10)->nullable();
+            $table->boolean('show_original_price')->default(true);
+            $table->boolean('show_variations')->default(true);
+            $table->boolean('show_sets')->default(true);
+            $table->boolean('show_accessories')->default(true);
+            $table->decimal('base_cost', 10)->nullable();
+            $table->string('bundle_price_type')->default('calculated')->comment('calculated, fixed, discount_percent, discount_amount');
+            $table->decimal('bundle_price_override', 10)->nullable()->comment('Fixed bundle price when bundle_price_type is fixed');
+            $table->decimal('bundle_discount', 10)->nullable()->comment('Discount percent or amount based on bundle_price_type');
+            $table->string('sku')->nullable();
+            $table->string('upc_code')->nullable();
+            $table->string('qb_1')->nullable()->comment('QuickBooks identifier 1');
+            $table->string('qb_2')->nullable()->comment('QuickBooks identifier 2');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->unsignedBigInteger('team_id')->nullable()->index('team_fk_9986809');
+            $table->integer('quantity')->nullable();
+        });
+
         Schema::create('product_accessory', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('product_id');
@@ -368,7 +417,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->boolean('published')->nullable()->default(false);
             $table->string('name')->nullable();
-            $table->string('slug')->index();
+            $table->string('slug')->nullable();
             $table->boolean('is_fake')->default(false);
             $table->longText('description')->nullable();
             $table->timestamps();
@@ -393,24 +442,16 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('layout_type')->default('grid');
             $table->boolean('published')->default(false);
+            $table->boolean('is_fake')->default(false);
             $table->boolean('show_on_homepage')->default(false);
             $table->integer('sort_order')->default(0);
             $table->string('background_color')->nullable();
             $table->string('text_color')->nullable();
             $table->integer('columns')->default(4);
-            $table->boolean('is_fake')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
 
-        Schema::create('product_favorites', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('product_id')->index('product_favorites_product_id_foreign');
-            $table->timestamps();
-
-            $table->unique(['user_id', 'product_id']);
-        });
 
         Schema::create('product_price_tiers', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -419,7 +460,7 @@ return new class extends Migration
             $table->integer('min_quantity');
             $table->integer('max_quantity')->nullable();
             $table->decimal('price', 10);
-            $table->decimal('discount_percent', 5)->nullable();
+            $table->decimal('discount_percent', 5, 2)->nullable();
             $table->string('label')->nullable();
             $table->integer('sort_order')->default(0);
             $table->boolean('is_fake')->default(false);
@@ -441,7 +482,7 @@ return new class extends Migration
         Schema::create('product_tags', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->nullable();
-            $table->string('slug')->index();
+            $table->string('slug')->nullable();
             $table->boolean('is_fake')->default(false);
             $table->timestamps();
             $table->softDeletes();
@@ -460,7 +501,6 @@ return new class extends Migration
             $table->decimal('full_price', 10)->nullable();
             $table->decimal('base_cost', 10)->nullable();
             $table->integer('quantity')->default(0);
-            $table->boolean('show_quantity')->default(false);
             $table->string('qb_1')->nullable();
             $table->string('qb_2')->nullable();
             $table->integer('sort_order')->default(0);
@@ -469,45 +509,6 @@ return new class extends Migration
             $table->boolean('is_fake')->default(false);
             $table->timestamps();
             $table->softDeletes();
-        });
-
-        Schema::create('products', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->boolean('published')->nullable()->default(false);
-            $table->boolean('is_fake')->default(false);
-            $table->boolean('featured')->nullable()->default(false);
-            $table->string('layout')->default('default');
-            $table->string('name')->nullable();
-            $table->string('slug')->index();
-            $table->string('product_type')->default('standard')->index();
-            $table->unsignedBigInteger('accessory_type_id')->nullable()->index('products_accessory_type_id_foreign');
-            $table->integer('sort_order')->default(0);
-            $table->longText('description')->nullable();
-            $table->text('additional_info')->nullable();
-            $table->text('shipping_return')->nullable();
-            $table->boolean('show_tabs')->default(true);
-            $table->boolean('show_description_tab')->default(true);
-            $table->boolean('show_additional_info_tab')->default(true);
-            $table->boolean('show_shipping_return_tab')->default(true);
-            $table->text('excerpt')->nullable();
-            $table->decimal('base_price', 10)->nullable();
-            $table->decimal('full_price', 10)->nullable();
-            $table->boolean('show_original_price')->default(true);
-            $table->boolean('show_variations')->default(true);
-            $table->boolean('show_sets')->default(true);
-            $table->boolean('show_accessories')->default(true);
-            $table->decimal('base_cost', 10)->nullable();
-            $table->string('bundle_price_type')->default('calculated')->comment('calculated, fixed, discount_percent, discount_amount');
-            $table->decimal('bundle_price_override', 10)->nullable()->comment('Fixed bundle price when bundle_price_type is fixed');
-            $table->decimal('bundle_discount', 10)->nullable()->comment('Discount percent or amount based on bundle_price_type');
-            $table->string('sku')->nullable();
-            $table->string('upc_code')->nullable();
-            $table->string('qb_1')->nullable()->comment('QuickBooks identifier 1');
-            $table->string('qb_2')->nullable()->comment('QuickBooks identifier 2');
-            $table->timestamps();
-            $table->softDeletes();
-            $table->unsignedBigInteger('team_id')->nullable()->index('team_fk_9986809');
-            $table->integer('quantity')->nullable();
         });
 
         Schema::create('qa_messages', function (Blueprint $table) {
@@ -554,6 +555,15 @@ return new class extends Migration
             $table->string('title')->nullable();
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('wishlists', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->index('wishlists_user_id_foreign');
+            $table->unsignedBigInteger('product_id')->index('wishlists_product_id_foreign');
+            $table->timestamps();
+
+            $table->unique(['user_id', 'product_id']);
         });
 
         Schema::create('settings', function (Blueprint $table) {
@@ -687,15 +697,6 @@ return new class extends Migration
             $table->unique(['variation_id', 'client_id']);
         });
 
-        Schema::create('wishlists', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('product_id')->index('wishlists_product_id_foreign');
-            $table->timestamps();
-
-            $table->unique(['user_id', 'product_id']);
-        });
-
         Schema::table('accessories', function (Blueprint $table) {
             $table->foreign(['accessory_type_id'])->references(['id'])->on('accessory_types')->onUpdate('no action')->onDelete('cascade');
         });
@@ -786,10 +787,6 @@ return new class extends Migration
             $table->foreign(['product_id'])->references(['id'])->on('products')->onUpdate('no action')->onDelete('cascade');
         });
 
-        Schema::table('product_favorites', function (Blueprint $table) {
-            $table->foreign(['product_id'])->references(['id'])->on('products')->onUpdate('no action')->onDelete('cascade');
-            $table->foreign(['user_id'])->references(['id'])->on('users')->onUpdate('no action')->onDelete('cascade');
-        });
 
         Schema::table('product_price_tiers', function (Blueprint $table) {
             $table->foreign(['product_id'])->references(['id'])->on('products')->onUpdate('no action')->onDelete('cascade');
@@ -858,27 +855,19 @@ return new class extends Migration
             $table->foreign(['client_id'])->references(['id'])->on('clients')->onUpdate('no action')->onDelete('set null');
         });
 
+        Schema::table('wishlists', function (Blueprint $table) {
+            $table->foreign(['user_id'])->references(['id'])->on('users')->onUpdate('no action')->onDelete('cascade');
+            $table->foreign(['product_id'])->references(['id'])->on('products')->onUpdate('no action')->onDelete('cascade');
+        });
+
         Schema::table('variation_client_prices', function (Blueprint $table) {
             $table->foreign(['client_id'])->references(['id'])->on('clients')->onUpdate('no action')->onDelete('cascade');
             $table->foreign(['variation_id'])->references(['id'])->on('product_variations')->onUpdate('no action')->onDelete('cascade');
         });
-
-        Schema::table('wishlists', function (Blueprint $table) {
-            $table->foreign(['product_id'])->references(['id'])->on('products')->onUpdate('no action')->onDelete('cascade');
-            $table->foreign(['user_id'])->references(['id'])->on('users')->onUpdate('no action')->onDelete('cascade');
-        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('wishlists', function (Blueprint $table) {
-            $table->dropForeign('wishlists_product_id_foreign');
-            $table->dropForeign('wishlists_user_id_foreign');
-        });
-
         Schema::table('variation_client_prices', function (Blueprint $table) {
             $table->dropForeign('variation_client_prices_client_id_foreign');
             $table->dropForeign('variation_client_prices_variation_id_foreign');
@@ -887,6 +876,11 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->dropForeign('team_fk_9558392');
             $table->dropForeign('users_client_id_foreign');
+        });
+
+        Schema::table('wishlists', function (Blueprint $table) {
+            $table->dropForeign('wishlists_user_id_foreign');
+            $table->dropForeign('wishlists_product_id_foreign');
         });
 
         Schema::table('user_user_alert', function (Blueprint $table) {
@@ -951,10 +945,6 @@ return new class extends Migration
             $table->dropForeign('product_price_tiers_product_id_foreign');
         });
 
-        Schema::table('product_favorites', function (Blueprint $table) {
-            $table->dropForeign('product_favorites_product_id_foreign');
-            $table->dropForeign('product_favorites_user_id_foreign');
-        });
 
         Schema::table('product_collection_items', function (Blueprint $table) {
             $table->dropForeign('product_collection_items_product_collection_id_foreign');
@@ -1046,8 +1036,6 @@ return new class extends Migration
             $table->dropForeign('accessories_accessory_type_id_foreign');
         });
 
-        Schema::dropIfExists('wishlists');
-
         Schema::dropIfExists('variation_client_prices');
 
         Schema::dropIfExists('variation_categories');
@@ -1076,6 +1064,8 @@ return new class extends Migration
 
         Schema::dropIfExists('settings');
 
+        Schema::dropIfExists('wishlists');
+
         Schema::dropIfExists('roles');
 
         Schema::dropIfExists('role_user');
@@ -1098,7 +1088,6 @@ return new class extends Migration
 
         Schema::dropIfExists('product_price_tiers');
 
-        Schema::dropIfExists('product_favorites');
 
         Schema::dropIfExists('product_collections');
 
@@ -1109,6 +1098,8 @@ return new class extends Migration
         Schema::dropIfExists('product_bundle_items');
 
         Schema::dropIfExists('product_accessory');
+
+        Schema::dropIfExists('personal_access_tokens');
 
         Schema::dropIfExists('permissions');
 
@@ -1149,6 +1140,8 @@ return new class extends Migration
         Schema::dropIfExists('client_prices');
 
         Schema::dropIfExists('client_addresses');
+
+        Schema::dropIfExists('carts');
 
         Schema::dropIfExists('audit_logs');
 

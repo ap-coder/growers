@@ -189,7 +189,7 @@ class User extends Authenticatable
 
     public function favoriteProducts()
     {
-        return $this->belongsToMany(Product::class, 'product_favorites')->withTimestamps();
+        return $this->belongsToMany(Product::class, 'wishlists')->withTimestamps();
     }
 
     public function hasFavorited(Product $product)
