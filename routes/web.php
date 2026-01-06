@@ -163,6 +163,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::post('settings/media', 'SettingController@storeMedia')->name('settings.storeMedia');
     Route::post('settings/clear-cache', 'SettingController@clearCache')->name('settings.clearCache');
     Route::post('settings/check-media', 'SettingController@checkMedia')->name('settings.checkMedia');
+    Route::post('settings/view-logs', 'SettingController@viewLogs')->name('settings.viewLogs');
     Route::post('settings/seed-all-dummy-products', 'SettingController@seedAllDummyProducts')->name('settings.seedAllDummyProducts');
     Route::post('settings/seed-dummy-products', 'SettingController@seedDummyProducts')->name('settings.seedDummyProducts');
     Route::post('settings/seed-dummy-accessories', 'SettingController@seedDummyAccessories')->name('settings.seedDummyAccessories');

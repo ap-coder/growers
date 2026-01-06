@@ -125,13 +125,45 @@ class SettingController extends Controller
 
         $setting->update($data);
 
-        if ($request->input('image_value') && $request->input('type') === 'image') {
-            $filePath = storage_path('tmp/uploads/' . basename($request->input('image_value')));
-            if (file_exists($filePath)) {
-                $setting->clearMediaCollection('image');
-                $setting->addMedia($filePath)->toMediaCollection('image');
-            } else {
-                \Log::error('Settings image upload failed: File not found', ['path' => $filePath]);
+        if ($request->input('type') === 'image') {
+            if ($request->input('image_value', false)) {
+                // Check if image changed by comparing file_name
+                if (!$setting->image || $request->input('image_value') !== $setting->image->file_name) {
+                    $filePath = storage_path('tmp/uploads/' . basename($request->input('image_value')));
+                    
+                    \Log::info('Settings image upload attempt', [
+                        'setting_id' => $setting->id,
+                        'setting_key' => $setting->key,
+                        'image_value' => $request->input('image_value'),
+                        'file_path' => $filePath,
+                        'file_exists' => file_exists($filePath),
+                        'existing_file_name' => $setting->image ? $setting->image->file_name : null
+                    ]);
+                    
+                    if (file_exists($filePath)) {
+                        if ($setting->image) {
+                            $setting->image->delete();
+                        }
+                        $setting->addMedia($filePath)->toMediaCollection('image');
+                        \Log::info('Settings image uploaded successfully', [
+                            'setting_key' => $setting->key,
+                            'new_file' => basename($request->input('image_value'))
+                        ]);
+                    } else {
+                        \Log::error('Settings image upload failed: File not found', [
+                            'path' => $filePath,
+                            'tmp_uploads_exists' => is_dir(storage_path('tmp/uploads')),
+                            'tmp_uploads_files' => is_dir(storage_path('tmp/uploads')) ? scandir(storage_path('tmp/uploads')) : []
+                        ]);
+                    }
+                }
+            } elseif ($setting->image) {
+                // If no image_value but had image before, delete it
+                \Log::info('Settings image deleted', [
+                    'setting_key' => $setting->key,
+                    'deleted_file' => $setting->image->file_name
+                ]);
+                $setting->image->delete();
             }
         }
 
@@ -197,6 +229,36 @@ class SettingController extends Controller
 
         session()->flash('media_info', $mediaInfo);
         return back()->with('success', 'Media status checked. See details below.');
+    }
+
+    public function viewLogs(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $logFile = storage_path('logs/laravel.log');
+        $logs = [];
+
+        if (file_exists($logFile)) {
+            $content = file_get_contents($logFile);
+            $lines = explode("\n", $content);
+            
+            // Get last 100 lines and filter for settings-related logs
+            $recentLines = array_slice($lines, -200);
+            $filteredLogs = [];
+            
+            foreach ($recentLines as $line) {
+                if (stripos($line, 'Settings image') !== false || 
+                    stripos($line, 'tmp/uploads') !== false ||
+                    stripos($line, 'media') !== false) {
+                    $filteredLogs[] = $line;
+                }
+            }
+            
+            $logs = array_slice($filteredLogs, -20); // Last 20 relevant log entries
+        }
+
+        session()->flash('upload_logs', $logs);
+        return back()->with('success', 'Upload logs retrieved. See details below.');
     }
 
     public function seedAllDummyProducts(Request $request)

@@ -123,7 +123,7 @@
         @endif
         
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <form action="{{ route('admin.settings.clearCache') }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="btn btn-warning btn-block">
@@ -132,7 +132,7 @@
                 </form>
                 <small class="text-muted">Clears config, cache, and view caches</small>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <form action="{{ route('admin.settings.checkMedia') }}" method="POST" style="display: inline;">
                     @csrf
                     <button type="submit" class="btn btn-info btn-block">
@@ -141,7 +141,16 @@
                 </form>
                 <small class="text-muted">Shows media info for image settings</small>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <form action="{{ route('admin.settings.viewLogs') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-file-alt"></i> View Upload Logs
+                    </button>
+                </form>
+                <small class="text-muted">Shows recent upload activity logs</small>
+            </div>
+            <div class="col-md-3">
                 <button type="button" class="btn btn-secondary btn-block" onclick="window.location.reload()">
                     <i class="fas fa-redo"></i> Refresh Page
                 </button>
@@ -181,6 +190,25 @@
                         @endforeach
                     </tbody>
                 </table>
+            </div>
+        @endif
+
+        @if(session('upload_logs'))
+            <hr class="my-3">
+            <h6 class="mb-3"><i class="fas fa-file-alt mr-2"></i>Recent Upload Logs</h6>
+            <div class="alert alert-info">
+                <small><strong>Tip:</strong> Upload an image, then click "View Upload Logs" to see what happened during the upload process.</small>
+            </div>
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 4px; max-height: 400px; overflow-y: auto;">
+                @if(count(session('upload_logs')) > 0)
+                    @foreach(session('upload_logs') as $log)
+                        <div style="font-family: monospace; font-size: 11px; margin-bottom: 5px; word-break: break-all;">
+                            {{ $log }}
+                        </div>
+                    @endforeach
+                @else
+                    <p class="text-muted mb-0">No upload-related logs found. Try uploading an image first.</p>
+                @endif
             </div>
         @endif
     </div>
