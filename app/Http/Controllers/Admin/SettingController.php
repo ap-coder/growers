@@ -126,8 +126,13 @@ class SettingController extends Controller
         $setting->update($data);
 
         if ($request->input('image_value') && $request->input('type') === 'image') {
-            $setting->clearMediaCollection('image');
-            $setting->addMedia(storage_path('tmp/uploads/' . basename($request->input('image_value'))))->toMediaCollection('image');
+            $filePath = storage_path('tmp/uploads/' . basename($request->input('image_value')));
+            if (file_exists($filePath)) {
+                $setting->clearMediaCollection('image');
+                $setting->addMedia($filePath)->toMediaCollection('image');
+            } else {
+                \Log::error('Settings image upload failed: File not found', ['path' => $filePath]);
+            }
         }
 
         return redirect()->route('admin.settings.index');
@@ -151,6 +156,47 @@ class SettingController extends Controller
         }
 
         return response(null, Response::HTTP_NO_CONTENT);
+    }
+
+    public function clearCache(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        try {
+            Artisan::call('config:clear');
+            Artisan::call('cache:clear');
+            Artisan::call('view:clear');
+            
+            return back()->with('success', 'All caches cleared successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error clearing caches: ' . $e->getMessage());
+        }
+    }
+
+    public function checkMedia(Request $request)
+    {
+        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $imageSettings = Setting::where('type', 'image')->get();
+        $mediaInfo = [];
+
+        foreach ($imageSettings as $setting) {
+            $mediaCount = $setting->getMedia('image')->count();
+            $lastMedia = $setting->getMedia('image')->last();
+            
+            $mediaInfo[] = [
+                'key' => $setting->key,
+                'label' => $setting->label,
+                'media_count' => $mediaCount,
+                'has_image' => $setting->image ? 'Yes' : 'No',
+                'file_name' => $lastMedia ? $lastMedia->file_name : 'N/A',
+                'url' => $lastMedia ? $lastMedia->getUrl() : 'N/A',
+                'preview_url' => $lastMedia ? $lastMedia->getUrl('preview') : 'N/A',
+            ];
+        }
+
+        session()->flash('media_info', $mediaInfo);
+        return back()->with('success', 'Media status checked. See details below.');
     }
 
     public function seedAllDummyProducts(Request $request)

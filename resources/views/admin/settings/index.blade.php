@@ -96,6 +96,96 @@
     $ungrouped = \App\Models\Setting::whereNotIn('group', array_keys($groupLabels))->orWhereNull('group')->get();
 @endphp
 
+{{-- Admin Debug Tools --}}
+<div class="card card-outline card-secondary mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-tools mr-2"></i>
+            Admin Tools
+        </h5>
+    </div>
+    <div class="card-body">
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+        
+        <div class="row">
+            <div class="col-md-4">
+                <form action="{{ route('admin.settings.clearCache') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-warning btn-block">
+                        <i class="fas fa-sync"></i> Clear All Caches
+                    </button>
+                </form>
+                <small class="text-muted">Clears config, cache, and view caches</small>
+            </div>
+            <div class="col-md-4">
+                <form action="{{ route('admin.settings.checkMedia') }}" method="POST" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-info btn-block">
+                        <i class="fas fa-images"></i> Check Media Status
+                    </button>
+                </form>
+                <small class="text-muted">Shows media info for image settings</small>
+            </div>
+            <div class="col-md-4">
+                <button type="button" class="btn btn-secondary btn-block" onclick="window.location.reload()">
+                    <i class="fas fa-redo"></i> Refresh Page
+                </button>
+                <small class="text-muted">Reload the page to see changes</small>
+            </div>
+        </div>
+
+        @if(session('media_info'))
+            <hr class="my-3">
+            <h6 class="mb-3"><i class="fas fa-info-circle mr-2"></i>Media Status Report</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Setting</th>
+                            <th>Media Count</th>
+                            <th>Has Image</th>
+                            <th>File Name</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach(session('media_info') as $info)
+                            <tr>
+                                <td><strong>{{ $info['label'] }}</strong><br><small class="text-muted">{{ $info['key'] }}</small></td>
+                                <td>{{ $info['media_count'] }}</td>
+                                <td>
+                                    @if($info['has_image'] === 'Yes')
+                                        <span class="badge badge-success">Yes</span>
+                                    @else
+                                        <span class="badge badge-secondary">No</span>
+                                    @endif
+                                </td>
+                                <td><small>{{ $info['file_name'] }}</small></td>
+                                <td><small class="text-break">{{ Str::limit($info['url'], 60) }}</small></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+
 @if($ungrouped->count() > 0)
 <div class="card">
     <div class="card-header">
