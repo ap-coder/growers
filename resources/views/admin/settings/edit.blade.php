@@ -180,21 +180,19 @@ Dropzone.options.imageDropzone = {
     },
     removedfile: function (file) {
         file.previewElement.remove();
-        var name = '';
-        if (typeof file.file_name !== 'undefined') {
-            name = file.file_name;
-        } else {
-            name = uploadedImageMap[file.name];
+        if (file.status !== 'error') {
+            $('form').find('input[name="image_value"]').remove();
+            this.options.maxFiles = this.options.maxFiles + 1;
         }
-        $('form').find('input[name="image_value"][value="' + name + '"]').remove();
     },
     init: function () {
         @if($setting->image)
             var file = {!! json_encode($setting->image) !!};
             this.options.addedfile.call(this, file);
-            this.options.thumbnail.call(this, file, file.preview);
+            this.options.thumbnail.call(this, file, file.preview ?? file.preview_url);
             file.previewElement.classList.add('dz-complete');
             $('form').append('<input type="hidden" name="image_value" value="' + file.file_name + '">');
+            this.options.maxFiles = this.options.maxFiles - 1;
         @endif
     },
     error: function (file, response) {

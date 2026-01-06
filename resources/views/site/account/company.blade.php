@@ -147,21 +147,19 @@ Dropzone.options.logoDropzone = {
     },
     removedfile: function (file) {
         file.previewElement.remove();
-        var name = '';
-        if (typeof file.file_name !== 'undefined') {
-            name = file.file_name;
-        } else {
-            name = uploadedLogoMap[file.name];
+        if (file.status !== 'error') {
+            $('form').find('input[name="logo"]').remove();
+            this.options.maxFiles = this.options.maxFiles + 1;
         }
-        $('form').find('input[name="logo"][value="' + name + '"]').remove();
     },
     init: function () {
         @if($client->logo)
             var file = {!! json_encode($client->logo) !!};
             this.options.addedfile.call(this, file);
-            this.options.thumbnail.call(this, file, file.preview);
+            this.options.thumbnail.call(this, file, file.preview ?? file.preview_url);
             file.previewElement.classList.add('dz-complete');
             $('form').append('<input type="hidden" name="logo" value="' + file.file_name + '">');
+            this.options.maxFiles = this.options.maxFiles - 1;
         @endif
     },
     error: function (file, response) {

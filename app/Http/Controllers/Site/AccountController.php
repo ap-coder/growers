@@ -201,9 +201,18 @@ class AccountController extends Controller
             'name', 'store_number', 'address', 'contact_name', 'contact_phone', 'contact_email'
         ]));
 
-        if ($request->input('logo')) {
-            $client->clearMediaCollection('logo');
-            $client->addMedia(storage_path('tmp/uploads/' . basename($request->input('logo'))))->toMediaCollection('logo');
+        if ($request->input('logo', false)) {
+            if (!$client->logo || $request->input('logo') !== $client->logo->file_name) {
+                $filePath = storage_path('tmp/uploads/' . basename($request->input('logo')));
+                if (file_exists($filePath)) {
+                    if ($client->logo) {
+                        $client->logo->delete();
+                    }
+                    $client->addMedia($filePath)->toMediaCollection('logo');
+                }
+            }
+        } elseif ($client->logo) {
+            $client->logo->delete();
         }
 
         return back()->with('success', 'Company information updated successfully.');
