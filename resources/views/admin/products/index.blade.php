@@ -28,7 +28,7 @@
                     @foreach($columns as $column)
                         <th>{{ ucfirst(str_replace('_', ' ', $column)) }}</th>
                     @endforeach
-                    <th>&nbsp;</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
         </table>
@@ -50,13 +50,6 @@
 <script>
     $(function () {
         let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons);
-        
-        // Add colvis button that excludes actions column
-        dtButtons.push({
-            extend: 'colvis',
-            text: '<i class="fas fa-columns"></i> Columns',
-            columns: ':not(.no-colvis):not(:first-child)' // Exclude placeholder and actions
-        });
 
         @can('product_delete')
         let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
