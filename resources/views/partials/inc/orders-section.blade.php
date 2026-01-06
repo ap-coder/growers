@@ -24,7 +24,7 @@
                             @endcan
                             @can('order_access')
                                 <li class="nav-item">
-                                    <a href="{{ route("admin.orders.index") }}" class="nav-link {{ request()->is("admin/orders/*/invoice") ? "active" : "" }}">
+                                    <a href="{{ route("admin.invoices.index") }}" class="nav-link {{ request()->is("admin/invoices") || request()->is("admin/invoices/*") ? "active" : "" }}">
                                         <i class="fa-fw nav-icon fas fa-file-invoice">
 
                                         </i>

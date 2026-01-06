@@ -126,6 +126,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
     Route::get('orders/{order}/invoice', 'OrderController@invoice')->name('orders.invoice');
     Route::resource('orders', 'OrderController');
 
+    // Invoices
+    Route::get('invoices', 'InvoiceController@index')->name('invoices.index');
+    Route::get('invoices/{invoice}', 'InvoiceController@show')->name('invoices.show');
+
     // Client
     Route::delete('clients/destroy', 'ClientController@massDestroy')->name('clients.massDestroy');
     Route::post('clients/parse-csv-import', 'ClientController@parseCsvImport')->name('clients.parseCsvImport');
