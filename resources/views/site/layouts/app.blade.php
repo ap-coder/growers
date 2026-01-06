@@ -24,6 +24,9 @@
     <link class="main-css" rel="stylesheet" type="text/css" href="{{ asset('site/css/style.css') }}?v={{ time() }}">
     <link class="skin" type="text/css" rel="stylesheet" href="{{ asset('site/css/skin/skin-1.css') }}">
 
+    <!-- Dropzone -->
+    <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+
     <!-- GOOGLE FONTS-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -95,6 +98,9 @@
 <script src="{{ asset('site/js/dz.ajax.js') }}"></script><!-- AJAX -->
 <script src="{{ asset('site/vendor/equalheights/jquery.equalheights.min.js') }}"></script><!-- EQUAL HEIGHTS -->
 <script src="{{ asset('site/js/custom.js') }}?v={{ time() }}"></script><!-- CUSTOM JS -->
+
+<!-- Dropzone -->
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
 
 <script>
 $(document).on('click', '.favorite-btn', function(e) {

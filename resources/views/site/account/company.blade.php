@@ -159,7 +159,7 @@ Dropzone.options.logoDropzone = {
         @if($client->logo)
             var file = {!! json_encode($client->logo) !!};
             this.options.addedfile.call(this, file);
-            this.options.thumbnail.call(this, file, file.url);
+            this.options.thumbnail.call(this, file, file.preview);
             file.previewElement.classList.add('dz-complete');
             $('form').append('<input type="hidden" name="logo" value="' + file.file_name + '">');
         @endif
