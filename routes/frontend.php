@@ -21,6 +21,7 @@ Route::group(['as' => 'site.', 'namespace' => 'Site', 'middleware' => ['web', 'a
     
     // Company Info
     Route::get('/account/company', 'AccountController@company')->name('account.company');
+    Route::post('/account/media', 'AccountController@storeMedia')->name('account.storeMedia');
     Route::put('/account/company', 'AccountController@updateCompany')->name('account.company.update');
     
     // Addresses

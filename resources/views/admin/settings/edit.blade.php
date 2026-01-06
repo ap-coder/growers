@@ -75,16 +75,11 @@
             </div>
             <div class="form-group" id="value-image-group" style="display: none;">
                 <label for="image_value">Image</label>
-                @if($setting->type === 'image' && $setting->image)
-                    <div class="mb-2">
-                        <img src="{{ $setting->image->preview }}" alt="Current Image" style="max-height: 150px;">
-                    </div>
-                @endif
-                <input class="form-control {{ $errors->has('image_value') ? 'is-invalid' : '' }}" type="file" name="image_value" id="image_value" accept="image/*">
+                <div class="needsclick dropzone {{ $errors->has('image_value') ? 'is-invalid' : '' }}" id="image-dropzone"></div>
                 @if($errors->has('image_value'))
                     <span class="text-danger">{{ $errors->first('image_value') }}</span>
                 @endif
-                <span class="help-block">Leave empty to keep current image. Images will be converted to WebP format.</span>
+                <span class="help-block">Images will be automatically converted to WebP format.</span>
             </div>
             <div class="form-group" id="value-boolean-group" style="display: none;">
                 <div class="form-check">
@@ -164,5 +159,59 @@ $(function() {
     $('#type').on('change', toggleValueFields);
     toggleValueFields();
 });
+
+// Dropzone configuration for image upload
+var uploadedImageMap = {};
+Dropzone.options.imageDropzone = {
+    url: '{{ route('admin.settings.storeMedia') }}',
+    maxFilesize: 2, // MB
+    acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
+    maxFiles: 1,
+    addRemoveLinks: true,
+    headers: {
+        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+    },
+    params: {
+        size: 2
+    },
+    success: function (file, response) {
+        $('form').append('<input type="hidden" name="image_value" value="' + response.name + '">');
+        uploadedImageMap[file.name] = response.name;
+    },
+    removedfile: function (file) {
+        file.previewElement.remove();
+        var name = '';
+        if (typeof file.file_name !== 'undefined') {
+            name = file.file_name;
+        } else {
+            name = uploadedImageMap[file.name];
+        }
+        $('form').find('input[name="image_value"][value="' + name + '"]').remove();
+    },
+    init: function () {
+        @if($setting->image)
+            var file = {!! json_encode($setting->image) !!};
+            this.options.addedfile.call(this, file);
+            this.options.thumbnail.call(this, file, file.preview);
+            file.previewElement.classList.add('dz-complete');
+            $('form').append('<input type="hidden" name="image_value" value="' + file.file_name + '">');
+        @endif
+    },
+    error: function (file, response) {
+        if ($.type(response) === 'string') {
+            var message = response;
+        } else {
+            var message = response.errors.file;
+        }
+        file.previewElement.classList.add('dz-error');
+        _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i];
+            _results.push(node.textContent = message);
+        }
+        return _results;
+    }
+};
 </script>
 @endsection

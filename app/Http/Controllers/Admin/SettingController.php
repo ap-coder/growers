@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Traits\MediaUploadingTrait;
 use App\Http\Requests\MassDestroySettingRequest;
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
@@ -23,6 +24,7 @@ use Yajra\DataTables\Facades\DataTables;
 
 class SettingController extends Controller
 {
+    use MediaUploadingTrait;
     private function clearCaches(): void
     {
         $basePath = base_path();
@@ -96,8 +98,8 @@ class SettingController extends Controller
 
         $setting = Setting::create($data);
 
-        if ($request->hasFile('image_value') && $request->input('type') === 'image') {
-            $setting->addMediaFromRequest('image_value')->toMediaCollection('image');
+        if ($request->input('image_value') && $request->input('type') === 'image') {
+            $setting->addMedia(storage_path('tmp/uploads/' . basename($request->input('image_value'))))->toMediaCollection('image');
         }
 
         return redirect()->route('admin.settings.index');
@@ -123,9 +125,9 @@ class SettingController extends Controller
 
         $setting->update($data);
 
-        if ($request->hasFile('image_value') && $request->input('type') === 'image') {
+        if ($request->input('image_value') && $request->input('type') === 'image') {
             $setting->clearMediaCollection('image');
-            $setting->addMediaFromRequest('image_value')->toMediaCollection('image');
+            $setting->addMedia(storage_path('tmp/uploads/' . basename($request->input('image_value'))))->toMediaCollection('image');
         }
 
         return redirect()->route('admin.settings.index');

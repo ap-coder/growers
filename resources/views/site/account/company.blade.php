@@ -77,16 +77,11 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label for="logo" class="form-label">Company Logo</label>
-                                @if($client->logo)
-                                <div class="mb-2">
-                                    <img src="{{ $client->logo->url }}" alt="Company Logo" style="max-width: 200px; max-height: 100px;">
-                                </div>
-                                @endif
-                                <input type="file" class="form-control @error('logo') is-invalid @enderror" id="logo" name="logo" accept="image/*">
-                                <small class="text-muted">Upload a new logo to replace the current one</small>
+                                <div class="needsclick dropzone @error('logo') is-invalid @enderror" id="logo-dropzone"></div>
                                 @error('logo')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                                <small class="text-muted">Upload a new logo to replace the current one. Images will be automatically converted to WebP format.</small>
                             </div>
                         </div>
                         
@@ -128,4 +123,62 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+// Dropzone configuration for company logo upload
+var uploadedLogoMap = {};
+Dropzone.options.logoDropzone = {
+    url: '{{ route('site.account.storeMedia') }}',
+    maxFilesize: 2, // MB
+    acceptedFiles: '.jpeg,.jpg,.png,.gif,.webp',
+    maxFiles: 1,
+    addRemoveLinks: true,
+    headers: {
+        'X-CSRF-TOKEN': "{{ csrf_token() }}"
+    },
+    params: {
+        size: 2
+    },
+    success: function (file, response) {
+        $('form').append('<input type="hidden" name="logo" value="' + response.name + '">');
+        uploadedLogoMap[file.name] = response.name;
+    },
+    removedfile: function (file) {
+        file.previewElement.remove();
+        var name = '';
+        if (typeof file.file_name !== 'undefined') {
+            name = file.file_name;
+        } else {
+            name = uploadedLogoMap[file.name];
+        }
+        $('form').find('input[name="logo"][value="' + name + '"]').remove();
+    },
+    init: function () {
+        @if($client->logo)
+            var file = {!! json_encode($client->logo) !!};
+            this.options.addedfile.call(this, file);
+            this.options.thumbnail.call(this, file, file.url);
+            file.previewElement.classList.add('dz-complete');
+            $('form').append('<input type="hidden" name="logo" value="' + file.file_name + '">');
+        @endif
+    },
+    error: function (file, response) {
+        if ($.type(response) === 'string') {
+            var message = response;
+        } else {
+            var message = response.errors.file;
+        }
+        file.previewElement.classList.add('dz-error');
+        _ref = file.previewElement.querySelectorAll('[data-dz-errormessage]');
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            node = _ref[_i];
+            _results.push(node.textContent = message);
+        }
+        return _results;
+    }
+};
+</script>
 @endsection

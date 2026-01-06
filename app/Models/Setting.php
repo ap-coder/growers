@@ -132,6 +132,7 @@ class Setting extends Model implements HasMedia
             $file->preview = $file->getUrl('preview');
             $file->login_bg = $file->getUrl('login-bg');
             $file->full = $file->getUrl('full');
+            $file->file_name = $file->file_name;
         }
 
         return $file;

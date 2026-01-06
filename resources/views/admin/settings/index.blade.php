@@ -50,8 +50,8 @@
                                     </td>
                                     <td>
                                         @if($setting->type === 'image')
-                                            @if($setting->value)
-                                                <img src="{{ asset('storage/' . $setting->value) }}" alt="{{ $setting->label }}" style="max-height: 50px;">
+                                            @if($setting->image)
+                                                <img src="{{ $setting->image->preview }}" alt="{{ $setting->label }}" style="max-height: 50px;">
                                             @else
                                                 <span class="text-muted">No image</span>
                                             @endif

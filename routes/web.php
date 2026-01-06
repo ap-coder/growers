@@ -160,6 +160,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'namespace' => 'Admin', 'mi
 
     // Setting
     Route::delete('settings/destroy', 'SettingController@massDestroy')->name('settings.massDestroy');
+    Route::post('settings/media', 'SettingController@storeMedia')->name('settings.storeMedia');
     Route::post('settings/seed-all-dummy-products', 'SettingController@seedAllDummyProducts')->name('settings.seedAllDummyProducts');
     Route::post('settings/seed-dummy-products', 'SettingController@seedDummyProducts')->name('settings.seedDummyProducts');
     Route::post('settings/seed-dummy-accessories', 'SettingController@seedDummyAccessories')->name('settings.seedDummyAccessories');

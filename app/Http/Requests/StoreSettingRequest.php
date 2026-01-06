@@ -28,9 +28,7 @@ class StoreSettingRequest extends FormRequest
             ],
             'image_value' => [
                 'nullable',
-                'image',
-                'mimes:jpeg,png,jpg,gif,svg',
-                'max:2048',
+                'string',
             ],
         ];
     }
