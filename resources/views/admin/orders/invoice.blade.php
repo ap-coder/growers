@@ -179,11 +179,20 @@
                 @php
                     $lineTotal = $item->quantity * $item->price;
                     $subtotal += $lineTotal;
+                    
+                    // Check if this is a variation (ProductVariation model)
+                    $isVariation = $item->product && get_class($item->product) === 'App\Models\ProductVariation';
+                    $productName = $item->product->name ?? 'Unknown Product';
+                    
+                    // If it's a variation, prepend the parent product name
+                    if ($isVariation && $item->product->product) {
+                        $productName = $item->product->product->name . ' - ' . $item->product->name;
+                    }
                 @endphp
                 <tr>
                     <td class="text-center">{{ $item->quantity }}</td>
                     <td>{{ $item->product->sku ?? $item->product->upc_code ?? '-' }}</td>
-                    <td>{{ $item->product->name ?? 'Unknown Product' }}</td>
+                    <td>{{ $productName }}</td>
                     <td class="text-right">${{ number_format($item->price, 2) }}</td>
                     <td class="text-right">${{ number_format($lineTotal, 2) }}</td>
                 </tr>
