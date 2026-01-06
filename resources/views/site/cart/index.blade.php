@@ -68,13 +68,12 @@
                                             @php
                                                 $lineTotal = $item->quantity * $item->price;
                                                 $productTotal += $lineTotal;
-                                                $qty = $item->quantity ?? 1;
                                             @endphp
                                             <tr class="small">
                                                 <td>
                                                     <input type="number" 
                                                            class="form-control form-control-sm cart-qty-update" 
-                                                           value="{{ intval($qty) }}" 
+                                                           value="{{ $item->quantity }}" 
                                                            min="1"
                                                            data-cart-id="{{ $item->id }}"
                                                            autocomplete="off"

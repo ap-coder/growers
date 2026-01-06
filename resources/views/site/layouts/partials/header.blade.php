@@ -81,28 +81,28 @@
                     <div class="extra-cell">
                         <ul class="header-right">
                             @auth
-                            <li class="nav-item dropdown">
-                                <a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
+                            <li class="nav-item login-link">
+                                <a class="nav-link" href="{{ route('site.account.dashboard') }}">
                                     <i class="flaticon flaticon-user"></i>
                                 </a>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="{{ route('site.account.dashboard') }}">Dashboard</a>
-                                    <a class="dropdown-item" href="{{ route('site.account.profile') }}">Profile</a>
-                                    <a class="dropdown-item" href="{{ route('site.account.orders') }}">Orders</a>
-                                    <div class="dropdown-divider"></div>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">Logout</button>
-                                    </form>
-                                </div>
                             </li>
                             @else
-                            <li class="nav-item">
+                            <li class="nav-item login-link">
                                 <a class="nav-link" href="{{ route('login') }}">
-                                    <i class="flaticon flaticon-user"></i> Login
+                                    Login / Register
                                 </a>
                             </li>
                             @endauth
+                            <li class="nav-item search-link">
+                                <a class="nav-link" href="javascript:void(0);">
+                                    <i class="iconly-Light-Search"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item wishlist-link">
+                                <a class="nav-link" href="{{ route('site.account.wishlist') }}">
+                                    <i class="iconly-Light-Heart2"></i>
+                                </a>
+                            </li>
                             
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('site.cart.index') }}" target="_blank">
