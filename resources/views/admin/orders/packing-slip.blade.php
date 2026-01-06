@@ -184,13 +184,6 @@
                     <div>{{ $order->special_request }}</div>
                 </div>
             @endif
-
-            @if($order->internal_notes)
-                <div class="special-box" style="border-color: #666; background: #f9f9f9;">
-                    <div class="special-title">INTERNAL NOTES (Admin Only)</div>
-                    <div>{{ $order->internal_notes }}</div>
-                </div>
-            @endif
         </div>
 
         <div class="right-side">
@@ -200,7 +193,7 @@
                     <thead>
                         <tr>
                             <th>Qty</th>
-                            <th>UPC</th>
+                            <th>QB1</th>
                             <th>Product</th>
                         </tr>
                     </thead>

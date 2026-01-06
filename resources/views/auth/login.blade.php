@@ -38,8 +38,8 @@
                 <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-12 p-a0">
                     <div class="login-slider">
                         @php
-                            $loginBg = \App\Models\Setting::get('login_background_image');
-                            $loginBgUrl = $loginBg ? asset('storage/' . $loginBg) : asset('site/images/registration/pic2.jpg');
+                            $loginBgSetting = \App\Models\Setting::where('key', 'login_background_image')->first();
+                            $loginBgUrl = ($loginBgSetting && $loginBgSetting->image) ? $loginBgSetting->image->login_bg : asset('site/images/registration/pic2.jpg');
                         @endphp
                         <div class="banner-login" style="background-image: url({{ $loginBgUrl }})">
                             <div class="banner-content">

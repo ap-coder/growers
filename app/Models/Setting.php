@@ -6,10 +6,13 @@ use DateTimeInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Setting extends Model
+class Setting extends Model implements HasMedia
 {
-    use SoftDeletes, HasFactory;
+    use SoftDeletes, HasFactory, InteractsWithMedia;
 
     public $table = 'settings';
 
@@ -95,5 +98,42 @@ class Setting extends Model
     protected function serializeDate(DateTimeInterface $date)
     {
         return $date->format('Y-m-d H:i:s');
+    }
+
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->fit('crop', 50, 50)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('preview')
+            ->fit('crop', 120, 120)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('login-bg')
+            ->fit('contain', 1920, 1080)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('full')
+            ->fit('contain', 2560, 1440)
+            ->format('webp')
+            ->nonQueued();
+    }
+
+    public function getImageAttribute()
+    {
+        $file = $this->getMedia('image')->last();
+        if ($file) {
+            $file->url = $file->getUrl();
+            $file->thumbnail = $file->getUrl('thumb');
+            $file->preview = $file->getUrl('preview');
+            $file->login_bg = $file->getUrl('login-bg');
+            $file->full = $file->getUrl('full');
+        }
+
+        return $file;
     }
 }

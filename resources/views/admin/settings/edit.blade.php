@@ -75,16 +75,16 @@
             </div>
             <div class="form-group" id="value-image-group" style="display: none;">
                 <label for="image_value">Image</label>
-                @if($setting->type === 'image' && $setting->value)
+                @if($setting->type === 'image' && $setting->image)
                     <div class="mb-2">
-                        <img src="{{ asset('storage/' . $setting->value) }}" alt="Current Image" style="max-height: 150px;">
+                        <img src="{{ $setting->image->preview }}" alt="Current Image" style="max-height: 150px;">
                     </div>
                 @endif
                 <input class="form-control {{ $errors->has('image_value') ? 'is-invalid' : '' }}" type="file" name="image_value" id="image_value" accept="image/*">
                 @if($errors->has('image_value'))
                     <span class="text-danger">{{ $errors->first('image_value') }}</span>
                 @endif
-                <span class="help-block">Leave empty to keep current image</span>
+                <span class="help-block">Leave empty to keep current image. Images will be converted to WebP format.</span>
             </div>
             <div class="form-group" id="value-boolean-group" style="display: none;">
                 <div class="form-check">

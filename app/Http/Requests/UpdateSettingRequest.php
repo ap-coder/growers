@@ -26,6 +26,12 @@ class UpdateSettingRequest extends FormRequest
                 'string',
                 'nullable',
             ],
+            'image_value' => [
+                'nullable',
+                'image',
+                'mimes:jpeg,png,jpg,gif,svg',
+                'max:2048',
+            ],
         ];
     }
 }

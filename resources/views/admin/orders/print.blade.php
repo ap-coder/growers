@@ -173,13 +173,6 @@
                     <div>{{ $order->special_request }}</div>
                 </div>
             @endif
-
-            @if($order->internal_notes)
-                <div class="special-box" style="border-color: #666; background: #f9f9f9;">
-                    <div class="special-title">INTERNAL NOTES (Admin Only)</div>
-                    <div>{{ $order->internal_notes }}</div>
-                </div>
-            @endif
         </div>
 
         <div class="right-side">
@@ -189,17 +182,17 @@
                     <thead>
                         <tr>
                             <th>Qty</th>
-                            <th>UPC</th>
+                            <th>QB1</th>
                             <th>Product</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($order->orderItems->sortBy(function($item) {
-                            return $item->product->upc_code ?? 'zzz';
+                            return $item->product->qb_1 ?? 'zzz';
                         }) as $item)
                             <tr>
                                 <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->product->upc_code ?? '-' }}</td>
+                                <td>{{ $item->product->qb_1 ?? '-' }}</td>
                                 <td>{{ $item->product->name ?? 'Unknown' }}</td>
                             </tr>
                         @endforeach

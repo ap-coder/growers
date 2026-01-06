@@ -92,14 +92,13 @@ class SettingController extends Controller
 
     public function store(StoreSettingRequest $request)
     {
-        $data = $request->all();
+        $data = $request->except('image_value');
+
+        $setting = Setting::create($data);
 
         if ($request->hasFile('image_value') && $request->input('type') === 'image') {
-            $path = $request->file('image_value')->store('settings', 'public');
-            $data['value'] = $path;
+            $setting->addMediaFromRequest('image_value')->toMediaCollection('image');
         }
-
-        Setting::create($data);
 
         return redirect()->route('admin.settings.index');
     }
@@ -116,18 +115,18 @@ class SettingController extends Controller
 
     public function update(UpdateSettingRequest $request, Setting $setting)
     {
-        $data = $request->all();
-
-        if ($request->hasFile('image_value') && $request->input('type') === 'image') {
-            $path = $request->file('image_value')->store('settings', 'public');
-            $data['value'] = $path;
-        }
+        $data = $request->except('image_value');
 
         if ($request->input('type') === 'boolean') {
             $data['value'] = $request->has('value_bool') ? '1' : '0';
         }
 
         $setting->update($data);
+
+        if ($request->hasFile('image_value') && $request->input('type') === 'image') {
+            $setting->clearMediaCollection('image');
+            $setting->addMediaFromRequest('image_value')->toMediaCollection('image');
+        }
 
         return redirect()->route('admin.settings.index');
     }
