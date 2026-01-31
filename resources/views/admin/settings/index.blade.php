@@ -282,7 +282,9 @@
                                     $dummyFaqCats = \App\Models\FaqCategory::where('is_fake', true)->count();
                                     $dummyFaqs = \App\Models\FaqQuestion::where('is_fake', true)->count();
                                     $dummyPages = \App\Models\ContentPage::where('is_fake', true)->count();
-                                    $totalDummy = $dummyProducts + $dummyVariations + $dummyPriceTiers + $dummyCategories + $dummyTags + $dummyCollections + $dummyClients + $dummyAddresses + $dummyFaqCats + $dummyFaqs + $dummyPages;
+                                    $dummyCarts = \App\Models\Cart::where('is_fake', true)->count();
+                                    $dummyOrders = \App\Models\Order::where('is_fake', true)->count();
+                                    $totalDummy = $dummyProducts + $dummyVariations + $dummyPriceTiers + $dummyCategories + $dummyTags + $dummyCollections + $dummyClients + $dummyAddresses + $dummyFaqCats + $dummyFaqs + $dummyPages + $dummyCarts + $dummyOrders;
                                 @endphp
                                 <div class="row">
                                     <div class="col-6">
@@ -334,6 +336,14 @@
                                             <tr>
                                                 <td class="text-muted">Pages:</td>
                                                 <td class="text-right"><strong>{{ $dummyPages }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Carts:</td>
+                                                <td class="text-right"><strong>{{ $dummyCarts }}</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-muted">Orders:</td>
+                                                <td class="text-right"><strong>{{ $dummyOrders }}</strong></td>
                                             </tr>
                                         </table>
                                     </div>

@@ -390,8 +390,6 @@ class DummyProductsSeeder extends Seeder
             $randomCategories = collect($categoryArray)->random($numCategories);
             $product->categories()->syncWithoutDetaching($randomCategories->pluck('id')->toArray());
 
-            $product->update(['client_access' => 'all']);
-
             if ($clients->count() > 0) {
                 $numClients = rand(1, min(3, $clients->count()));
                 $randomClients = $clients->random($numClients);
@@ -875,6 +873,7 @@ class DummyProductsSeeder extends Seeder
                     'sku' => $variation->sku,
                     'quantity' => $quantity,
                     'price' => $price,
+                    'is_fake' => true,
                 ]);
 
                 $counts['items']++;
@@ -929,6 +928,7 @@ class DummyProductsSeeder extends Seeder
                 'shipping_cost' => rand(0, 1) ? rand(10, 50) : 0,
                 'created_at' => $orderDate,
                 'team_id' => $client->team_id,
+                'is_fake' => true,
             ]);
 
             $counts['orders']++;

@@ -18,11 +18,13 @@ class Cart extends Model
         'price',
         'sku',
         'variation_name',
+        'is_fake',
     ];
 
     protected $casts = [
         'quantity' => 'integer',
         'price' => 'decimal:2',
+        'is_fake' => 'boolean',
     ];
 
     public function user()

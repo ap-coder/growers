@@ -53,6 +53,11 @@ class Order extends Model
         'deleted_at',
         'team_id',
         'created_by_id',
+        'is_fake',
+    ];
+
+    protected $casts = [
+        'is_fake' => 'boolean',
     ];
 
     protected function serializeDate(DateTimeInterface $date)

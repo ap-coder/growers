@@ -292,16 +292,36 @@ class SettingController extends Controller
             
             // Generate bundles
             try {
-                $bundleCounts = DummyProductsSeeder::seedDummyBundleProducts(1);
-                $totalProducts += $bundleCounts['products'] ?? 0;
+                $bundleCounts = DummyProductsSeeder::seedDummyBundles(1);
+                $totalProducts += $bundleCounts['bundles'] ?? 0;
                 $totalVariations += $bundleCounts['variations'] ?? 0;
             } catch (\Exception $e) {
                 throw new \Exception('Error creating bundles: ' . $e->getMessage());
             }
             
+            // Generate cart items
+            $cartItems = 0;
+            try {
+                $cartCounts = DummyProductsSeeder::seedDummyCart();
+                $cartItems = $cartCounts['items'] ?? 0;
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating cart items: ' . $e->getMessage());
+            }
+            
+            // Generate orders
+            $totalOrders = 0;
+            $totalOrderItems = 0;
+            try {
+                $orderCounts = DummyProductsSeeder::seedDummyOrders();
+                $totalOrders = $orderCounts['orders'] ?? 0;
+                $totalOrderItems = $orderCounts['items'] ?? 0;
+            } catch (\Exception $e) {
+                throw new \Exception('Error creating orders: ' . $e->getMessage());
+            }
+            
             $this->clearCaches();
             
-            $message = "Created complete catalog: {$totalProducts} products, {$totalVariations} variations";
+            $message = "Created complete catalog: {$totalProducts} products, {$totalVariations} variations, {$cartItems} cart items, {$totalOrders} orders ({$totalOrderItems} order items)";
             
             if ($request->ajax()) {
                 return response()->json(['success' => true, 'message' => $message]);
