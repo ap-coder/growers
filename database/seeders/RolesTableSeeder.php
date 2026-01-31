@@ -23,6 +23,9 @@ class RolesTableSeeder extends Seeder
         $customer_permissions = $all_permissions->filter(function ($permission) {
             return in_array($permission->title, [
                 'profile_password_edit',
+                // Frontend product viewing permissions
+                'site_product_access',
+                'site_product_show',
             ]);
         });
         Role::findOrFail(2)->permissions()->sync($customer_permissions->pluck('id'));
