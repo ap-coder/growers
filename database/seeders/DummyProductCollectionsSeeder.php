@@ -39,7 +39,7 @@ class DummyProductCollectionsSeeder extends Seeder
             $collection = ProductCollection::create([
                 'name' => $layoutName . ' Collection',
                 'slug' => \Illuminate\Support\Str::slug($layoutName . ' Collection'),
-                'description' => 'Demo collection showcasing the ' . $layoutName . ' layout.',
+                'description' => null,
                 'layout_type' => $layoutKey,
                 'published' => true,
                 'show_on_homepage' => $sortOrder <= 3, // First 3 show on homepage

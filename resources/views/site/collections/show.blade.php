@@ -6,12 +6,12 @@
 <div class="dz-bnr-inr" style="background-image:url({{ asset('site/images/background/bg1.jpg') }});">
     <div class="container">
         <div class="dz-bnr-inr-entry">
-            <h1>{{ $collection->name }}</h1>
+            <h1 style="color: #fff;">{{ $collection->name }}</h1>
             <nav aria-label="breadcrumb" class="breadcrumb-row">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}">Home</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('site.shop.index') }}">Shop</a></li>
-                    <li class="breadcrumb-item active">{{ $collection->name }}</li>
+                    <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}" style="color: #fff;">Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('site.shop.index') }}" style="color: #fff;">Shop</a></li>
+                    <li class="breadcrumb-item active" style="color: #fff;">{{ $collection->name }}</li>
                 </ul>
             </nav>
         </div>
@@ -32,7 +32,7 @@
                 <i class="fas fa-file-pdf me-1"></i> Download Catalog
             </a>
         </div>
-        
+
         <div class="row">
             @forelse($products as $product)
                 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 m-b30">

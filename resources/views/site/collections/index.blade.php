@@ -9,8 +9,8 @@
             <h1>Collections</h1>
             <nav aria-label="breadcrumb" class="breadcrumb-row">
                 <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}">Home</a></li>
-                    <li class="breadcrumb-item active">Collections</li>
+                    <li class="breadcrumb-item"><a href="{{ route('frontend.home') }}" style="color: #fff;">Home</a></li>
+                    <li class="breadcrumb-item active" style="color: #fff;">Collections</li>
                 </ul>
             </nav>
         </div>
