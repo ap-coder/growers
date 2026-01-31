@@ -244,6 +244,13 @@
                         <textarea class="form-control ckeditor" name="description" id="description" rows="6">{{ old('description', $product->description) }}</textarea>
                     </div>
                     
+                    {{-- Description Tab --}}
+                    <div class="form-group">
+                        <label for="description_tab">Description Tab Content</label>
+                        <textarea class="form-control ckeditor" name="description_tab" id="description_tab" rows="6">{{ old('description_tab', $product->description_tab) }}</textarea>
+                        <small class="text-muted">Content for the Description tab on the product detail page. If empty, the main description will be used.</small>
+                    </div>
+                    
                     {{-- Additional Info --}}
                     <div class="form-group">
                         <label for="additional_info">Additional Information</label>

@@ -60,6 +60,7 @@ class Product extends Model implements HasMedia
         'accessory_type_id',
         'sort_order',
         'description',
+        'description_tab',
         'additional_info',
         'shipping_return',
         'show_tabs',
