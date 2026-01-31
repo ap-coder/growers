@@ -566,6 +566,16 @@ class PermissionsTableSeeder extends Seeder
                 'id'    => 139,
                 'title' => 'client_address_access',
             ],
+            // Frontend (site) permissions needed by Product frontend controllers
+            // Using IDs aligned with TEST seeder where applicable to avoid divergence across environments
+            [
+                'id'    => 173,
+                'title' => 'site_product_access',
+            ],
+            [
+                'id'    => 182,
+                'title' => 'site_product_show',
+            ],
         ];
 
         Permission::upsert($permissions, ['id'], ['title']);
