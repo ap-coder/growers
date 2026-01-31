@@ -15,7 +15,7 @@ class TaskTagController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('task_tag_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_tag_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $taskTags = TaskTag::all();
 
@@ -24,7 +24,7 @@ class TaskTagController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('task_tag_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_tag_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.taskTags.create');
     }
@@ -38,7 +38,7 @@ class TaskTagController extends Controller
 
     public function edit(TaskTag $taskTag)
     {
-        abort_if(Gate::denies('task_tag_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_tag_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.taskTags.edit', compact('taskTag'));
     }
@@ -52,14 +52,14 @@ class TaskTagController extends Controller
 
     public function show(TaskTag $taskTag)
     {
-        abort_if(Gate::denies('task_tag_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_tag_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.taskTags.show', compact('taskTag'));
     }
 
     public function destroy(TaskTag $taskTag)
     {
-        abort_if(Gate::denies('task_tag_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_tag_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $taskTag->delete();
 

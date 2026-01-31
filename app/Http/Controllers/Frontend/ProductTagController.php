@@ -15,7 +15,7 @@ class ProductTagController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('product_tag_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_tag_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productTags = ProductTag::all();
 
@@ -24,7 +24,7 @@ class ProductTagController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('product_tag_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_tag_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.productTags.create');
     }
@@ -38,7 +38,7 @@ class ProductTagController extends Controller
 
     public function edit(ProductTag $productTag)
     {
-        abort_if(Gate::denies('product_tag_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_tag_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.productTags.edit', compact('productTag'));
     }
@@ -52,14 +52,14 @@ class ProductTagController extends Controller
 
     public function show(ProductTag $productTag)
     {
-        abort_if(Gate::denies('product_tag_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_tag_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.productTags.show', compact('productTag'));
     }
 
     public function destroy(ProductTag $productTag)
     {
-        abort_if(Gate::denies('product_tag_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_tag_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productTag->delete();
 

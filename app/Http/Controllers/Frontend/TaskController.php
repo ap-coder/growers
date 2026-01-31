@@ -22,7 +22,7 @@ class TaskController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('task_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $tasks = Task::with(['status', 'tags', 'assigned_to', 'media'])->get();
 
@@ -31,7 +31,7 @@ class TaskController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('task_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $statuses = TaskStatus::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -59,7 +59,7 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
-        abort_if(Gate::denies('task_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $statuses = TaskStatus::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -92,7 +92,7 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
-        abort_if(Gate::denies('task_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $task->load('status', 'tags', 'assigned_to');
 
@@ -101,7 +101,7 @@ class TaskController extends Controller
 
     public function destroy(Task $task)
     {
-        abort_if(Gate::denies('task_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $task->delete();
 
@@ -121,7 +121,7 @@ class TaskController extends Controller
 
     public function storeCKEditorImages(Request $request)
     {
-        abort_if(Gate::denies('task_create') && Gate::denies('task_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_task_create') && Gate::denies('site_task_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $model         = new Task();
         $model->id     = $request->input('crud_id', 0);

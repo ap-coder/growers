@@ -15,7 +15,7 @@ class UserAlertsController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('user_alert_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_user_alert_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $userAlerts = UserAlert::with(['users'])->get();
 
@@ -24,7 +24,7 @@ class UserAlertsController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('user_alert_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_user_alert_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $users = User::pluck('name', 'id');
 
@@ -41,7 +41,7 @@ class UserAlertsController extends Controller
 
     public function show(UserAlert $userAlert)
     {
-        abort_if(Gate::denies('user_alert_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_user_alert_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $userAlert->load('users');
 
@@ -50,7 +50,7 @@ class UserAlertsController extends Controller
 
     public function destroy(UserAlert $userAlert)
     {
-        abort_if(Gate::denies('user_alert_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_user_alert_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $userAlert->delete();
 

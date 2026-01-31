@@ -16,7 +16,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('order_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_order_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $orders = Order::with(['client', 'team'])->get();
 
@@ -25,7 +25,7 @@ class OrderController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('order_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_order_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -41,7 +41,7 @@ class OrderController extends Controller
 
     public function edit(Order $order)
     {
-        abort_if(Gate::denies('order_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_order_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -59,7 +59,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        abort_if(Gate::denies('order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_order_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $order->load('client', 'team');
 
@@ -68,7 +68,7 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
-        abort_if(Gate::denies('order_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_order_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $order->delete();
 

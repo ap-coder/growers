@@ -16,7 +16,7 @@ class FaqQuestionController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('faq_question_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_faq_question_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $faqQuestions = FaqQuestion::with(['category'])->get();
 
@@ -25,7 +25,7 @@ class FaqQuestionController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('faq_question_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_faq_question_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = FaqCategory::pluck('category', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -41,7 +41,7 @@ class FaqQuestionController extends Controller
 
     public function edit(FaqQuestion $faqQuestion)
     {
-        abort_if(Gate::denies('faq_question_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_faq_question_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = FaqCategory::pluck('category', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -59,7 +59,7 @@ class FaqQuestionController extends Controller
 
     public function show(FaqQuestion $faqQuestion)
     {
-        abort_if(Gate::denies('faq_question_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_faq_question_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $faqQuestion->load('category');
 
@@ -68,7 +68,7 @@ class FaqQuestionController extends Controller
 
     public function destroy(FaqQuestion $faqQuestion)
     {
-        abort_if(Gate::denies('faq_question_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_faq_question_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $faqQuestion->delete();
 

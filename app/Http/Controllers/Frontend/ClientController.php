@@ -19,7 +19,7 @@ class ClientController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clients = Client::with(['prices', 'team'])->get();
 
@@ -28,7 +28,7 @@ class ClientController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('client_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -44,7 +44,7 @@ class ClientController extends Controller
 
     public function edit(Client $client)
     {
-        abort_if(Gate::denies('client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $prices = ClientPrice::pluck('price', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -62,7 +62,7 @@ class ClientController extends Controller
 
     public function show(Client $client)
     {
-        abort_if(Gate::denies('client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $client->load('prices', 'team', 'clientClientPrices', 'clientsProducts');
 
@@ -71,7 +71,7 @@ class ClientController extends Controller
 
     public function destroy(Client $client)
     {
-        abort_if(Gate::denies('client_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $client->delete();
 

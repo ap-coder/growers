@@ -19,7 +19,7 @@ class ProductCategoryController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productCategories = ProductCategory::with(['media'])->get();
 
@@ -28,7 +28,7 @@ class ProductCategoryController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('product_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_category_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.productCategories.create');
     }
@@ -50,7 +50,7 @@ class ProductCategoryController extends Controller
 
     public function edit(ProductCategory $productCategory)
     {
-        abort_if(Gate::denies('product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.productCategories.edit', compact('productCategory'));
     }
@@ -75,14 +75,14 @@ class ProductCategoryController extends Controller
 
     public function show(ProductCategory $productCategory)
     {
-        abort_if(Gate::denies('product_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.productCategories.show', compact('productCategory'));
     }
 
     public function destroy(ProductCategory $productCategory)
     {
-        abort_if(Gate::denies('product_category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $productCategory->delete();
 
@@ -102,7 +102,7 @@ class ProductCategoryController extends Controller
 
     public function storeCKEditorImages(Request $request)
     {
-        abort_if(Gate::denies('product_category_create') && Gate::denies('product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_category_create') && Gate::denies('site_product_category_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $model         = new ProductCategory();
         $model->id     = $request->input('crud_id', 0);

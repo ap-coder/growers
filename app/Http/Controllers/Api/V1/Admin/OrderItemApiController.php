@@ -15,7 +15,7 @@ class OrderItemApiController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('order_item_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('api_order_item_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return new OrderItemResource(OrderItem::with(['product', 'items', 'team'])->get());
     }
@@ -31,7 +31,7 @@ class OrderItemApiController extends Controller
 
     public function show(OrderItem $orderItem)
     {
-        abort_if(Gate::denies('order_item_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('api_order_item_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return new OrderItemResource($orderItem->load(['product', 'items', 'team']));
     }
@@ -47,7 +47,7 @@ class OrderItemApiController extends Controller
 
     public function destroy(OrderItem $orderItem)
     {
-        abort_if(Gate::denies('order_item_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('api_order_item_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $orderItem->delete();
 

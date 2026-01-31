@@ -23,7 +23,7 @@ class ProductController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $products = Product::with(['categories', 'tags', 'clients', 'team', 'media'])->get();
 
@@ -32,7 +32,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = ProductCategory::pluck('name', 'id');
 
@@ -66,7 +66,7 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        abort_if(Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $categories = ProductCategory::pluck('name', 'id');
 
@@ -115,7 +115,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        abort_if(Gate::denies('product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $product->load('categories', 'tags', 'clients', 'team');
 
@@ -124,7 +124,7 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        abort_if(Gate::denies('product_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $product->delete();
 
@@ -144,7 +144,7 @@ class ProductController extends Controller
 
     public function storeCKEditorImages(Request $request)
     {
-        abort_if(Gate::denies('product_create') && Gate::denies('product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_product_create') && Gate::denies('site_product_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $model         = new Product();
         $model->id     = $request->input('crud_id', 0);

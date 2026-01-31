@@ -21,7 +21,7 @@ class ClientPriceController extends Controller
 
     public function index()
     {
-        abort_if(Gate::denies('client_price_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_price_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clientPrices = ClientPrice::with(['client', 'team', 'media'])->get();
 
@@ -30,7 +30,7 @@ class ClientPriceController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('client_price_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_price_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -54,7 +54,7 @@ class ClientPriceController extends Controller
 
     public function edit(ClientPrice $clientPrice)
     {
-        abort_if(Gate::denies('client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clients = Client::pluck('name', 'id')->prepend(trans('global.pleaseSelect'), '');
 
@@ -83,7 +83,7 @@ class ClientPriceController extends Controller
 
     public function show(ClientPrice $clientPrice)
     {
-        abort_if(Gate::denies('client_price_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_price_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clientPrice->load('client', 'team');
 
@@ -92,7 +92,7 @@ class ClientPriceController extends Controller
 
     public function destroy(ClientPrice $clientPrice)
     {
-        abort_if(Gate::denies('client_price_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_price_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $clientPrice->delete();
 
@@ -112,7 +112,7 @@ class ClientPriceController extends Controller
 
     public function storeCKEditorImages(Request $request)
     {
-        abort_if(Gate::denies('client_price_create') && Gate::denies('client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_client_price_create') && Gate::denies('site_client_price_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $model         = new ClientPrice();
         $model->id     = $request->input('crud_id', 0);

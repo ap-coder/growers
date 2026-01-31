@@ -15,7 +15,7 @@ class SettingController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('setting_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_setting_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $settings = Setting::all();
 
@@ -24,7 +24,7 @@ class SettingController extends Controller
 
     public function create()
     {
-        abort_if(Gate::denies('setting_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_setting_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.settings.create');
     }
@@ -38,7 +38,7 @@ class SettingController extends Controller
 
     public function edit(Setting $setting)
     {
-        abort_if(Gate::denies('setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_setting_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return view('frontend.settings.edit', compact('setting'));
     }
@@ -52,7 +52,7 @@ class SettingController extends Controller
 
     public function destroy(Setting $setting)
     {
-        abort_if(Gate::denies('setting_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('site_setting_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $setting->delete();
 

@@ -15,7 +15,7 @@ class FaqCategoryApiController extends Controller
 {
     public function index()
     {
-        abort_if(Gate::denies('faq_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('api_faq_category_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return new FaqCategoryResource(FaqCategory::all());
     }
@@ -31,7 +31,7 @@ class FaqCategoryApiController extends Controller
 
     public function show(FaqCategory $faqCategory)
     {
-        abort_if(Gate::denies('faq_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('api_faq_category_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         return new FaqCategoryResource($faqCategory);
     }
@@ -47,7 +47,7 @@ class FaqCategoryApiController extends Controller
 
     public function destroy(FaqCategory $faqCategory)
     {
-        abort_if(Gate::denies('faq_category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('api_faq_category_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $faqCategory->delete();
 
