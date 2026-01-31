@@ -23,10 +23,8 @@ class ShopController extends Controller
         // Admins see all published products, others see based on client access
         if (!$isAdmin) {
             $query->where(function($q) use ($clientId) {
-                // Always show products with client_access = 'all'
-                $q->where('client_access', 'all')
-                  // Or products with no client restrictions
-                  ->orWhereDoesntHave('clients');
+                // Show products with no client restrictions
+                $q->whereDoesntHave('clients');
                   
                 // Or if user has client_id, show products assigned to that client
                 if ($clientId) {
@@ -81,8 +79,7 @@ class ShopController extends Controller
         // Admins see all featured products, others see based on client access
         if (!$isAdmin) {
             $featuredQuery->where(function($q) use ($clientId) {
-                $q->where('client_access', 'all')
-                  ->orWhereDoesntHave('clients');
+                $q->whereDoesntHave('clients');
                   
                 if ($clientId) {
                     $q->orWhereHas('clients', function ($subQ) use ($clientId) {
